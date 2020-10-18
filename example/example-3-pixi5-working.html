@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://d3js.org/d3.v5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.2.4/pixi.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pixi-viewport@4.11.1/dist/viewport.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.2.4/pixi.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pixi-viewport@4.11.1/dist/viewport.min.js"></script>
 
 </head>
 <body>
@@ -17,7 +17,7 @@
     let width = window.outerWidth;
     let height = window.outerHeight;
     let globalDragging = false;
-    const resolution = window.devicePixelRatio ;
+    const resolution = window.devicePixelRatio;
     // const resolution = 1;
 
     var pixiCanvas = d3.select('#pixiCanvas');
@@ -31,8 +31,8 @@
         view: pixiCanvas.node()
     }
     const app = new PIXI.Application(options);
-        app.view.style.height = height + "px";
-        app.view.style.width = width+"px";
+    app.view.style.height = height + "px";
+    app.view.style.width = width + "px";
 
     document.body.appendChild(app.view);
     const viewport = new Viewport.Viewport({
@@ -111,13 +111,21 @@
 
 
     function onDragStart(event) {
+        console.log("=====event", event);
+        console.log("======event find",  simulation.find(event.data.global.x, event.data.global.y));
+        const thisNode= simulation.find(event.data.global.x, event.data.global.y);
+        thisNode.fixed = false;
         viewport.plugins.pause('drag')
-        simulation.alphaTarget(0.3).restart();
+        // simulation.alphaTarget(0.3).restart();
         this.isDown = true;
         this.event = event.data;
         this.alpha = 0.5;
         this.dragging = true;
         globalDragging = true;
+            //
+            // thisNode.fx = d3.event.x;
+            // thisNode.fy = d3.event.y;
+
 
     }
 

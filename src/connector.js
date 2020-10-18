@@ -357,26 +357,38 @@ export default class Connector {
 
         let links = []
 
-        for (i = 0; i < 10; i++) {
-            links.push(
-                {
-                    source: 1, target: 2,
-                    linkStyleConfig: {
-                        lineStyle: 1,
-                    },
-                    properties: {"title": "Edge-" + i}
-                }
-            )
-            links.push(
-                {
-                    source: 1, target: 2,
-                    linkStyleConfig: {
-                        lineStyle: 1,
-                    },
-                    properties: {"title": "Edge-" + i + "--2"}
-                }
-            )
-        }
+        // for (i = 0; i < 10; i++) {
+        links.push(
+            {
+                id: "1-2",
+                source: 1, target: 2,
+                linkStyleConfig: {
+                    lineStyle: 1,
+                },
+                properties: {"title": "Edge-" + i}
+            }
+        )
+        links.push(
+            {
+                id: "1-3",
+                source: 1, target: 3,
+                linkStyleConfig: {
+                    lineStyle: 1,
+                },
+                properties: {"title": "Edge-" + i + "--2"}
+            }
+        )
+        links.push(
+            {
+                id: "5-4",
+                source: 5, target: 6,
+                linkStyleConfig: {
+                    lineStyle: 1,
+                },
+                properties: {"title": "Edge-" + i + "--2"}
+            }
+        )
+        // }
         return {
             nodes: nodes,
             links: links

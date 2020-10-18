@@ -9,9 +9,14 @@ const connector = new Connector();
 export default class Viewer extends React.Component {
 
     forceLayout(...args) {
-        const [data, {iterations, nodeRepulsionStrength}] = args
+        const [data, {iterations, nodeRepulsionStrength, defaultLinkLength}] = args
         d3.forceSimulation(data.nodes)
-            .force("link", d3.forceLink(data.links).id(linkData => linkData.id))
+            .force("link", d3.forceLink(data.links)
+                .id(linkData => linkData.id)
+                .distance(function (d) {
+                    return d.distance || defaultLinkLength
+                })
+            )
             .force("charge", d3.forceManyBody().strength(-nodeRepulsionStrength))
             .force("center", d3.forceCenter())
             .stop()
@@ -31,8 +36,9 @@ export default class Viewer extends React.Component {
         const WORLD_WIDTH = SCREEN_WIDTH;
         const WORLD_HEIGHT = SCREEN_HEIGHT;
         const RESOLUTION = window.devicePixelRatio;
-        const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 100;
+        const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 80;
         const FORCE_LAYOUT_ITERATIONS = 350;
+        const DEFAULT_LINK_LENGTH = 150;
         const NODE_RADIUS = 10;
         const NODE_HIT_RADIUS = NODE_RADIUS + 15;
         const ICON_FONT_FAMILY = 'Material Icons';
@@ -60,6 +66,7 @@ export default class Viewer extends React.Component {
         const {nodes, links} = this.forceLayout(data, {
             iterations: FORCE_LAYOUT_ITERATIONS,
             nodeRepulsionStrength: FORCE_LAYOUT_NODE_REPULSION_STRENGTH,
+            defaultLinkLength: DEFAULT_LINK_LENGTH
         });
 
 
@@ -127,6 +134,8 @@ export default class Viewer extends React.Component {
         // create 4 layers: links, nodes, labels, front
         const linksLayer = new PIXI.Container();
         viewport.addChild(linksLayer);
+        const linksLabelsLayer = new PIXI.Container();
+        viewport.addChild(linksLabelsLayer);
         const nodesLayer = new PIXI.Container();
         viewport.addChild(nodesLayer);
         const labelsLayer = new PIXI.Container();
@@ -144,18 +153,50 @@ export default class Viewer extends React.Component {
         let hoveredLabelGfxOriginalChildren = undefined;
         let clickedNodeData = undefined;
         let linkGraphicsArray = [];
+        let linkLabelGraphicsArray = [];
+
 
         const updatePositions = () => {
+                        console.log("=====linkGraphicsArray", linkGraphicsArray);
+            console.log("=====linkLabelGraphicsArray", linkLabelGraphicsArray);
+
             while (linkGraphicsArray.length > 0) {
                 let linkGraphics = linkGraphicsArray.pop();
                 linkGraphics.clear();
                 linksLayer.removeChild(linkGraphics);
                 linkGraphics.destroy();
             }
+            while (linkLabelGraphicsArray.length > 0) {
+                let linkLabelGraphics = linkLabelGraphicsArray.pop();
+                linkLabelGraphics.clear();
+                linksLabelsLayer.removeChild(linkLabelGraphics);
+                linkLabelGraphics.destroy();
+            }
+
             let limitedLinks = new PIXI.Graphics();
             limitedLinks.alpha = 0.6;
             linkGraphicsArray.push(limitedLinks);
             linksLayer.addChild(limitedLinks);
+
+
+            // links labels
+            let limitedLinksLabels = new PIXI.Graphics();
+            limitedLinksLabels.alpha = 0.6;
+            linkLabelGraphicsArray.push(limitedLinksLabels);
+            linksLabelsLayer.addChild(limitedLinksLabels);
+
+
+            //
+            // const labelBackground = new PIXI.Sprite(PIXI.Texture.WHITE);
+            // labelBackground.x = -(labelText.width + LABEL_X_PADDING * 2) / 2;
+            // labelBackground.y = NODE_HIT_RADIUS;
+            // labelBackground.width = labelText.width + LABEL_X_PADDING * 2;
+            // labelBackground.height = labelText.height + LABEL_Y_PADDING * 2;
+            // labelBackground.tint = 0xeeeeee;
+            // labelGfx.addChild(labelBackground);
+            // labelGfx.addChild(labelText);
+
+
             let count = 2500;
             for (let i = 0; i < links.length; i++) {
                 if (count === 0) {
@@ -165,10 +206,44 @@ export default class Viewer extends React.Component {
                     linkGraphicsArray.push(limitedLinks);
                     linksLayer.addChild(limitedLinks);
                     limitedLinks.alpha = 0.6;
+
+
+                    // link labels
+                    limitedLinksLabels.endFill();
+                    limitedLinksLabels = new PIXI.Graphics();
+                    linkLabelGraphicsArray.push(limitedLinksLabels);
+                    linksLabelsLayer.addChild(limitedLinksLabels);
+                    limitedLinksLabels.alpha = 0.6;
+
+
                 }
-                limitedLinks.lineStyle(Math.sqrt(links[i].linkStyleConfig.lineStyle), 0x999999);
+
+
+                // limitedLinks.lineStyle(Math.sqrt(links[i].linkStyleConfig.lineStyle), 0x999999);
                 limitedLinks.moveTo(links[i].source.x, links[i].source.y);
-                limitedLinks.lineTo(links[i].target.x, links[i].target.y);
+                // limitedLinks.lineTo(links[i].target.x, links[i].target.y);
+                limitedLinks.lineStyle(2, 0xAA0000, 1);
+
+                const nextPointX = links[i].target.x - 50;
+                const nextPointY = links[i].target.y - 10;
+                limitedLinks.bezierCurveTo(links[i].source.x, links[i].source.y,
+                    nextPointX, nextPointY,
+                    links[i].target.x, links[i].target.y);
+
+                //
+
+                // for link label
+                const linkLabelText = new PIXI.Text(LABEL_TEXT(links[i]), {
+                    fontFamily: LABEL_FONT_FAMILY,
+                    fontSize: LABEL_FONT_SIZE,
+                    fill: 0x343434
+                });
+                linkLabelText.x = (links[i].source.x + links[i].target.x) / 2 - 10;
+                linkLabelText.y = (links[i].source.y + links[i].target.y) / 2 - 10;
+                linkLabelText.anchor.set(0.5, 0);
+                limitedLinksLabels.addChild(linkLabelText)
+
+
                 count--;
             }
             //linksLayer.removeChildren();

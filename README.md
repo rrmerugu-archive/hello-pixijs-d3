@@ -9,7 +9,7 @@
 - link curved links https://jsfiddle.net/skysigal/gp0u5rLu/
 https://codepen.io/stopyransky/embed/vrMxKQ/?theme-id=modal
 
-
+- https://stackoverflow.com/questions/808826/draw-arrow-on-canvas-tag (arrow)
 
 Enabling hardware acceleration did it for me.
 

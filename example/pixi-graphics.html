@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://pixijs.download/v5.1.2/pixi.js"></script>
+
+</head>
+<body>
+
+</body>
+<script>
+    // const app = new PIXI.Application({antialias: true});
+    // document.body.appendChild(app.view);
+    // const bezier = new PIXI.Graphics();
+    //
+    // bezier.lineStyle(5, 0xAA0000, 1);
+    // bezier.bezierCurveTo(100, 200, 200, 200, 240, 100);
+    //
+    // bezier.position.x = 50;
+    // bezier.position.y = 50;
+    //
+    // app.stage.addChild(bezier);
+    //
+    //
+    //
+
+
+    var renderer = new PIXI.autoDetectRenderer(800, 600);
+
+    document.body.appendChild(renderer.view);
+
+    var stage = new PIXI.Container
+
+    // create a new render texture..
+    var renderTexture = new PIXI.RenderTexture.create(800, 600);
+
+    // create a sprite that uses the new render texture...
+    // and add it to the stage
+    var sprite = new PIXI.Sprite(renderTexture);
+    stage.addChild(sprite);
+
+    // create an item..
+    var text = new PIXI.Text("OH please render me!");
+
+    // render the item it to the render texture..
+    renderer.render(text, renderTexture);
+
+    // render the stage
+    renderer.render(stage);
+</script>
+</html>
