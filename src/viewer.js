@@ -4,6 +4,7 @@ import * as PIXI from 'pixi.js-legacy'
 import * as d3 from "d3";
 import {Viewport} from 'pixi-viewport'
 import Connector from "./connector";
+import FontFaceObserver  from "fontfaceobserver";
 
 const connector = new Connector();
 export default class Viewer extends React.Component {
@@ -32,10 +33,10 @@ export default class Viewer extends React.Component {
         const SCREEN_HEIGHT = window.innerHeight;
         //const WORLD_WIDTH = SCREEN_WIDTH * 2;
         //const WORLD_HEIGHT = SCREEN_HEIGHT * 2;
-        // const RESOLUTION = window.devicePixelRatio * 2;
+        const RESOLUTION = window.devicePixelRatio * 2;
         const WORLD_WIDTH = SCREEN_WIDTH;
         const WORLD_HEIGHT = SCREEN_HEIGHT;
-        const RESOLUTION = window.devicePixelRatio;
+        // const RESOLUTION = window.devicePixelRatio;
         const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 80;
         const FORCE_LAYOUT_ITERATIONS = 350;
         const DEFAULT_LINK_LENGTH = 150;
@@ -71,7 +72,7 @@ export default class Viewer extends React.Component {
 
 
         // preload font
-        // await new FontFaceObserver(ICON_FONT_FAMILY).load();
+         new FontFaceObserver(ICON_FONT_FAMILY).load();
 
         // create PIXI application
         const app = new PIXI.Application({
@@ -116,7 +117,8 @@ export default class Viewer extends React.Component {
         });
         const resetViewport = () => {
             viewport.center = new PIXI.Point(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
-            viewport.setZoom(0.2, true);
+            viewport.fit(true, WORLD_WIDTH, WORLD_HEIGHT )
+            viewport.setZoom(1, true);
         };
         app.stage.addChild(viewport);
         viewport
@@ -316,12 +318,12 @@ export default class Viewer extends React.Component {
             hoveredLabelGfxOriginalChildren = [...labelGfx.children];
 
             // circle border
-            //const circleBorder = new PIXI.Graphics();
-            //circleBorder.x = 0;
-            //circleBorder.y = 0;
-            //circleBorder.lineStyle(1.5, 0x000000);
-            //circleBorder.drawCircle(0, 0, NODE_RADIUS);
-            //nodeGfx.addChild(circleBorder);
+            const circleBorder = new PIXI.Graphics();
+            circleBorder.x = 0;
+            circleBorder.y = 0;
+            circleBorder.lineStyle(1.5, 0x000000);
+            circleBorder.drawCircle(0, 0, NODE_RADIUS);
+            nodeGfx.addChild(circleBorder);
 
             // text with background
             const labelText = new PIXI.Text(LABEL_TEXT(nodeData), {
@@ -433,22 +435,22 @@ export default class Viewer extends React.Component {
             circle.drawCircle(0, 0, NODE_RADIUS);
             nodeGfx.addChild(circle);
 
-            //const circleBorder = new PIXI.Graphics();
-            //circle.x = 0;
-            //circle.y = 0;
-            //circleBorder.lineStyle(1.5, 0xffffff);
-            //circleBorder.drawCircle(0, 0, NODE_RADIUS);
-            //nodeGfx.addChild(circleBorder);
+            const circleBorder = new PIXI.Graphics();
+            circle.x = 0;
+            circle.y = 0;
+            circleBorder.lineStyle(1.5, 0xff00ff);
+            circleBorder.drawCircle(0, 0, NODE_RADIUS);
+            nodeGfx.addChild(circleBorder);
 
-            //const icon = new PIXI.Text(ICON_TEXT, {
-            //  fontFamily: ICON_FONT_FAMILY,
-            //  fontSize: ICON_FONT_SIZE,
-            //  fill: 0xffffff
-            //});
-            //icon.x = 0;
-            //icon.y = 0;
-            //icon.anchor.set(0.5);
-            //nodeGfx.addChild(icon);
+            const icon = new PIXI.Text(ICON_TEXT, {
+             fontFamily: ICON_FONT_FAMILY,
+             fontSize: ICON_FONT_SIZE,
+             fill: 0xffffff
+            });
+            icon.x = 0;
+            icon.y = 0;
+            icon.anchor.set(0.5);
+            nodeGfx.addChild(icon);
 
             const labelGfx = new PIXI.Container();
             labelGfx.x = nodeData.x;
