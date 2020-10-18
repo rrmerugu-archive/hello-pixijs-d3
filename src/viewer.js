@@ -258,9 +258,9 @@ export default class Viewer extends React.Component {
 
                 // for link label
                 const linkLabelText = new PIXI.Text(LABEL_TEXT(links[i]), {
-                    fontFamily: LABEL_FONT_FAMILY,
+                    // fontFamily: LABEL_FONT_FAMILY,
                     fontSize: LABEL_FONT_SIZE,
-                    fill: 0x343434
+                    // fill: 0x343434
                 });
                 linkLabelText.x = (links[i].source.x + links[i].target.x) / 2 - 10;
                 linkLabelText.y = (links[i].source.y + links[i].target.y) / 2 - 10;

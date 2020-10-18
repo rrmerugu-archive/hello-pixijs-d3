@@ -380,6 +380,26 @@ export default class Connector {
         )
         links.push(
             {
+                id: "1-4",
+                source: 1, target: 4,
+                linkStyleConfig: {
+                    lineStyle: 1,
+                },
+                properties: {"title": "Edge-" + i + "--2"}
+            }
+        )
+        links.push(
+            {
+                id: "1-5",
+                source: 1, target: 5,
+                linkStyleConfig: {
+                    lineStyle: 1,
+                },
+                properties: {"title": "Edge-" + i + "--2"}
+            }
+        )
+        links.push(
+            {
                 id: "5-4",
                 source: 5, target: 6,
                 linkStyleConfig: {
