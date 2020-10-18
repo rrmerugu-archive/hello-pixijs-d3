@@ -1,0 +1,100 @@
+<html>
+
+<head>
+	<title>Pixi integration in d3</title>
+	<style> html,body {padding:0; margin:0}</style>
+</head>
+
+<body>
+
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.1.0/pixi.min.js"></script>
+	<script>
+
+		var width = document.body.clientWidth;
+		var height = document.body.clientHeight;
+
+		var container = new PIXI.Container();
+		var stage = new PIXI.Container();
+		stage.addChild(container);
+
+		var renderer = new PIXI.WebGLRenderer(width, height, {resolution:2});
+		document.body.appendChild(renderer.view);
+
+		var canvas = d3.select(renderer.view);
+		canvas.style("width", width).style("height",height);
+
+		var centerY = height * .5;
+		var centerX = width * .5;
+		var particleSize = 64;
+		var data = d3.range(0,20);
+		var yScale = d3.scaleLinear().domain(d3.extent(data)).range([height*.2, height*.8]);
+
+		data = data.map(function(i) {
+
+			return {
+				r: 5,
+				x: centerX,
+				y: yScale(i)
+			}
+		});
+
+		var extent = d3.extent(data, function(d,i) {return i});
+		var colourScale = d3.scaleSequential(d3.interpolateRainbow).domain(extent);
+
+		var circles = d3.selectAll("custom.circle")
+		.data(data)
+		.enter()
+		.append("custom")
+		.attr("class", "circle")
+		.attr("scale", 1)
+		.each(function(d,i) {
+			d.sprite = new PIXI.Graphics();
+			d.color = rgbToHex(d3.color(colourScale(i)).rgb());
+			d.sprite.beginFill(d.color);
+			d.sprite.drawCircle(0,0,d.r*2);
+			d.pivot = {x:.5, y:.5};
+			container.addChild(d.sprite);
+		});
+
+		canvas.on("mousedown", function() {
+			data.pop();
+			circles
+			.data(data)
+			.exit()
+			.transition()
+			.attr("scale", 0)
+			.on("end", function(d) {
+				container.removeChild(d.sprite);
+				d3.select(this).remove();
+			})
+		})
+
+		timer = d3.timer(function() {
+			circles
+			.each(function(d,i) {
+				var scale = d3.select(this).attr("scale");
+				d.sprite.position.x = d.x;
+				d.sprite.position.y = d.y;
+				d.sprite.scale.x = scale;
+				d.sprite.scale.y = scale;
+			});
+
+			renderer.render(stage);
+		});
+
+		function rgbToHex(c) {
+			return "0x" + componentToHex(c.r) + componentToHex(c.g) + componentToHex(c.b);
+			function componentToHex(c) {
+				var hex = c.toString(16);
+				return hex.length == 1 ? "0" + hex : hex;
+			}
+		}
+
+
+
+
+	</script>
+</body>
+
+</html>
