@@ -27,10 +27,10 @@ export default class Viewer extends React.Component {
         const SCREEN_HEIGHT = window.innerHeight;
         //const WORLD_WIDTH = SCREEN_WIDTH * 2;
         //const WORLD_HEIGHT = SCREEN_HEIGHT * 2;
-        const RESOLUTION = window.devicePixelRatio * 2;
+        // const RESOLUTION = window.devicePixelRatio * 2;
         const WORLD_WIDTH = SCREEN_WIDTH;
         const WORLD_HEIGHT = SCREEN_HEIGHT;
-        // const RESOLUTION = window.devicePixelRatio;
+        const RESOLUTION = window.devicePixelRatio;
         const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 100;
         const FORCE_LAYOUT_ITERATIONS = 350;
         const NODE_RADIUS = 10;
@@ -79,6 +79,7 @@ export default class Viewer extends React.Component {
         });
         // app.view.style.width = `${SCREEN_WIDTH}px`;
         app.view.style.width = SCREEN_WIDTH + "px";
+        app.view.style.height = SCREEN_HEIGHT + "px";
         const container = document.getElementById("container");
         container.appendChild(app.view);
 
