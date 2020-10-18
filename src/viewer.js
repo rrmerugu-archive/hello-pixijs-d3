@@ -157,7 +157,7 @@ export default class Viewer extends React.Component {
 
 
         const updatePositions = () => {
-                        console.log("=====linkGraphicsArray", linkGraphicsArray);
+            console.log("=====linkGraphicsArray", linkGraphicsArray);
             console.log("=====linkLabelGraphicsArray", linkLabelGraphicsArray);
 
             while (linkGraphicsArray.length > 0) {
@@ -219,18 +219,42 @@ export default class Viewer extends React.Component {
                 }
 
 
+                const nextPointX = links[i].target.x - 50;
+                const nextPointY = links[i].target.y - 100;
+
+
+                const normal = [
+                    -(links[i].target.y - NODE_RADIUS - nextPointY),
+                    links[i].target.x - NODE_RADIUS - nextPointX,
+                ]
+                const l = Math.sqrt(normal[0] ** 2 + normal[1] ** 2) * 2;
+                console.log("=====l", l, normal);
+                normal[0] /= l;
+                normal[1] /= l;
+
+                const tangent = [
+                    -normal[1] * 30,
+                    normal[0] * 30
+                ]
+
+                normal[0] *= 20;
+                normal[1] *= 20;
+
+
                 // limitedLinks.lineStyle(Math.sqrt(links[i].linkStyleConfig.lineStyle), 0x999999);
                 limitedLinks.moveTo(links[i].source.x, links[i].source.y);
                 // limitedLinks.lineTo(links[i].target.x, links[i].target.y);
                 limitedLinks.lineStyle(2, 0xAA0000, 1);
 
-                const nextPointX = links[i].target.x - 50;
-                const nextPointY = links[i].target.y - 10;
-                limitedLinks.bezierCurveTo(links[i].source.x, links[i].source.y,
-                    nextPointX, nextPointY,
-                    links[i].target.x, links[i].target.y);
+                limitedLinks
+                    .bezierCurveTo(links[i].source.x, links[i].source.y,
+                        nextPointX, nextPointY, links[i].target.x, links[i].target.y)
 
-                //
+                    .lineStyle(2, 0xAA0000, 1, .5)
+                    .moveTo(links[i].target.x + normal[0] + tangent[0], links[i].target.y + normal[1] + tangent[1])
+                    .lineTo(links[i].target.x, links[i].target.y)
+                    .lineTo(links[i].target.x - normal[0] + tangent[0], links[i].target.y - normal[1] + tangent[1])
+
 
                 // for link label
                 const linkLabelText = new PIXI.Text(LABEL_TEXT(links[i]), {
