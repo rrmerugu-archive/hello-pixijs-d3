@@ -139,7 +139,7 @@ export default class Viewer extends React.Component {
 
         const LABEL_X_PADDING = -12;
         const LABEL_Y_PADDING = -15;
-        const defaultLineWidth = 1;
+        const defaultLineWidth = 4;
 
         data.links = prepareLinksDataForCurves(data.links);
 
@@ -394,11 +394,26 @@ export default class Viewer extends React.Component {
                         points = linkGfx.geometry.graphicsData[0].shape.points;
                         // console.log("points interval", points.length, points);
                         if (points.length > 0) {
-                            console.log("=======points len", points.length, points)
+                            console.log("=======points len", points.length)
+                            console.log("=======points", points)
                             // TODO - fix polygon generation, so that the poligon only uses
                             // the area around the line and nother else.
                             linkGfx.interactive = true;
                             linkGfx.buttonMode = true;
+
+
+                            if (points.length === 4) {
+                                // this is straight line; so making 2 point into 4 points to create a rectangle
+                                // structure to create hitArea around the link connecting the nodes in straight line.
+                                // const x1, y1, x2, y2 = points[0], points[1], points[2], points[3];
+                                const x1 = points[0];
+                                const y1 = points[1];
+                                const x2 = points[2];
+                                const y2 = points[3];
+                                console.log("x1-y1", x1, y1)
+                                points  = [x1+2, y1+2, x2+2, y2+2, x2-2, y2-2, x1-2, y1-2]
+                            }
+
                             linkGfx.hitArea = new PIXI.Polygon(points);
                             // linkGfx.drawPolygon(points);
                             console.log("=====mouse actions ", links[i]);
