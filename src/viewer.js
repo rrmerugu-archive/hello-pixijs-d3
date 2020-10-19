@@ -136,7 +136,7 @@ export default class Viewer extends React.Component {
         const LABEL_FONT_SIZE = 12;
         const getNodeLabel = nodeData => nodeData.id;
         const getLinkLabel = linkData => linkData.source.id + "-" + linkData.target.id;
-        
+
         const LABEL_X_PADDING = -12;
         const LABEL_Y_PADDING = -15;
         const defaultLineWidth = 1;
@@ -310,17 +310,17 @@ export default class Viewer extends React.Component {
             for (let i = 0; i < links.length; i++) {
 
                 // count = 2500;
-                let limitedLinks = new PIXI.Graphics();
-                linkGraphicsArray.push(limitedLinks);
-                linksLayer.addChild(limitedLinks);
-                // limitedLinks.alpha = 0.6;
+                let linkGfx = new PIXI.Graphics();
+                linkGraphicsArray.push(linkGfx);
+                linksLayer.addChild(linkGfx);
+                // linkGfx.alpha = 0.6;
 
 
                 // link labels
-                let limitedLinksLabels = new PIXI.Graphics();
-                linkLabelGraphicsArray.push(limitedLinksLabels);
-                linksLabelsLayer.addChild(limitedLinksLabels);
-                // limitedLinksLabels.alpha = 0.6;
+                let linkGfxLabels = new PIXI.Graphics();
+                linkLabelGraphicsArray.push(linkGfxLabels);
+                linksLabelsLayer.addChild(linkGfxLabels);
+                // linkGfxLabels.alpha = 0.6;
 
 
                 const curvatureConstant = 0.5;
@@ -357,25 +357,28 @@ export default class Viewer extends React.Component {
                 normal[0] *= 20;
                 normal[1] *= 20;
 
-                // limitedLinks.lineStyle(Math.sqrt(links[i].linkStyleConfig.lineStyle? links[i].linkStyleConfig: 1), 0x999999);
-                limitedLinks.lineStyle(Math.sqrt(defaultLineWidth), 0x999999);
-                limitedLinks.moveTo(links[i].source.x, links[i].source.y);
-                // limitedLinks.lineTo(links[i].target.x, links[i].target.y);
+                // linkGfx.lineStyle(Math.sqrt(links[i].linkStyleConfig.lineStyle? links[i].linkStyleConfig: 1), 0x999999);
+                linkGfx.lineStyle(Math.sqrt(defaultLineWidth), 0x999999);
+                linkGfx.moveTo(links[i].source.x, links[i].source.y);
+                // linkGfx.lineTo(links[i].target.x, links[i].target.y);
 
                 if (sameIndex === 1) {
-                    // limitedLinks.lineStyle(2, 0xAA0000, 1);
-                    limitedLinks.lineTo(links[i].target.x, links[i].target.y);
+                    // linkGfx.lineStyle(2, 0xAA0000, 1);
+                    linkGfx.lineTo(links[i].target.x, links[i].target.y);
 
                 } else {
-                    limitedLinks
+                    linkGfx
                         .bezierCurveTo(links[i].source.x, links[i].source.y,
                             nextPointX, nextPointY, links[i].target.x, links[i].target.y)
 
                 }
-                limitedLinks.lineStyle(2, 0xAA0000, 1, .5)
+                linkGfx.lineStyle(2, 0xAA0000, 1, .5)
                     .moveTo(links[i].target.x + normal[0] + tangent[0], links[i].target.y + normal[1] + tangent[1])
                     .lineTo(links[i].target.x, links[i].target.y)
                     .lineTo(links[i].target.x - normal[0] + tangent[0], links[i].target.y - normal[1] + tangent[1])
+
+                linkGfx.interactive = true;
+                linkGfx.buttonMode = true;
 
 
                 // for link label
@@ -387,11 +390,51 @@ export default class Viewer extends React.Component {
                 linkLabelText.x = (links[i].source.x + links[i].target.x) / 2 - 10 * sameIndex;
                 linkLabelText.y = (links[i].source.y + links[i].target.y) / 2 - 10 * sameIndex;
                 linkLabelText.anchor.set(0.5, 0);
-                limitedLinksLabels.addChild(linkLabelText)
+                linkGfxLabels.addChild(linkLabelText)
+
+                let points = linkGfx.geometry.points;
+                // console.log("==point", points);
+                console.log("======points", linkGfx)
+                let interval = setInterval(() => {
+                    if (linkGfx.geometry) {
+                        points = linkGfx.geometry.points;
+                        // console.log("points interval", points.length, points);
+                        if (points.length > 0) {
+                            console.log("=======points", points.length)
+                            // TODO - fix polygon generation, so that the poligon only uses
+                            // the area around the line and nother else.
+                            const curvePolygon = new PIXI.Polygon(points);
+                            // console.log("==curvePolygon", curvePolygon);
+                            linkGfx.interactive = true;
+                            linkGfx.buttonMode = true;
+                            linkGfx.hitArea = curvePolygon;
+                            // line.drawPolygon(curvePolygon);
+
+                            linkGfx.on("mouseover", mouseover);
+                            linkGfx.on("mouseout", mouseout);
+                            clearInterval(interval);
+                        }
+                    }
+                }, 50);
+
+                // linkGfx.hitArea = linkGfx.getBounds();
+                // linkGfx.interactive = true;
 
 
-                limitedLinks.endFill();
-                limitedLinksLabels.endFill();
+                //              // make circle non-transparent when mouse is over it
+                function mouseover(mouseData) {
+                    console.log("Hover", mouseData);
+                    this.alpha = 1;
+                }
+
+                // make circle half-transparent when mouse leaves
+                function mouseout(mouseData) {
+                    this.alpha = 0.5;
+                }
+
+                linkGfx.endFill();
+                linkGfxLabels.endFill();
+
 
             }
 
@@ -414,18 +457,18 @@ export default class Viewer extends React.Component {
             //}
 
             //for (const link of links) {
-            //  limitedLinks.lineStyle(Math.sqrt(link.value), 0x999999);
-            //  limitedLinks.moveTo(link.source.x, link.source.y);
-            //  limitedLinks.lineTo(link.target.x, link.target.y);
+            //  linkGfx.lineStyle(Math.sqrt(link.value), 0x999999);
+            //  linkGfx.moveTo(link.source.x, link.source.y);
+            //  linkGfx.lineTo(link.target.x, link.target.y);
             //}
-            //limitedLinks.endFill();
-            //linksLayer.addChild(limitedLinks);
+            //linkGfx.endFill();
+            //linksLayer.addChild(linkGfx);
 
             for (const node of nodes) {
                 nodeDataToNodeGfx.get(node).position = new PIXI.Point(node.x, node.y)
                 nodeDataToLabelGfx.get(node).position = new PIXI.Point(node.x, node.y)
             }
-
+            console.log("log positions updated");
             requestRender();
         };
 
