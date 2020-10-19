@@ -361,6 +361,14 @@ export default class Viewer extends React.Component {
                 if (sameIndex === 1) {
                     // linkGfx.lineStyle(2, 0xAA0000, 1);
                     linkGfx.lineTo(links[i].target.x, links[i].target.y);
+                    // linkGfx.lineTo(links[i].source.x + 2, links[i].source.y + 2);
+                    // linkGfx.lineTo(links[i].target.x + 2, links[i].target.y + 2);
+                    // linkGfx.lineTo(links[i].target.x - 2, links[i].target.y - 2);
+                    // linkGfx.lineTo(links[i].source.x - 2, links[i].source.y - 2);
+
+
+                    // points  = [x1+2, y1+2, x2+2, y2+2, x2-2, y2-2, x1-2, y1-2]
+
 
                 } else {
                     linkGfx
@@ -411,7 +419,7 @@ export default class Viewer extends React.Component {
                                 const x2 = points[2];
                                 const y2 = points[3];
                                 console.log("x1-y1", x1, y1)
-                                points  = [x1+2, y1+2, x2+2, y2+2, x2-2, y2-2, x1-2, y1-2]
+                                points = [x1 + 3, y1 + 3, x2 + 3, y2 + 3, x2 - 3, y2 - 3, x1 - 3, y1 - 3]
                             }
 
                             linkGfx.hitArea = new PIXI.Polygon(points);
@@ -422,20 +430,22 @@ export default class Viewer extends React.Component {
                             linkGfxLabels.endFill();
 
                             //              // make circle non-transparent when mouse is over it
-                            function mouseover(mouseData) {
-                                console.log("Hover", mouseData);
-                                this.alpha = 1;
+                            function mouseover(mouseData, linkData) {
+                                console.log("link MouseOver", mouseData, linkData);
+                                // this.alpha = 1;
                             }
 
                             // make circle half-transparent when mouse leaves
-                            function mouseout(mouseData) {
-                                this.alpha = 0.5;
+                            function mouseout(mouseData, linkData) {
+                                console.log("link MouseOut", mouseData, linkData);
+
+                                // this.alpha = 0.5;
                             }
 
 
                             linkGfx.click = mouseover;
-                            linkGfx.on("mouseover", mouseover);
-                            linkGfx.on("mouseout", mouseout);
+                            linkGfx.on("mouseover", (mouseData) => mouseover(mouseData, links[i]));
+                            linkGfx.on("mouseout", (mouseData) => mouseout(mouseData, links[i]));
                             clearInterval(interval);
                         }
                     }
@@ -500,6 +510,8 @@ export default class Viewer extends React.Component {
 
             hoveredNodeData = nodeData;
 
+
+            // console.log("====nodeData", nodeData);
             const nodeGfx = nodeDataToNodeGfx.get(nodeData);
             const labelGfx = nodeDataToLabelGfx.get(nodeData);
 
