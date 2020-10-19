@@ -34,8 +34,8 @@ export default class Viewer extends React.Component {
         //const WORLD_WIDTH = SCREEN_WIDTH * 2;
         //const WORLD_HEIGHT = SCREEN_HEIGHT * 2;
         // const RESOLUTION = window.devicePixelRatio * 2;
-        const WORLD_WIDTH = SCREEN_WIDTH;
-        const WORLD_HEIGHT = SCREEN_HEIGHT;
+        const WORLD_WIDTH = SCREEN_WIDTH / 4;
+        const WORLD_HEIGHT = SCREEN_HEIGHT /4;
         const RESOLUTION = window.devicePixelRatio * 2;
         const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 50;
         const FORCE_LAYOUT_ITERATIONS = 650;
@@ -88,11 +88,12 @@ export default class Viewer extends React.Component {
 
         });
         // app.view.style.width = `${SCREEN_WIDTH}px`;
-        // app.view.style.width = SCREEN_WIDTH + "px";
+        app.view.style.width = SCREEN_WIDTH + "px";
         // app.view.style.height = SCREEN_HEIGHT + "px";
         // app.view.style.position = "absolute";
-        app.view.style.left = SCREEN_WIDTH / 2 + "px";
-        app.view.style.top = SCREEN_HEIGHT / 2 + "px";
+
+
+
         const container = document.getElementById("container");
         container.appendChild(app.view);
 
@@ -149,8 +150,9 @@ export default class Viewer extends React.Component {
 
 
         const resetViewport = () => {
-            viewport.center = new PIXI.Point(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
-            viewport.fit(true, WORLD_WIDTH / 2, WORLD_HEIGHT / 2)
+            viewport.center = new PIXI.Point(WORLD_WIDTH / 4, WORLD_HEIGHT / 4);
+            // viewport.moveCenter(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+            viewport.fit(true, WORLD_WIDTH / 4, WORLD_HEIGHT / 4)
             viewport.setZoom(1, true);
 
 

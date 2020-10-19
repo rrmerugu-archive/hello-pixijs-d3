@@ -11,6 +11,7 @@ https://codepen.io/stopyransky/embed/vrMxKQ/?theme-id=modal
 
 - https://stackoverflow.com/questions/808826/draw-arrow-on-canvas-tag (arrow)
 
+- https://rodighiero.github.io/COVID-19/ []
 Enabling hardware acceleration did it for me.
 
 Chrome -> Settings (⌘,) -> Advanced -> System -> enable 1st
