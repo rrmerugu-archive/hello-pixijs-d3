@@ -96,7 +96,7 @@ export default class Viewer extends React.Component {
         //const WORLD_HEIGHT = SCREEN_HEIGHT * 2;
         // const RESOLUTION = window.devicePixelRatio * 2;
         const WORLD_WIDTH = SCREEN_WIDTH / 4;
-        const WORLD_HEIGHT = SCREEN_HEIGHT /4;
+        const WORLD_HEIGHT = SCREEN_HEIGHT / 4;
         const RESOLUTION = window.devicePixelRatio * 2;
         const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 50;
         const FORCE_LAYOUT_ITERATIONS = 650;
@@ -154,7 +154,6 @@ export default class Viewer extends React.Component {
         app.view.style.width = SCREEN_WIDTH + "px";
         // app.view.style.height = SCREEN_HEIGHT + "px";
         // app.view.style.position = "absolute";
-
 
 
         const container = document.getElementById("container");
@@ -219,7 +218,6 @@ export default class Viewer extends React.Component {
             viewport.setZoom(1, true);
 
 
-
             // app.stage.x = WORLD_WIDTH / 2;
             // app.stage.y = WORLD_HEIGHT / 2;
 
@@ -275,14 +273,14 @@ export default class Viewer extends React.Component {
             }
 
             let limitedLinks = new PIXI.Graphics();
-            limitedLinks.alpha = 0.6;
+            // limitedLinks.alpha = 0.6;
             linkGraphicsArray.push(limitedLinks);
             linksLayer.addChild(limitedLinks);
 
 
             // links labels
             let limitedLinksLabels = new PIXI.Graphics();
-            limitedLinksLabels.alpha = 0.6;
+            // limitedLinksLabels.alpha = 0.6;
             linkLabelGraphicsArray.push(limitedLinksLabels);
             linksLabelsLayer.addChild(limitedLinksLabels);
 
@@ -306,7 +304,7 @@ export default class Viewer extends React.Component {
                     limitedLinks = new PIXI.Graphics();
                     linkGraphicsArray.push(limitedLinks);
                     linksLayer.addChild(limitedLinks);
-                    limitedLinks.alpha = 0.6;
+                    // limitedLinks.alpha = 0.6;
 
 
                     // link labels
@@ -314,17 +312,17 @@ export default class Viewer extends React.Component {
                     limitedLinksLabels = new PIXI.Graphics();
                     linkLabelGraphicsArray.push(limitedLinksLabels);
                     linksLabelsLayer.addChild(limitedLinksLabels);
-                    limitedLinksLabels.alpha = 0.6;
+                    // limitedLinksLabels.alpha = 0.6;
 
 
                 }
 
 
                 const curvatureConstant = 0.5;
-                const sameIndex = links[i].sameIndex * curvatureConstant ;
+                const sameIndex = links[i].sameIndex;
 
-                const nextPointX = links[i].target.x - 50 * sameIndex;
-                const nextPointY = links[i].target.y - 100 * sameIndex;
+                const nextPointX = links[i].target.x - 50 * sameIndex * curvatureConstant;
+                const nextPointY = links[i].target.y - 100 * sameIndex * curvatureConstant;
 
 
                 const normal = [
@@ -345,17 +343,21 @@ export default class Viewer extends React.Component {
                 normal[0] *= 20;
                 normal[1] *= 20;
 
-
-                // limitedLinks.lineStyle(Math.sqrt(links[i].linkStyleConfig.lineStyle), 0x999999);
+                limitedLinks.lineStyle(Math.sqrt(links[i].linkStyleConfig.lineStyle), 0x999999);
                 limitedLinks.moveTo(links[i].source.x, links[i].source.y);
                 // limitedLinks.lineTo(links[i].target.x, links[i].target.y);
-                limitedLinks.lineStyle(2, 0xAA0000, 1);
 
-                limitedLinks
-                    .bezierCurveTo(links[i].source.x, links[i].source.y,
-                        nextPointX, nextPointY, links[i].target.x, links[i].target.y)
+                if (sameIndex === 1) {
+                    // limitedLinks.lineStyle(2, 0xAA0000, 1);
+                    limitedLinks.lineTo(links[i].target.x, links[i].target.y);
 
-                    .lineStyle(2, 0xAA0000, 1, .5)
+                } else {
+                    limitedLinks
+                        .bezierCurveTo(links[i].source.x, links[i].source.y,
+                            nextPointX, nextPointY, links[i].target.x, links[i].target.y)
+
+                }
+                limitedLinks.lineStyle(2, 0xAA0000, 1, .5)
                     .moveTo(links[i].target.x + normal[0] + tangent[0], links[i].target.y + normal[1] + tangent[1])
                     .lineTo(links[i].target.x, links[i].target.y)
                     .lineTo(links[i].target.x - normal[0] + tangent[0], links[i].target.y - normal[1] + tangent[1])
@@ -368,7 +370,7 @@ export default class Viewer extends React.Component {
                     // fill: 0x343434
                 });
                 linkLabelText.x = (links[i].source.x + links[i].target.x) / 2 - 10 * sameIndex;
-                linkLabelText.y = (links[i].source.y + links[i].target.y) / 2 - 10 * sameIndex ;
+                linkLabelText.y = (links[i].source.y + links[i].target.y) / 2 - 10 * sameIndex;
                 linkLabelText.anchor.set(0.5, 0);
                 limitedLinksLabels.addChild(linkLabelText)
 
