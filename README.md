@@ -18,3 +18,4 @@ Chrome -> Settings (⌘,) -> Advanced -> System -> enable 1st
 
 This setting fixed my problem on Chrome:
 In Chrome:flags > enable WebGL Draft Extensions
+https://guides.github.com/introduction/flow/

@@ -6,6 +6,7 @@ import {Viewport} from 'pixi-viewport'
 import Connector from "./connector";
 import FontFaceObserver from "fontfaceobserver";
 import PixiFps from "pixi-fps";
+
 const connector = new Connector();
 
 export function prepareLinksDataForCurves(links) {
@@ -89,7 +90,7 @@ export default class Viewer extends React.Component {
 
     componentDidMount() {
         // let data = connector.getGraphData();
-       let data = connector.getData();
+        let data = connector.getData();
 
         let c = 1;
         // setInterval(() => {
@@ -133,7 +134,9 @@ export default class Viewer extends React.Component {
         const ICON_TEXT = 'person';
         const LABEL_FONT_FAMILY = 'Helvetica';
         const LABEL_FONT_SIZE = 12;
-        const LABEL_TEXT = nodeData => nodeData.id;
+        const getNodeLabel = nodeData => nodeData.id;
+        const getLinkLabel = linkData => linkData.source.id + "-" + linkData.target.id;
+        
         const LABEL_X_PADDING = -12;
         const LABEL_Y_PADDING = -15;
         const defaultLineWidth = 1;
@@ -252,7 +255,6 @@ export default class Viewer extends React.Component {
         let hoveredNodeData = undefined;
 
 
-
         let hoveredNodeGfxOriginalChildren = undefined;
         let hoveredLabelGfxOriginalChildren = undefined;
         let clickedNodeData = undefined;
@@ -280,18 +282,18 @@ export default class Viewer extends React.Component {
                 linkLabelGraphics.destroy();
             }
 
-            let limitedLinks = new PIXI.Graphics();
-            // limitedLinks.alpha = 0.6;
-            linkGraphicsArray.push(limitedLinks);
-            linksLayer.addChild(limitedLinks);
-
-
-            // links labels
-            let limitedLinksLabels = new PIXI.Graphics();
-            // limitedLinksLabels.alpha = 0.6;
-            linkLabelGraphicsArray.push(limitedLinksLabels);
-            linksLabelsLayer.addChild(limitedLinksLabels);
-
+            // let limitedLinks = new PIXI.Graphics();
+            // // limitedLinks.alpha = 0.6;
+            // linkGraphicsArray.push(limitedLinks);
+            // linksLayer.addChild(limitedLinks);
+            //
+            //
+            // // links labels
+            // let limitedLinksLabels = new PIXI.Graphics();
+            // // limitedLinksLabels.alpha = 0.6;
+            // linkLabelGraphicsArray.push(limitedLinksLabels);
+            // linksLabelsLayer.addChild(limitedLinksLabels);
+            //
 
             //
             // const labelBackground = new PIXI.Sprite(PIXI.Texture.WHITE);
@@ -304,26 +306,21 @@ export default class Viewer extends React.Component {
             // labelGfx.addChild(labelText);
 
 
-            let count = 2500;
+            // let count = 2500;
             for (let i = 0; i < links.length; i++) {
-                if (count === 0) {
-                    count = 2500;
-                    limitedLinks.endFill();
-                    limitedLinks = new PIXI.Graphics();
-                    linkGraphicsArray.push(limitedLinks);
-                    linksLayer.addChild(limitedLinks);
-                    // limitedLinks.alpha = 0.6;
+
+                // count = 2500;
+                let limitedLinks = new PIXI.Graphics();
+                linkGraphicsArray.push(limitedLinks);
+                linksLayer.addChild(limitedLinks);
+                // limitedLinks.alpha = 0.6;
 
 
-                    // link labels
-                    limitedLinksLabels.endFill();
-                    limitedLinksLabels = new PIXI.Graphics();
-                    linkLabelGraphicsArray.push(limitedLinksLabels);
-                    linksLabelsLayer.addChild(limitedLinksLabels);
-                    // limitedLinksLabels.alpha = 0.6;
-
-
-                }
+                // link labels
+                let limitedLinksLabels = new PIXI.Graphics();
+                linkLabelGraphicsArray.push(limitedLinksLabels);
+                linksLabelsLayer.addChild(limitedLinksLabels);
+                // limitedLinksLabels.alpha = 0.6;
 
 
                 const curvatureConstant = 0.5;
@@ -382,10 +379,10 @@ export default class Viewer extends React.Component {
 
 
                 // for link label
-                const linkLabelText = new PIXI.Text(LABEL_TEXT(links[i]), {
+                const linkLabelText = new PIXI.Text(getLinkLabel(links[i]), {
                     // fontFamily: LABEL_FONT_FAMILY,
                     fontSize: LABEL_FONT_SIZE,
-                    // fill: 0x343434
+                    fill: 0xd2d2d2
                 });
                 linkLabelText.x = (links[i].source.x + links[i].target.x) / 2 - 10 * sameIndex;
                 linkLabelText.y = (links[i].source.y + links[i].target.y) / 2 - 10 * sameIndex;
@@ -393,17 +390,19 @@ export default class Viewer extends React.Component {
                 limitedLinksLabels.addChild(linkLabelText)
 
 
-                count--;
+                limitedLinks.endFill();
+                limitedLinksLabels.endFill();
+
             }
 
 
-            linksLayer.mouseover = function(mouseData) {
-  this.alpha = 0.2;
-}
+            linksLayer.mouseover = function (mouseData) {
+                this.alpha = 0.2;
+            }
 
-linksLayer.mouseout = function(mouseData) {
-  this.alpha = 0.5;
-}
+            linksLayer.mouseout = function (mouseData) {
+                this.alpha = 0.5;
+            }
 
 
             // shape.hitArea = new PIXI.Polygon(vertices);
@@ -464,7 +463,7 @@ linksLayer.mouseout = function(mouseData) {
             nodeGfx.addChild(circleBorder);
 
             // text with background
-            const labelText = new PIXI.Text(LABEL_TEXT(nodeData), {
+            const labelText = new PIXI.Text(getNodeLabel(nodeData), {
                 fontFamily: LABEL_FONT_FAMILY,
                 fontSize: LABEL_FONT_SIZE,
                 fill: 0x333333
@@ -603,7 +602,7 @@ linksLayer.mouseout = function(mouseData) {
             labelGfx.on('mouseup', () => unclickNode());
             labelGfx.on('mouseupoutside', () => unclickNode());
 
-            const labelText = new PIXI.Text(LABEL_TEXT(nodeData), {
+            const labelText = new PIXI.Text(getNodeLabel(nodeData), {
                 fontFamily: LABEL_FONT_FAMILY,
                 fontSize: LABEL_FONT_SIZE,
                 fill: 0x333333
@@ -641,9 +640,9 @@ linksLayer.mouseout = function(mouseData) {
         // invalidation.then(() => {
         //     app.destroy(true, true);
         // });
-const fpsCounter = new PixiFps();
+        const fpsCounter = new PixiFps();
 
-app.stage.addChild(fpsCounter);
+        app.stage.addChild(fpsCounter);
         // prevent body scrolling
         app.view.addEventListener('wheel', event => {
             event.preventDefault();
