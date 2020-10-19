@@ -4,7 +4,7 @@ import * as PIXI from 'pixi.js-legacy'
 import * as d3 from "d3";
 import {Viewport} from 'pixi-viewport'
 import Connector from "./connector";
-import FontFaceObserver  from "fontfaceobserver";
+import FontFaceObserver from "fontfaceobserver";
 
 const connector = new Connector();
 export default class Viewer extends React.Component {
@@ -33,13 +33,13 @@ export default class Viewer extends React.Component {
         const SCREEN_HEIGHT = window.innerHeight;
         //const WORLD_WIDTH = SCREEN_WIDTH * 2;
         //const WORLD_HEIGHT = SCREEN_HEIGHT * 2;
-        const RESOLUTION = window.devicePixelRatio * 2;
+        // const RESOLUTION = window.devicePixelRatio * 2;
         const WORLD_WIDTH = SCREEN_WIDTH;
         const WORLD_HEIGHT = SCREEN_HEIGHT;
-        // const RESOLUTION = window.devicePixelRatio;
-        const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 80;
-        const FORCE_LAYOUT_ITERATIONS = 350;
-        const DEFAULT_LINK_LENGTH = 150;
+        const RESOLUTION = window.devicePixelRatio * 2;
+        const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 50;
+        const FORCE_LAYOUT_ITERATIONS = 650;
+        const DEFAULT_LINK_LENGTH = 100;
         const NODE_RADIUS = 10;
         const NODE_HIT_RADIUS = NODE_RADIUS + 15;
         const ICON_FONT_FAMILY = 'Material Icons';
@@ -72,22 +72,27 @@ export default class Viewer extends React.Component {
 
 
         // preload font
-         new FontFaceObserver(ICON_FONT_FAMILY).load();
+        new FontFaceObserver(ICON_FONT_FAMILY).load();
 
         // create PIXI application
         const app = new PIXI.Application({
             width: SCREEN_WIDTH,
             height: SCREEN_HEIGHT,
             resolution: RESOLUTION,
-            transparent: false,
-            backgroundColor: 0xFFFFFF,
+            transparent: true,
+            // backgroundColor: 0xFFFFFF,
             antialias: true,
             autoStart: false, // disable automatic rendering by ticker, render manually instead, only when needed
-            forceCanvas: true
+            forceCanvas: true,
+            autoDensity: true
+
         });
         // app.view.style.width = `${SCREEN_WIDTH}px`;
-        app.view.style.width = SCREEN_WIDTH + "px";
-        app.view.style.height = SCREEN_HEIGHT + "px";
+        // app.view.style.width = SCREEN_WIDTH + "px";
+        // app.view.style.height = SCREEN_HEIGHT + "px";
+        // app.view.style.position = "absolute";
+        app.view.style.left = SCREEN_WIDTH / 2 + "px";
+        app.view.style.top = SCREEN_HEIGHT / 2 + "px";
         const container = document.getElementById("container");
         container.appendChild(app.view);
 
@@ -115,11 +120,7 @@ export default class Viewer extends React.Component {
             worldHeight: WORLD_HEIGHT,
             interaction: app.renderer.plugins.interaction
         });
-        const resetViewport = () => {
-            viewport.center = new PIXI.Point(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
-            viewport.fit(true, WORLD_WIDTH, WORLD_HEIGHT )
-            viewport.setZoom(1, true);
-        };
+
         app.stage.addChild(viewport);
         viewport
             .drag()
@@ -134,6 +135,7 @@ export default class Viewer extends React.Component {
         });
 
         // create 4 layers: links, nodes, labels, front
+
         const linksLayer = new PIXI.Container();
         viewport.addChild(linksLayer);
         const linksLabelsLayer = new PIXI.Container();
@@ -144,6 +146,38 @@ export default class Viewer extends React.Component {
         viewport.addChild(labelsLayer);
         const frontLayer = new PIXI.Container();
         viewport.addChild(frontLayer);
+
+
+        const resetViewport = () => {
+            viewport.center = new PIXI.Point(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+            viewport.fit(true, WORLD_WIDTH / 2, WORLD_HEIGHT / 2)
+            viewport.setZoom(1, true);
+
+
+
+            // app.stage.x = WORLD_WIDTH / 2;
+            // app.stage.y = WORLD_HEIGHT / 2;
+
+            // app.stage.
+
+            // linksLayer.x = WORLD_WIDTH / 2;
+            // linksLayer.y = WORLD_HEIGHT / 2;
+            //
+            // nodesLayer.x = WORLD_WIDTH / 2;
+            // nodesLayer.y = WORLD_HEIGHT / 2;
+            //
+            // linksLabelsLayer.x = WORLD_WIDTH / 2;
+            // linksLabelsLayer.y = WORLD_HEIGHT / 2;
+            //
+            // labelsLayer.x = WORLD_WIDTH / 2;
+            // labelsLayer.y = WORLD_HEIGHT / 2;
+            //
+            // frontLayer.x = WORLD_WIDTH / 2;
+            // frontLayer.y = WORLD_HEIGHT / 2;
+
+
+        };
+
 
         // state
         let nodeDataToNodeGfx = new WeakMap();
@@ -443,9 +477,9 @@ export default class Viewer extends React.Component {
             nodeGfx.addChild(circleBorder);
 
             const icon = new PIXI.Text(ICON_TEXT, {
-             fontFamily: ICON_FONT_FAMILY,
-             fontSize: ICON_FONT_SIZE,
-             fill: 0xffffff
+                fontFamily: ICON_FONT_FAMILY,
+                fontSize: ICON_FONT_SIZE,
+                fill: 0xffffff
             });
             icon.x = 0;
             icon.y = 0;
