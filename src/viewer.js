@@ -321,14 +321,23 @@ export default class Viewer extends React.Component {
                 const curvatureConstant = 0.5;
                 const sameIndex = links[i].sameIndex;
 
-                const nextPointX = links[i].target.x - 50 * sameIndex * curvatureConstant;
-                const nextPointY = links[i].target.y - 100 * sameIndex * curvatureConstant;
-
-
-                const normal = [
-                    -(links[i].target.y - NODE_RADIUS - nextPointY),
-                    links[i].target.x - NODE_RADIUS - nextPointX,
+                let nextPointX = links[i].target.x;
+                let nextPointY = links[i].target.y;
+                let normal = [
+                    -(links[i].target.y - NODE_RADIUS),
+                    links[i].target.x - NODE_RADIUS,
                 ]
+                if (sameIndex > 1) {
+                    // for curved links
+                    nextPointX = links[i].target.x - 50 * sameIndex * curvatureConstant;
+                    nextPointY = links[i].target.y - 100 * sameIndex * curvatureConstant;
+                    normal = [
+                        -(links[i].target.y - NODE_RADIUS - nextPointY),
+                        links[i].target.x - NODE_RADIUS - nextPointX,
+                    ]
+                }
+
+
                 const l = Math.sqrt(normal[0] ** 2 + normal[1] ** 2) * 2;
                 console.log("=====l", l, normal);
                 console.log("=====link", links[i])
