@@ -7,6 +7,67 @@ import Connector from "./connector";
 import FontFaceObserver from "fontfaceobserver";
 
 const connector = new Connector();
+
+export function prepareLinksDataForCurves(links) {
+    /*
+    This method will set attributes on to the links that will
+    help us controls the curves of the links.
+     */
+    links.forEach(function (link) {
+
+        // find other links with same target+source or source+target
+        let same = links.filter(function (v) {
+            return ((v.source === link.source && v.target === link.target));
+        })
+        let sameAlt = links.filter(function (v) {
+            return ((v.source === link.target && v.target === link.source));
+        })
+
+        let sameAll = same.concat(sameAlt);
+        sameAll.forEach(function (s, i) {
+            s.sameIndex = (i + 1);
+            s.sameTotal = sameAll.length;
+            s.sameTotalHalf = (s.sameTotal / 2);
+            s.sameUneven = ((s.sameTotal % 2) !== 0);
+            s.sameMiddleLink = ((s.sameUneven === true) && (Math.ceil(s.sameTotalHalf) === s.sameIndex));
+            s.sameLowerHalf = (s.sameIndex <= s.sameTotalHalf);
+            s.sameArcDirection = s.sameLowerHalf ? 0 : 1;
+            s.sameIndexCorrected = s.sameLowerHalf ? s.sameIndex : (s.sameIndex - Math.ceil(s.sameTotalHalf));
+
+            // if (s.sameIndexCorrected === 2) {
+            //     s.sameArcDirection = 1;
+            // }
+            // if (s.sameIndexCorrected === 1) {
+            //     s.sameArcDirection = 0;
+            // }
+        });
+    });
+
+    links.sort(function (a, b) {
+        if (a.sameTotal < b.sameTotal) return -1;
+        if (a.sameTotal > b.sameTotal) return 1;
+        return 0;
+    });
+
+    if (links.length > 0) {
+        const maxSame = links[links.length - 1].sameTotal;
+
+        links.forEach(function (link, i) {
+            links[i].maxSameHalf = Math.round(maxSame / 3);
+        });
+
+    }
+
+
+    return links.map(link => {
+        let obj = link;
+        obj.source = link.source;
+        obj.target = link.target;
+        return obj;
+    })
+}
+
+
 export default class Viewer extends React.Component {
 
     forceLayout(...args) {
@@ -51,7 +112,9 @@ export default class Viewer extends React.Component {
         const LABEL_X_PADDING = -12;
         const LABEL_Y_PADDING = -15;
         // const {nodes_pre, links_pre} = connector.getData();
-        const data = connector.getGraphData();
+        let data = connector.getGraphData();
+
+        data.links = prepareLinksDataForCurves(data.links);
 
         const colorToNumber = (c) => {
             return parseInt(c.slice(1), 16)
@@ -257,8 +320,11 @@ export default class Viewer extends React.Component {
                 }
 
 
-                const nextPointX = links[i].target.x - 50;
-                const nextPointY = links[i].target.y - 100;
+                const curvatureConstant = 0.5;
+                const sameIndex = links[i].sameIndex * curvatureConstant ;
+
+                const nextPointX = links[i].target.x - 50 * sameIndex;
+                const nextPointY = links[i].target.y - 100 * sameIndex;
 
 
                 const normal = [
@@ -267,6 +333,7 @@ export default class Viewer extends React.Component {
                 ]
                 const l = Math.sqrt(normal[0] ** 2 + normal[1] ** 2) * 2;
                 console.log("=====l", l, normal);
+                console.log("=====link", links[i])
                 normal[0] /= l;
                 normal[1] /= l;
 
@@ -300,8 +367,8 @@ export default class Viewer extends React.Component {
                     fontSize: LABEL_FONT_SIZE,
                     // fill: 0x343434
                 });
-                linkLabelText.x = (links[i].source.x + links[i].target.x) / 2 - 10;
-                linkLabelText.y = (links[i].source.y + links[i].target.y) / 2 - 10;
+                linkLabelText.x = (links[i].source.x + links[i].target.x) / 2 - 10 * sameIndex;
+                linkLabelText.y = (links[i].source.y + links[i].target.y) / 2 - 10 * sameIndex ;
                 linkLabelText.anchor.set(0.5, 0);
                 limitedLinksLabels.addChild(linkLabelText)
 

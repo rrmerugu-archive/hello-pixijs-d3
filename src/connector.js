@@ -360,12 +360,32 @@ export default class Connector {
         // for (i = 0; i < 10; i++) {
         links.push(
             {
-                id: "1-2",
+                id: "1-2-1",
                 source: 1, target: 2,
                 linkStyleConfig: {
                     lineStyle: 1,
                 },
-                properties: {"title": "Edge-" + i}
+                properties: {"title": "Edge-1-2-1"}
+            }
+        )
+        links.push(
+            {
+                id: "1-2-2",
+                source: 1, target: 2,
+                linkStyleConfig: {
+                    lineStyle: 1,
+                },
+                properties: {"title": "Edge- 1-2-2"}
+            }
+        )
+        links.push(
+            {
+                id: "1-2-3",
+                source: 1, target: 2,
+                linkStyleConfig: {
+                    lineStyle: 1,
+                },
+                properties: {"title": "Edge- 1-2-3"}
             }
         )
         links.push(
@@ -375,7 +395,7 @@ export default class Connector {
                 linkStyleConfig: {
                     lineStyle: 1,
                 },
-                properties: {"title": "Edge-" + i + "--2"}
+                properties: {"title": "Edge-1-3"}
             }
         )
         links.push(
@@ -385,7 +405,7 @@ export default class Connector {
                 linkStyleConfig: {
                     lineStyle: 1,
                 },
-                properties: {"title": "Edge-" + i + "--2"}
+                properties: {"title": "Edge-1-4"}
             }
         )
         links.push(
@@ -395,7 +415,7 @@ export default class Connector {
                 linkStyleConfig: {
                     lineStyle: 1,
                 },
-                properties: {"title": "Edge-" + i + "--2"}
+                properties: {"title": "Edge-1-5"}
             }
         )
         links.push(
@@ -405,7 +425,7 @@ export default class Connector {
                 linkStyleConfig: {
                     lineStyle: 1,
                 },
-                properties: {"title": "Edge-" + i + "--2"}
+                properties: {"title": "Edge-5-4"}
             }
         )
         // }
