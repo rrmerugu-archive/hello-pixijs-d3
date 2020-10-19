@@ -89,7 +89,8 @@ export default class Viewer extends React.Component {
 
 
     componentDidMount() {
-        let data = connector.getGraphData();
+        // let data = connector.getGraphData();
+       let data = connector.getData();
 
         let c = 1;
         // setInterval(() => {
@@ -109,7 +110,7 @@ export default class Viewer extends React.Component {
         // }, 3000);
         //
         //
-                    this.drawGraph(data);
+        this.drawGraph(data);
 
     }
 
@@ -123,9 +124,9 @@ export default class Viewer extends React.Component {
         const WORLD_WIDTH = SCREEN_WIDTH / 4;
         const WORLD_HEIGHT = SCREEN_HEIGHT / 4;
         const RESOLUTION = window.devicePixelRatio * 2;
-        const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 50;
+        const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 300;
         const FORCE_LAYOUT_ITERATIONS = 650;
-        const DEFAULT_LINK_LENGTH = 100;
+        const DEFAULT_LINK_LENGTH = 120;
         const NODE_RADIUS = 10;
         const NODE_HIT_RADIUS = NODE_RADIUS + 15;
         const ICON_FONT_FAMILY = 'Material Icons';
@@ -136,7 +137,7 @@ export default class Viewer extends React.Component {
         const LABEL_TEXT = nodeData => nodeData.id;
         const LABEL_X_PADDING = -12;
         const LABEL_Y_PADDING = -15;
-        // const {nodes_pre, links_pre} = connector.getData();
+        const defaultLineWidth = 1;
 
         data.links = prepareLinksDataForCurves(data.links);
 
@@ -239,7 +240,7 @@ export default class Viewer extends React.Component {
             viewport.center = new PIXI.Point(WORLD_WIDTH / 4, WORLD_HEIGHT / 4);
             // viewport.moveCenter(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
             viewport.fit(true, WORLD_WIDTH / 4, WORLD_HEIGHT / 4)
-            viewport.setZoom(1, true);
+            viewport.setZoom(0.5, true);
 
 
             // app.stage.x = WORLD_WIDTH / 2;
@@ -376,7 +377,8 @@ export default class Viewer extends React.Component {
                 normal[0] *= 20;
                 normal[1] *= 20;
 
-                limitedLinks.lineStyle(Math.sqrt(links[i].linkStyleConfig.lineStyle), 0x999999);
+                // limitedLinks.lineStyle(Math.sqrt(links[i].linkStyleConfig.lineStyle? links[i].linkStyleConfig: 1), 0x999999);
+                limitedLinks.lineStyle(Math.sqrt(defaultLineWidth), 0x999999);
                 limitedLinks.moveTo(links[i].source.x, links[i].source.y);
                 // limitedLinks.lineTo(links[i].target.x, links[i].target.y);
 
