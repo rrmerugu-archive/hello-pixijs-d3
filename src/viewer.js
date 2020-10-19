@@ -89,8 +89,8 @@ export default class Viewer extends React.Component {
     }
 
     componentDidMount() {
-        // let data = connector.getGraphData();
-        let data = connector.getData();
+        let data = connector.getGraphData();
+        // let data = connector.getData();
 
         let c = 1;
         // setInterval(() => {
@@ -311,10 +311,6 @@ export default class Viewer extends React.Component {
 
                 // count = 2500;
                 let linkGfx = new PIXI.Graphics();
-                linkGraphicsArray.push(linkGfx);
-                linksLayer.addChild(linkGfx);
-                // linkGfx.alpha = 0.6;
-
 
                 // link labels
                 let linkGfxLabels = new PIXI.Graphics();
@@ -372,14 +368,12 @@ export default class Viewer extends React.Component {
                             nextPointX, nextPointY, links[i].target.x, links[i].target.y)
 
                 }
-                linkGfx.lineStyle(2, 0xAA0000, 1, .5)
-                    .moveTo(links[i].target.x + normal[0] + tangent[0], links[i].target.y + normal[1] + tangent[1])
-                    .lineTo(links[i].target.x, links[i].target.y)
-                    .lineTo(links[i].target.x - normal[0] + tangent[0], links[i].target.y - normal[1] + tangent[1])
-
-                linkGfx.interactive = true;
-                linkGfx.buttonMode = true;
-
+                // this is the arrow head
+                // linkGfx.lineStyle(5, 0xAA0000, 1, .5)
+                //     .moveTo(links[i].target.x + normal[0] + tangent[0], links[i].target.y + normal[1] + tangent[1])
+                //     .lineTo(links[i].target.x, links[i].target.y)
+                //     .lineTo(links[i].target.x - normal[0] + tangent[0], links[i].target.y - normal[1] + tangent[1])
+                //
 
                 // for link label
                 const linkLabelText = new PIXI.Text(getLinkLabel(links[i]), {
@@ -397,19 +391,34 @@ export default class Viewer extends React.Component {
                 console.log("======points", linkGfx)
                 let interval = setInterval(() => {
                     if (linkGfx.geometry) {
-                        points = linkGfx.geometry.points;
+                        points = linkGfx.geometry.graphicsData[0].shape.points;
                         // console.log("points interval", points.length, points);
                         if (points.length > 0) {
-                            console.log("=======points", points.length)
+                            console.log("=======points len", points.length, points)
                             // TODO - fix polygon generation, so that the poligon only uses
                             // the area around the line and nother else.
-                            const curvePolygon = new PIXI.Polygon(points);
-                            // console.log("==curvePolygon", curvePolygon);
                             linkGfx.interactive = true;
                             linkGfx.buttonMode = true;
-                            linkGfx.hitArea = curvePolygon;
-                            // line.drawPolygon(curvePolygon);
+                            linkGfx.hitArea = new PIXI.Polygon(points);
+                            // linkGfx.drawPolygon(points);
+                            console.log("=====mouse actions ", links[i]);
 
+                            linkGfx.endFill();
+                            linkGfxLabels.endFill();
+
+                            //              // make circle non-transparent when mouse is over it
+                            function mouseover(mouseData) {
+                                console.log("Hover", mouseData);
+                                this.alpha = 1;
+                            }
+
+                            // make circle half-transparent when mouse leaves
+                            function mouseout(mouseData) {
+                                this.alpha = 0.5;
+                            }
+
+
+                            linkGfx.click = mouseover;
                             linkGfx.on("mouseover", mouseover);
                             linkGfx.on("mouseout", mouseout);
                             clearInterval(interval);
@@ -417,35 +426,23 @@ export default class Viewer extends React.Component {
                     }
                 }, 50);
 
+
                 // linkGfx.hitArea = linkGfx.getBounds();
                 // linkGfx.interactive = true;
 
 
-                //              // make circle non-transparent when mouse is over it
-                function mouseover(mouseData) {
-                    console.log("Hover", mouseData);
-                    this.alpha = 1;
-                }
-
-                // make circle half-transparent when mouse leaves
-                function mouseout(mouseData) {
-                    this.alpha = 0.5;
-                }
-
-                linkGfx.endFill();
-                linkGfxLabels.endFill();
-
-
+                linkGraphicsArray.push(linkGfx);
+                linksLayer.addChild(linkGfx);
             }
 
-
-            linksLayer.mouseover = function (mouseData) {
-                this.alpha = 0.2;
-            }
-
-            linksLayer.mouseout = function (mouseData) {
-                this.alpha = 0.5;
-            }
+            //
+            // linksLayer.mouseover = function (mouseData) {
+            //     this.alpha = 0.2;
+            // }
+            //
+            // linksLayer.mouseout = function (mouseData) {
+            //     this.alpha = 0.5;
+            // }
 
 
             // shape.hitArea = new PIXI.Polygon(vertices);
@@ -463,6 +460,10 @@ export default class Viewer extends React.Component {
             //}
             //linkGfx.endFill();
             //linksLayer.addChild(linkGfx);
+
+
+            // linkGfx.alpha = 0.6;
+
 
             for (const node of nodes) {
                 nodeDataToNodeGfx.get(node).position = new PIXI.Point(node.x, node.y)
