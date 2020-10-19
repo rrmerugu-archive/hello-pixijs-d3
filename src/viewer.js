@@ -5,7 +5,7 @@ import * as d3 from "d3";
 import {Viewport} from 'pixi-viewport'
 import Connector from "./connector";
 import FontFaceObserver from "fontfaceobserver";
-
+import PixiFps from "pixi-fps";
 const connector = new Connector();
 
 export function prepareLinksDataForCurves(links) {
@@ -87,7 +87,6 @@ export default class Viewer extends React.Component {
 
     }
 
-
     componentDidMount() {
         // let data = connector.getGraphData();
        let data = connector.getData();
@@ -146,7 +145,7 @@ export default class Viewer extends React.Component {
         }
         const scale = d3.scaleOrdinal(d3.schemeCategory10);
 
-        function color(nodeData) {
+        function getColor(nodeData) {
             return scale(nodeData.group);
         }
 
@@ -175,11 +174,7 @@ export default class Viewer extends React.Component {
             autoDensity: true
 
         });
-        // app.view.style.width = `${SCREEN_WIDTH}px`;
         app.view.style.width = SCREEN_WIDTH + "px";
-        // app.view.style.height = SCREEN_HEIGHT + "px";
-        // app.view.style.position = "absolute";
-
 
         const container = document.getElementById("container");
         container.appendChild(app.view);
@@ -246,24 +241,6 @@ export default class Viewer extends React.Component {
             // app.stage.x = WORLD_WIDTH / 2;
             // app.stage.y = WORLD_HEIGHT / 2;
 
-            // app.stage.
-
-            // linksLayer.x = WORLD_WIDTH / 2;
-            // linksLayer.y = WORLD_HEIGHT / 2;
-            //
-            // nodesLayer.x = WORLD_WIDTH / 2;
-            // nodesLayer.y = WORLD_HEIGHT / 2;
-            //
-            // linksLabelsLayer.x = WORLD_WIDTH / 2;
-            // linksLabelsLayer.y = WORLD_HEIGHT / 2;
-            //
-            // labelsLayer.x = WORLD_WIDTH / 2;
-            // labelsLayer.y = WORLD_HEIGHT / 2;
-            //
-            // frontLayer.x = WORLD_WIDTH / 2;
-            // frontLayer.y = WORLD_HEIGHT / 2;
-
-
         };
 
 
@@ -273,16 +250,22 @@ export default class Viewer extends React.Component {
         let nodeDataToLabelGfx = new WeakMap();
         let labelGfxToNodeData = new WeakMap();
         let hoveredNodeData = undefined;
+
+
+
         let hoveredNodeGfxOriginalChildren = undefined;
         let hoveredLabelGfxOriginalChildren = undefined;
         let clickedNodeData = undefined;
         let linkGraphicsArray = [];
+
+        let labelGfxToLinkData = new WeakMap();
+        let hoveredLinkData = undefined;
         let linkLabelGraphicsArray = [];
 
 
         const updatePositions = () => {
-            console.log("=====linkGraphicsArray", linkGraphicsArray);
-            console.log("=====linkLabelGraphicsArray", linkLabelGraphicsArray);
+            // console.log("=====linkGraphicsArray", linkGraphicsArray);
+            // console.log("=====linkLabelGraphicsArray", linkLabelGraphicsArray);
 
             while (linkGraphicsArray.length > 0) {
                 let linkGraphics = linkGraphicsArray.pop();
@@ -364,8 +347,8 @@ export default class Viewer extends React.Component {
 
 
                 const l = Math.sqrt(normal[0] ** 2 + normal[1] ** 2) * 2;
-                console.log("=====l", l, normal);
-                console.log("=====link", links[i])
+                // console.log("=====l", l, normal);
+                // console.log("=====link", links[i])
                 normal[0] /= l;
                 normal[1] /= l;
 
@@ -412,6 +395,20 @@ export default class Viewer extends React.Component {
 
                 count--;
             }
+
+
+            linksLayer.mouseover = function(mouseData) {
+  this.alpha = 0.2;
+}
+
+linksLayer.mouseout = function(mouseData) {
+  this.alpha = 0.5;
+}
+
+
+            // shape.hitArea = new PIXI.Polygon(vertices);
+            // shape.interactive = true;
+            // shape.click = function(mouseData){       console.log("MOUSE CLICK " + shape.hexId);    }
             //linksLayer.removeChildren();
             //for(const linkGraphics in linkGraphicsArray){
             //  linksLayer.addChild(linkGraphics);
@@ -435,6 +432,7 @@ export default class Viewer extends React.Component {
 
         // event handlers
         const hoverNode = nodeData => {
+            // console.log("HoverNode", nodeData);
             if (clickedNodeData) {
                 return;
             }
@@ -556,6 +554,8 @@ export default class Viewer extends React.Component {
 
         // create node graphics
         const nodeDataGfxPairs = nodes.map(nodeData => {
+
+            console.log("====nodeData>>>", nodeData)
             const nodeGfx = new PIXI.Container();
             nodeGfx.x = nodeData.x;
             nodeGfx.y = nodeData.y;
@@ -571,7 +571,7 @@ export default class Viewer extends React.Component {
             const circle = new PIXI.Graphics();
             circle.x = 0;
             circle.y = 0;
-            circle.beginFill(colorToNumber(color(nodeData)));
+            circle.beginFill(colorToNumber(getColor(nodeData)));
             circle.drawCircle(0, 0, NODE_RADIUS);
             nodeGfx.addChild(circle);
 
@@ -641,7 +641,9 @@ export default class Viewer extends React.Component {
         // invalidation.then(() => {
         //     app.destroy(true, true);
         // });
+const fpsCounter = new PixiFps();
 
+app.stage.addChild(fpsCounter);
         // prevent body scrolling
         app.view.addEventListener('wheel', event => {
             event.preventDefault();
