@@ -89,6 +89,31 @@ export default class Viewer extends React.Component {
 
 
     componentDidMount() {
+        let data = connector.getGraphData();
+
+        let c = 1;
+        // setInterval(() => {
+        //     data.links.push(
+        //         {
+        //             id: "1-3-" + c,
+        //             source: 1, target: 3,
+        //             linkStyleConfig: {
+        //                 lineStyle: 1,
+        //             },
+        //             properties: {"title": "Edge-1-3-"+ c}
+        //         }
+        //     )
+        //     this.drawGraph(data);
+        //     c += 1;
+        //
+        // }, 3000);
+        //
+        //
+                    this.drawGraph(data);
+
+    }
+
+    drawGraph(data) {
         // config
         const SCREEN_WIDTH = window.innerWidth;
         const SCREEN_HEIGHT = window.innerHeight;
@@ -112,7 +137,6 @@ export default class Viewer extends React.Component {
         const LABEL_X_PADDING = -12;
         const LABEL_Y_PADDING = -15;
         // const {nodes_pre, links_pre} = connector.getData();
-        let data = connector.getGraphData();
 
         data.links = prepareLinksDataForCurves(data.links);
 
