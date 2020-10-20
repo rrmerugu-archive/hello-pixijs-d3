@@ -89,8 +89,8 @@ export default class Viewer extends React.Component {
     }
 
     componentDidMount() {
-        let data = connector.getGraphData();
-        // let data = connector.getData();
+        // let data = connector.getGraphData();
+        let data = connector.getData();
 
         let c = 1;
         // setInterval(() => {
