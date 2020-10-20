@@ -63,6 +63,12 @@ export default class GraphCanvas {
         this.nodesLayer = new PIXI.Container();
         this.viewport.addChild(this.nodesLayer);
 
+        this.nodeLabelsLayer = new PIXI.Container();
+        this.viewport.addChild(this.nodeLabelsLayer);
+
+
+
+
 
     }
 
@@ -124,85 +130,91 @@ export default class GraphCanvas {
         console.log("===nodes", nodes);
         const { NODE_HIT_RADIUS, NODE_RADIUS, LABEL_FONT_FAMILY, LABEL_FONT_SIZE,
             LABEL_X_PADDING,
-            LABEL_Y_PADDING
+            LABEL_Y_PADDING,
+            ICON_TEXT,
+            ICON_FONT_FAMILY,
+            ICON_FONT_SIZE
         } = this.settings;
 
         return nodes.map(nodeData => {
 
             // console.log("====nodeData>>>", nodeData)
-            const nodeGfx = new PIXI.Container();
-            nodeGfx.x = nodeData.x;
-            nodeGfx.y = nodeData.y;
-            nodeGfx.interactive = true;
-            nodeGfx.buttonMode = true;
-            nodeGfx.hitArea = new PIXI.Circle(0, 0, NODE_HIT_RADIUS);
-            // nodeGfx.on('click', event => hoverNode(nodeGfxToNodeData.get(event.currentTarget)));
+            const nodeContainer = new PIXI.Container();
+            nodeContainer.x = nodeData.x;
+            nodeContainer.y = nodeData.y;
+            nodeContainer.interactive = true;
+            nodeContainer.buttonMode = true;
+            nodeContainer.hitArea = new PIXI.Circle(0, 0, NODE_HIT_RADIUS);
+            // nodeContainer.on('click', event => hoverNode(nodeGfxToNodeData.get(event.currentTarget)));
 
-            // nodeGfx.on('mouseover', event => hoverNode(nodeGfxToNodeData.get(event.currentTarget)));
-            // nodeGfx.on('mouseout', event => unhoverNode(nodeGfxToNodeData.get(event.currentTarget)));
-            // nodeGfx.on('mousedown', event => clickNode(nodeGfxToNodeData.get(event.currentTarget)));
-            // nodeGfx.on('mouseup', () => unclickNode());
-            // nodeGfx.on('mouseupoutside', () => unclickNode());
+            // nodeContainer.on('mouseover', event => hoverNode(nodeGfxToNodeData.get(event.currentTarget)));
+            // nodeContainer.on('mouseout', event => unhoverNode(nodeGfxToNodeData.get(event.currentTarget)));
+            // nodeContainer.on('mousedown', event => clickNode(nodeGfxToNodeData.get(event.currentTarget)));
+            // nodeContainer.on('mouseup', () => unclickNode());
+            // nodeContainer.on('mouseupoutside', () => unclickNode());
 
             const circle = new PIXI.Graphics();
             circle.x = 0;
             circle.y = 0;
             circle.beginFill(colorToNumber(getColor(nodeData)));
             circle.drawCircle(0, 0, NODE_RADIUS);
-            nodeGfx.addChild(circle);
+            nodeContainer.addChild(circle);
 
             const circleBorder = new PIXI.Graphics();
             circle.x = 0;
             circle.y = 0;
             circleBorder.lineStyle(1.5, 0xff00ff);
             circleBorder.drawCircle(0, 0, NODE_RADIUS);
-            nodeGfx.addChild(circleBorder);
+            nodeContainer.addChild(circleBorder);
 
-            // const icon = new PIXI.Text(ICON_TEXT, {
-            //     fontFamily: ICON_FONT_FAMILY,
-            //     fontSize: ICON_FONT_SIZE,
-            //     fill: 0xffffff
-            // });
-            // icon.x = 0;
-            // icon.y = 0;
-            // icon.anchor.set(0.5);
-            // nodeGfx.addChild(icon);
-
-
-            this.nodesLayer.addChild(nodeGfx);
+            const icon = new PIXI.Text(ICON_TEXT, {
+                fontFamily: ICON_FONT_FAMILY,
+                fontSize: ICON_FONT_SIZE,
+                fill: 0xffffff
+            });
+            icon.x = 0;
+            icon.y = 0;
+            icon.anchor.set(0.5);
+            nodeContainer.addChild(icon);
 
 
-            const labelGfx = new PIXI.Container();
-            labelGfx.x = nodeData.x;
-            labelGfx.y = nodeData.y;
-            labelGfx.interactive = true;
-            labelGfx.buttonMode = true;
-            // labelGfx.on('mouseover', event => hoverNode(labelGfxToNodeData.get(event.currentTarget)));
-            // labelGfx.on('mouseout', event => unhoverNode(labelGfxToNodeData.get(event.currentTarget)));
-            // labelGfx.on('mousedown', event => clickNode(labelGfxToNodeData.get(event.currentTarget)));
-            // labelGfx.on('mouseup', () => unclickNode());
-            // labelGfx.on('mouseupoutside', () => unclickNode());
+            this.nodesLayer.addChild(nodeContainer);
 
-            const labelText = new PIXI.Text(getNodeLabel(nodeData), {
+
+            const labelContainer = new PIXI.Container();
+            labelContainer.x = nodeData.x;
+            labelContainer.y = nodeData.y;
+            labelContainer.interactive = true;
+            labelContainer.buttonMode = true;
+            // labelContainer.on('mouseover', event => hoverNode(labelGfxToNodeData.get(event.currentTarget)));
+            // labelContainer.on('mouseout', event => unhoverNode(labelGfxToNodeData.get(event.currentTarget)));
+            // labelContainer.on('mousedown', event => clickNode(labelGfxToNodeData.get(event.currentTarget)));
+            // labelContainer.on('mouseup', () => unclickNode());
+            // labelContainer.on('mouseupoutside', () => unclickNode());
+
+            const nodeLabelText = new PIXI.Text(getNodeLabel(nodeData), {
                 fontFamily: LABEL_FONT_FAMILY,
                 fontSize: LABEL_FONT_SIZE,
                 fill: 0x333333
             });
-            labelText.x = 0;
-            labelText.y = NODE_HIT_RADIUS + LABEL_Y_PADDING;
-            labelText.anchor.set(0.5, 0);
+            nodeLabelText.x = 0 + LABEL_X_PADDING;
+            nodeLabelText.y = NODE_HIT_RADIUS + LABEL_Y_PADDING;
+            nodeLabelText.anchor.set(0.5, 0);
             //const labelBackground = new PIXI.Sprite(PIXI.Texture.WHITE);
-            //labelBackground.x = -(labelText.width + LABEL_X_PADDING * 2) / 2;
+            //labelBackground.x = -(nodeLabelText.width + LABEL_X_PADDING * 2) / 2;
             //labelBackground.y = NODE_HIT_RADIUS;
-            //labelBackground.width = labelText.width + LABEL_X_PADDING * 2;
-            //labelBackground.height = labelText.height + LABEL_Y_PADDING * 2;
+            //labelBackground.width = nodeLabelText.width + LABEL_X_PADDING * 2;
+            //labelBackground.height = nodeLabelText.height + LABEL_Y_PADDING * 2;
             //labelBackground.tint = 0xffffff;
             //labelBackground.alpha = 0.5;
-            //labelGfx.addChild(labelBackground);
-            labelGfx.addChild(labelText);
+            //labelContainer.addChild(labelBackground);
+            labelContainer.addChild(nodeLabelText);
 
 
-            return [nodeData, nodeGfx, labelGfx];
+            this.nodeLabelsLayer.addChild(labelContainer);
+
+
+            return [nodeData, nodeContainer, labelContainer];
         });
 
     }

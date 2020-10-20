@@ -15,8 +15,12 @@ export default class GESettings {
     NODE_HIT_RADIUS = this.NODE_RADIUS + 5;
     LABEL_FONT_FAMILY = 'Helvetica';
     LABEL_FONT_SIZE = 12;
-    LABEL_X_PADDING = -12;
-    LABEL_Y_PADDING = -15;
+    LABEL_X_PADDING = 2;
+    LABEL_Y_PADDING = -5;
+
+     ICON_FONT_FAMILY = 'Material Icons';
+     ICON_FONT_SIZE = this.NODE_RADIUS / Math.SQRT2 * 2;
+     ICON_TEXT = '.';
 
 
     constructor(screenWidth, screenHeight) {
