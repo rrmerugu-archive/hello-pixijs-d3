@@ -240,76 +240,25 @@ export default class GraphCanvas {
         let linkGfxLabels = new PIXI.Graphics();
         this.linkLabelGraphicsArray.push(linkGfxLabels);
         this.linksLabelsLayer.addChild(linkGfxLabels);
-        // linkGfxLabels.alpha = .5;
-
-
-        const curvatureConstant = 0.5;
-        const sameIndex = linkData.sameIndex;
-
-        let nextPointX = linkData.target.x;
-        let nextPointY = linkData.target.y;
-        let normal = [
-            -(linkData.target.y - NODE_RADIUS),
-            linkData.target.x - NODE_RADIUS,
-        ]
-        if (sameIndex > 1) {
-            // for curved links
-            nextPointX = linkData.target.x - 50 * sameIndex * curvatureConstant;
-            nextPointY = linkData.target.y - 100 * sameIndex * curvatureConstant;
-            normal = [
-                -(linkData.target.y - NODE_RADIUS - nextPointY),
-                linkData.target.x - NODE_RADIUS - nextPointX,
-            ]
-        }
-
-        const l = Math.sqrt(normal[0] ** 2 + normal[1] ** 2) * 2;
-        normal[0] /= l;
-        normal[1] /= l;
-
-        const tangent = [
-            -normal[1] * 30,
-            normal[0] * 30
-        ]
-
-        normal[0] *= 20;
-        normal[1] *= 20;
-
+      
         linkGfx.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), 0x999999);
         linkGfx.moveTo(linkData.source.x, linkData.source.y);
+        linkGfx.lineTo(linkData.target.x, linkData.target.y);
 
-        if (sameIndex === 1) {
-            linkGfx.lineTo(linkData.target.x, linkData.target.y);
-            // linkGfx.lineTo(linkData.source.x + 2, linkData.source.y + 2);
-            // linkGfx.lineTo(linkData.target.x + 2, linkData.target.y + 2);
-            // linkGfx.lineTo(linkData.target.x - 2, linkData.target.y - 2);
-            // linkGfx.lineTo(linkData.source.x - 2, linkData.source.y - 2);
-
-        } else {
-            linkGfx
-                .bezierCurveTo(linkData.source.x, linkData.source.y,
-                    nextPointX, nextPointY, linkData.target.x, linkData.target.y)
-
-        }
-        // this is the arrow head
-        // linkGfx.lineStyle(5, 0xAA0000, 1, .5)
-        //     .moveTo(linkData.target.x + normal[0] + tangent[0], linkData.target.y + normal[1] + tangent[1])
-        //     .lineTo(linkData.target.x, linkData.target.y)
-        //     .lineTo(linkData.target.x - normal[0] + tangent[0], linkData.target.y - normal[1] + tangent[1])
-        //
-
+ 
         // for link label
         const linkLabelText = new PIXI.Text(getLinkLabel(linkData), {
             fontFamily: LABEL_FONT_FAMILY,
             fontSize: LINK_DEFAULT_LABEL_FONT_SIZE,
             fill: 0xd2d2d2
         });
+        const sameIndex = 1;
         linkLabelText.x = (linkData.source.x + linkData.target.x) / 2 - 10 * sameIndex;
         linkLabelText.y = (linkData.source.y + linkData.target.y) / 2 - 10 * sameIndex;
         linkLabelText.anchor.set(0.5, 0);
         linkGfxLabels.addChild(linkLabelText)
 
-        // console.log("==point", points);
-        // console.log("======points", linkGfx)
+
         let interval = setInterval(() => {
             if (linkGfx.geometry && linkGfx.geometry.graphicsData.length > 0) {
                 let points = linkGfx.geometry.graphicsData[0].shape.points;
