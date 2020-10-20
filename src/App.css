@@ -1,7 +1,23 @@
-body{
+body, html {
     /*background-color: red;*/
+    height: 100%;
 }
+
 * {
     padding: 0;
     margin: 0;
+}
+
+.sidebar {
+    width: 200px;
+    height: 100vh;
+    background: #efefef;
+    float: left;
+
+}
+
+.mainContent {
+    height: 100vh;
+    width: calc(100% - 200px);
+    float: left;
 }

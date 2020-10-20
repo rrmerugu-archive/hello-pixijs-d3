@@ -6,67 +6,10 @@ import {Viewport} from 'pixi-viewport'
 import Connector from "./connector";
 import FontFaceObserver from "fontfaceobserver";
 import PixiFps from "pixi-fps";
+import {prepareLinksDataForCurves} from "./utils";
+import EventsComponent, {EventsManager} from "./events";
 
 const connector = new Connector();
-
-export function prepareLinksDataForCurves(links) {
-    /*
-    This method will set attributes on to the links that will
-    help us controls the curves of the links.
-     */
-    links.forEach(function (link) {
-
-        // find other links with same target+source or source+target
-        let same = links.filter(function (v) {
-            return ((v.source === link.source && v.target === link.target));
-        })
-        let sameAlt = links.filter(function (v) {
-            return ((v.source === link.target && v.target === link.source));
-        })
-
-        let sameAll = same.concat(sameAlt);
-        sameAll.forEach(function (s, i) {
-            s.sameIndex = (i + 1);
-            s.sameTotal = sameAll.length;
-            s.sameTotalHalf = (s.sameTotal / 2);
-            s.sameUneven = ((s.sameTotal % 2) !== 0);
-            s.sameMiddleLink = ((s.sameUneven === true) && (Math.ceil(s.sameTotalHalf) === s.sameIndex));
-            s.sameLowerHalf = (s.sameIndex <= s.sameTotalHalf);
-            s.sameArcDirection = s.sameLowerHalf ? 0 : 1;
-            s.sameIndexCorrected = s.sameLowerHalf ? s.sameIndex : (s.sameIndex - Math.ceil(s.sameTotalHalf));
-
-            // if (s.sameIndexCorrected === 2) {
-            //     s.sameArcDirection = 1;
-            // }
-            // if (s.sameIndexCorrected === 1) {
-            //     s.sameArcDirection = 0;
-            // }
-        });
-    });
-
-    links.sort(function (a, b) {
-        if (a.sameTotal < b.sameTotal) return -1;
-        if (a.sameTotal > b.sameTotal) return 1;
-        return 0;
-    });
-
-    if (links.length > 0) {
-        const maxSame = links[links.length - 1].sameTotal;
-
-        links.forEach(function (link, i) {
-            links[i].maxSameHalf = Math.round(maxSame / 3);
-        });
-
-    }
-
-
-    return links.map(link => {
-        let obj = link;
-        obj.source = link.source;
-        obj.target = link.target;
-        return obj;
-    })
-}
 
 
 export default class Viewer extends React.Component {
@@ -92,7 +35,7 @@ export default class Viewer extends React.Component {
         // let data = connector.getGraphData();
         let data = connector.getData();
 
-        let c = 1;
+        // let c = 1;
         // setInterval(() => {
         //     data.links.push(
         //         {
@@ -116,15 +59,18 @@ export default class Viewer extends React.Component {
 
     drawGraph(data) {
         // config
-        const SCREEN_WIDTH = window.innerWidth;
-        const SCREEN_HEIGHT = window.innerHeight;
+        let el = document.getElementsByClassName("mainContent")[0]
+        // const SCREEN_WIDTH = window.innerWidth;
+        // const SCREEN_HEIGHT = window.innerHeight;
+        const SCREEN_WIDTH = el.clientWidth;
+        const SCREEN_HEIGHT = el.clientHeight;
         //const WORLD_WIDTH = SCREEN_WIDTH * 2;
         //const WORLD_HEIGHT = SCREEN_HEIGHT * 2;
         // const RESOLUTION = window.devicePixelRatio * 2;
         const WORLD_WIDTH = SCREEN_WIDTH / 4;
         const WORLD_HEIGHT = SCREEN_HEIGHT / 4;
         const RESOLUTION = window.devicePixelRatio * 2;
-        const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 300;
+        const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 500;
         const FORCE_LAYOUT_ITERATIONS = 650;
         const DEFAULT_LINK_LENGTH = 120;
         const NODE_RADIUS = 10;
@@ -396,14 +342,14 @@ export default class Viewer extends React.Component {
 
                 let points = linkGfx.geometry.points;
                 // console.log("==point", points);
-                console.log("======points", linkGfx)
+                // console.log("======points", linkGfx)
                 let interval = setInterval(() => {
-                    if (linkGfx.geometry) {
+                    if (linkGfx.geometry && linkGfx.geometry.graphicsData.length > 0) {
                         points = linkGfx.geometry.graphicsData[0].shape.points;
                         // console.log("points interval", points.length, points);
                         if (points.length > 0) {
-                            console.log("=======points len", points.length)
-                            console.log("=======points", points)
+                            // console.log("=======points len", points.length)
+                            // console.log("=======points", points)
                             // TODO - fix polygon generation, so that the poligon only uses
                             // the area around the line and nother else.
                             linkGfx.interactive = true;
@@ -418,26 +364,26 @@ export default class Viewer extends React.Component {
                                 const y1 = points[1];
                                 const x2 = points[2];
                                 const y2 = points[3];
-                                console.log("x1-y1", x1, y1)
+                                // console.log("x1-y1", x1, y1)
                                 points = [x1 + 3, y1 + 3, x2 + 3, y2 + 3, x2 - 3, y2 - 3, x1 - 3, y1 - 3]
                             }
 
                             linkGfx.hitArea = new PIXI.Polygon(points);
                             // linkGfx.drawPolygon(points);
-                            console.log("=====mouse actions ", links[i]);
+                            // console.log("=====mouse actions ", links[i]);
 
                             linkGfx.endFill();
                             linkGfxLabels.endFill();
 
                             //              // make circle non-transparent when mouse is over it
                             function mouseover(mouseData, linkData) {
-                                console.log("link MouseOver", mouseData, linkData);
+                                // console.log("link MouseOver", mouseData, linkData);
                                 // this.alpha = 1;
                             }
 
                             // make circle half-transparent when mouse leaves
                             function mouseout(mouseData, linkData) {
-                                console.log("link MouseOut", mouseData, linkData);
+                                // console.log("link MouseOut", mouseData, linkData);
 
                                 // this.alpha = 0.5;
                             }
@@ -500,13 +446,13 @@ export default class Viewer extends React.Component {
 
         // event handlers
         const hoverNode = nodeData => {
-            // console.log("HoverNode", nodeData);
             if (clickedNodeData) {
                 return;
             }
             if (hoveredNodeData === nodeData) {
                 return;
             }
+            console.log("HoverNode", nodeData);
 
             hoveredNodeData = nodeData;
 
@@ -560,6 +506,7 @@ export default class Viewer extends React.Component {
             if (hoveredNodeData !== nodeData) {
                 return;
             }
+            console.log("unhoverNode", nodeData);
 
             hoveredNodeData = undefined;
 
@@ -652,15 +599,15 @@ export default class Viewer extends React.Component {
             circleBorder.drawCircle(0, 0, NODE_RADIUS);
             nodeGfx.addChild(circleBorder);
 
-            const icon = new PIXI.Text(ICON_TEXT, {
-                fontFamily: ICON_FONT_FAMILY,
-                fontSize: ICON_FONT_SIZE,
-                fill: 0xffffff
-            });
-            icon.x = 0;
-            icon.y = 0;
-            icon.anchor.set(0.5);
-            nodeGfx.addChild(icon);
+            // const icon = new PIXI.Text(ICON_TEXT, {
+            //     fontFamily: ICON_FONT_FAMILY,
+            //     fontSize: ICON_FONT_SIZE,
+            //     fill: 0xffffff
+            // });
+            // icon.x = 0;
+            // icon.y = 0;
+            // icon.anchor.set(0.5);
+            // nodeGfx.addChild(icon);
 
             const labelGfx = new PIXI.Container();
             labelGfx.x = nodeData.x;
