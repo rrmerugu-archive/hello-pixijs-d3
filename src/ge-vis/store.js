@@ -3,8 +3,13 @@
 
 export default class GraphStore {
 
-    nodes = {}
-    links = {}
+
+    nodeDataToNodeGfx = new WeakMap();
+    nodeGfxToNodeData = new WeakMap();
+    nodeDataToLabelGfx = new WeakMap();
+    labelGfxToNodeData = new WeakMap();
+    nodes = []
+    links = []
 
 
     addNode(node) {
@@ -19,7 +24,7 @@ export default class GraphStore {
 
     }
 
-    update(nodeDataGfxPairs){
+    update(nodeDataGfxPairs) {
         this.nodeDataGfxPairs = nodeDataGfxPairs
 
         // create lookup tables
