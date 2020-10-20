@@ -18,9 +18,9 @@ export default class GESettings {
     LABEL_X_PADDING = 2;
     LABEL_Y_PADDING = -5;
 
-     ICON_FONT_FAMILY = 'Material Icons';
-     ICON_FONT_SIZE = this.NODE_RADIUS / Math.SQRT2 * 2;
-     ICON_TEXT = '.';
+    ICON_FONT_FAMILY = 'Material Icons';
+    ICON_FONT_SIZE = this.NODE_RADIUS / Math.SQRT2 * 2;
+    ICON_TEXT = 'person';
 
 
     constructor(screenWidth, screenHeight) {
