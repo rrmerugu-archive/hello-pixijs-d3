@@ -9,7 +9,7 @@ Events for click, mouseover, mouseout are functional.
 
 - mousedown [onNodeClicked(nodeData)\]
 - mouseover [onNodeMouseOver(nodeData)\]
-- mouseout [onNodeUnClicked(nodeData)\]
+- mouseout [onNodeMouseOut(nodeData)\]
 
 **Links**
 - mouseover [onLinkMouseOver(mouseData, linkData)\]

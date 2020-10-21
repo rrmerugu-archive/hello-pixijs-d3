@@ -1,15 +1,18 @@
 import * as d3 from "d3";
-import GraphStore from "./store";
+import GraphStore, {DataStore} from "./store";
 import GESettings from "./settings";
 import * as PIXI from 'pixi.js-legacy'
 import {Viewport} from 'pixi-viewport'
 import {colorToNumber, scale, getColor, getNodeLabel, getLinkLabel} from "./utils";
 import FontFaceObserver from "fontfaceobserver";
+import EventStore from "./events";
 
 export default class GraphCanvas {
 
 
     graphStore = new GraphStore();
+    dataStore = new DataStore();
+    events = new EventStore();
     renderRequestId = undefined;
     clickedNodeData = undefined;
 
@@ -118,41 +121,21 @@ export default class GraphCanvas {
         this.clickedNodeData = nodeData;
         console.log(this.clickedNodeData.id, " clicked");
 
-        // // enable node dragging
-        // this.pixiApp.renderer.plugins.interaction.on('mousemove', this.appMouseMove);
-        // // disable viewport dragging
-        // this.viewport.pause = true;
     }
     onNodeMouseOver(nodeData) {
         this.clickedNodeData = nodeData;
         console.log(this.clickedNodeData.id, " mouseover");
 
-        // // enable node dragging
-        // this.pixiApp.renderer.plugins.interaction.on('mousemove', this.appMouseMove);
-        // // disable viewport dragging
-        // this.viewport.pause = true;
     }
 
     onLinkClicked(linkData) {
         console.log(linkData.id, " clicked");
     }
 
-    // appMouseMove = event => {
-    //     if (!this.clickedNodeData) {
-    //         return;
-    //     }
-    //
-    //     this.moveNode(this.clickedNodeData, this.viewport.toWorld(event.data.global));
-    // };
 
-    onNodeUnClicked(nodeData) {
-        console.log(nodeData.id , " unclicked");
+    onNodeMouseOut(nodeData) {
+        console.log(nodeData.id , " node mouseout");
         this.clickedNodeData = undefined;
-
-        // // disable node dragging
-        // this.pixiApp.renderer.plugins.interaction.off('mousemove', appMouseMove);
-        // // enable viewport dragging
-        // this.viewport.pause = false;
     }
 
 
@@ -164,17 +147,7 @@ export default class GraphCanvas {
     onLinkMouseOut(mouseData, linkData) {
         console.log(linkData.id, "link MouseOut");
 
-        // this.alpha = 0.5;
     }
-
-
-    // onLinkClicked(link) {
-    //
-    // }
-    //
-    // onLinkUnClicked(link) {
-    //
-    // }
 
 
     resetViewport() {
@@ -205,7 +178,7 @@ export default class GraphCanvas {
 
         nodeContainer.on('mousedown', event => _this.onNodeClicked(_this.graphStore.nodeGfxToNodeData.get(event.currentTarget)));
         nodeContainer.on('mouseover', (event) => _this.onNodeMouseOver(_this.graphStore.nodeGfxToNodeData.get(event.currentTarget)));
-        nodeContainer.on('mouseout', (event) => _this.onNodeUnClicked(_this.graphStore.nodeGfxToNodeData.get(event.currentTarget)));
+        nodeContainer.on('mouseout', (event) => _this.onNodeMouseOut(_this.graphStore.nodeGfxToNodeData.get(event.currentTarget)));
 
         const circle = new PIXI.Graphics();
         circle.x = 0;
@@ -263,19 +236,17 @@ export default class GraphCanvas {
 
     }
 
-    linkGraphicsArray = [];
-    linkLabelGraphicsArray = [];
 
 
     clearCanvas() {
-        while (this.linkGraphicsArray.length > 0) {
-            let linkGraphics = this.linkGraphicsArray.pop();
+        while (this.dataStore.linkGraphicsArray.length > 0) {
+            let linkGraphics = this.dataStore.linkGraphicsArray.pop();
             linkGraphics.clear();
             this.linksLayerContainer.removeChild(linkGraphics);
             linkGraphics.destroy();
         }
-        while (this.linkLabelGraphicsArray.length > 0) {
-            let linkLabelGraphics = this.linkLabelGraphicsArray.pop();
+        while (this.dataStore.linkLabelGraphicsArray.length > 0) {
+            let linkLabelGraphics = this.dataStore.linkLabelGraphicsArray.pop();
             linkLabelGraphics.clear();
             this.linksLabelsLayer.removeChild(linkLabelGraphics);
             linkLabelGraphics.destroy();
@@ -290,7 +261,7 @@ export default class GraphCanvas {
 
         // link labels
         let linkGfxLabels = new PIXI.Graphics();
-        this.linkLabelGraphicsArray.push(linkGfxLabels);
+        this.dataStore.linkLabelGraphicsArray.push(linkGfxLabels);
         this.linksLabelsLayer.addChild(linkGfxLabels);
 
         linkGfx.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), 0x999999);
@@ -351,12 +322,12 @@ export default class GraphCanvas {
     }
 
     updatePositions = () => {
-        const {links} = this.graphStore;
+        const {links} = this.dataStore;
         this.clearCanvas();
 
         for (let i = 0; i < links.length; i++) {
             let linkGfx = this.createLink(links[i])
-            this.linkGraphicsArray.push(linkGfx);
+            this.dataStore.linkGraphicsArray.push(linkGfx);
             this.linksLayerContainer.addChild(linkGfx);
         }
 
@@ -367,7 +338,7 @@ export default class GraphCanvas {
 
     updateNodePositions() {
         let _this = this;
-        const {nodes} = this.graphStore;
+        const {nodes} = this.dataStore;
         for (const node of nodes) {
             _this.graphStore.nodeDataToNodeGfx.get(node).position = new PIXI.Point(node.x, node.y)
             _this.graphStore.nodeDataToLabelGfx.get(node).position = new PIXI.Point(node.x, node.y)
@@ -380,8 +351,8 @@ export default class GraphCanvas {
         const nodeDataGfxPairs = this.createNodes(nodes);
 
         // update store
-        this.graphStore.links = links;
-        this.graphStore.nodes = nodes;
+        this.dataStore.links = links;
+        this.dataStore.nodes = nodes;
         this.graphStore.update(nodeDataGfxPairs);
 
         // initial draw

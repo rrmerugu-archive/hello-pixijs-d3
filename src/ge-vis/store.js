@@ -1,6 +1,10 @@
+export  class DataStore {
+    nodes = []
+    links = []
+    linkGraphicsArray = [];
+    linkLabelGraphicsArray = [];
 
-
-
+}
 export default class GraphStore {
 
 
@@ -8,8 +12,6 @@ export default class GraphStore {
     nodeGfxToNodeData = new WeakMap();
     nodeDataToLabelGfx = new WeakMap();
     labelGfxToNodeData = new WeakMap();
-    nodes = []
-    links = []
 
 
     addNode(node) {
