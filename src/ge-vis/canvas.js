@@ -311,33 +311,28 @@ export default class GraphCanvas {
     }
 
     updatePositions = () => {
-
-        let _this = this;
-        const {links, nodes} = this.graphStore;
-
+        const {links} = this.graphStore;
         this.clearCanvas();
 
         for (let i = 0; i < links.length; i++) {
-
-
             let linkGfx = this.createLink(links[i])
-            // linkGfx.hitArea = linkGfx.getBounds();
-            // linkGfx.interactive = true;
-
-
             this.linkGraphicsArray.push(linkGfx);
             this.linksLayerContainer.addChild(linkGfx);
         }
 
-
-        for (const node of nodes) {
-            _this.graphStore.nodeDataToNodeGfx.get(node).position = new PIXI.Point(node.x, node.y)
-            _this.graphStore.nodeDataToLabelGfx.get(node).position = new PIXI.Point(node.x, node.y)
-        }
+        this.updateNodePositions();
         console.log("log positions updated");
         this.requestRender();
     };
 
+    updateNodePositions() {
+        let _this = this;
+        const {nodes} = this.graphStore;
+        for (const node of nodes) {
+            _this.graphStore.nodeDataToNodeGfx.get(node).position = new PIXI.Point(node.x, node.y)
+            _this.graphStore.nodeDataToLabelGfx.get(node).position = new PIXI.Point(node.x, node.y)
+        }
+    }
 
     addData(nodes, links) {
 
