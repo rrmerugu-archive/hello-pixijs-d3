@@ -286,12 +286,12 @@ export default class GraphCanvas {
                     linkGfxLabels.endFill();
 
                     function mouseover(mouseData, linkData) {
-                        console.log("link MouseOver", mouseData, linkData);
+                        console.log(linkData.id, "link MouseOver" );
                         // this.alpha = 1;
                     }
 
                     function mouseout(mouseData, linkData) {
-                        console.log("link MouseOut", mouseData, linkData);
+                        console.log(linkData.id, "link MouseOut");
 
                         // this.alpha = 0.5;
                     }
