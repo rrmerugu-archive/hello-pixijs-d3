@@ -72,7 +72,7 @@ export default class GraphCanvas {
         });
 
 
-        // adding nodes layer 
+        // adding nodes layer
 
 
         this.linksLayerContainer = new PIXI.Container();
@@ -147,8 +147,8 @@ export default class GraphCanvas {
         nodeContainer.hitArea = new PIXI.Circle(0, 0, NODE_HIT_RADIUS);
 
         nodeContainer.on('mousedown', event => _this.eventStore.onNodeClicked(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
-        nodeContainer.on('mouseover', (event) => _this.eventStore.onNodeMouseOver(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget)), nodeContainer);
-        nodeContainer.on('mouseout', (event) => _this.eventStore.onNodeMouseOut(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget)), nodeContainer);
+        nodeContainer.on('mouseover', (event) => _this.eventStore.onNodeMouseOver(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
+        nodeContainer.on('mouseout', (event) => _this.eventStore.onNodeMouseOut(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
         nodeContainer.on('mouseup', (event) => this.eventStore.onNodeUnClicked(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
         nodeContainer.on('mouseupoutside', (event) => this.eventStore.onNodeUnClicked(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
 

@@ -40,6 +40,7 @@ export default class EventStore {
         this.moveNode(this.clickedNodeData, graphCanvas.viewport.toWorld(event.data.global), graphCanvas);
     };
 
+
     onNodeClicked(graphCanvas, nodeData, nodeContainer, event) {
         this.clickedNodeData = nodeData;
         console.log(this.clickedNodeData.id, " clicked");
@@ -50,34 +51,11 @@ export default class EventStore {
         graphCanvas.viewport.pause = true;
     }
 
-    onNodeMouseOver(graphCanvas, nodeData, nodeContainer, event) {
-        console.log(nodeData.id, " mouseover");
-
-        // for drag feature
-        if (this.clickedNodeData) {
-            return;
-        }
-        if (this.hoveredNodeData === nodeData) {
-            return;
-        }
-
-        console.log("HoverNode", nodeData);
-        this.hoveredNodeData = nodeData;
-
-        // console.log("====nodeData", nodeData);
-        // console.log("====nodeData", nodeData);
-        const nodeGfx = graphCanvas.graphStore.nodeDataToNodeGfx.get(nodeData);
-        const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(nodeData);
-
-        // move to front layer
-        graphCanvas.nodesLayer.removeChild(nodeGfx);
-        graphCanvas.frontLayer.addChild(nodeGfx);
-        graphCanvas.nodeLabelsLayer.removeChild(labelGfx);
-        graphCanvas.frontLayer.addChild(labelGfx);
-
+    highlightNode(graphCanvas, nodeData, nodeContainer, nodeLabelContainer) {
+        console.log("highlightNode", nodeData.id);
         // add hover effect
-        graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = [...nodeGfx.children];
-        graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren = [...labelGfx.children];
+        graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = [...nodeContainer.children];
+        graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren = [...nodeLabelContainer.children];
 
         // circle border
         const circleBorder = new PIXI.Graphics();
@@ -85,7 +63,7 @@ export default class EventStore {
         circleBorder.y = 0;
         circleBorder.lineStyle(1.5, 0x000000);
         circleBorder.drawCircle(0, 0, graphCanvas.settings.NODE_RADIUS);
-        nodeGfx.addChild(circleBorder);
+        nodeContainer.addChild(circleBorder);
 
         // text with background
         const labelText = new PIXI.Text(getNodeLabel(nodeData), {
@@ -103,23 +81,11 @@ export default class EventStore {
         //labelBackground.height = labelText.height + LABEL_Y_PADDING * 2;
         //labelBackground.tint = 0xeeeeee;
         //labelGfx.addChild(labelBackground);
-        labelGfx.addChild(labelText);
-
-        graphCanvas.requestRender();
-
+        nodeLabelContainer.addChild(labelText);
     }
 
+    unHighlightNode(graphCanvas, nodeData, nodeContainer) {
 
-    onNodeMouseOut(graphCanvas, nodeData, nodeContainer, event) {
-        console.log(nodeData.id, " node mouseout");
-
-        if (this.clickedNodeData) {
-            return;
-        }
-        if (this.hoveredNodeData !== nodeData) {
-            return;
-        }
-        this.clickedNodeData = undefined;
         const nodeGfx = graphCanvas.graphStore.nodeDataToNodeGfx.get(nodeData);
         const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(nodeData);
 
@@ -146,6 +112,46 @@ export default class EventStore {
         graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren = undefined;
 
         graphCanvas.requestRender();
+    }
+
+    onNodeMouseOver(graphCanvas, nodeData, nodeContainer, event) {
+        console.log(nodeData.id, " mouseover");
+        const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(nodeData);
+
+        this.highlightNode(graphCanvas, nodeData, nodeContainer, labelGfx)
+
+        // for drag feature
+        if (this.clickedNodeData) {
+            return;
+        }
+        // if (this.hoveredNodeData === nodeData) {
+        //     return;
+        // }
+        this.hoveredNodeData = nodeData;
+
+
+        // move to front layer
+        graphCanvas.nodesLayer.removeChild(nodeContainer);
+        graphCanvas.frontLayer.addChild(nodeContainer);
+        graphCanvas.nodeLabelsLayer.removeChild(labelGfx);
+        graphCanvas.frontLayer.addChild(labelGfx);
+
+        graphCanvas.requestRender();
+
+    }
+
+
+    onNodeMouseOut(graphCanvas, nodeData, nodeContainer, event) {
+        console.log(nodeData.id, " mouseout");
+        this.unHighlightNode(graphCanvas, nodeData, nodeContainer)
+        if (this.clickedNodeData) {
+            return;
+        }
+        // if (this.hoveredNodeData !== nodeData) {
+        //     return;
+        // }
+        this.clickedNodeData = undefined;
+
     }
 
 
