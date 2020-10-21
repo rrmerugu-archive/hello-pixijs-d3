@@ -1,12 +1,16 @@
-export  class DataStore {
+export class DataStore {
     nodes = []
     links = []
     linkGraphicsArray = [];
     linkLabelGraphicsArray = [];
 
 }
+
 export default class GraphStore {
 
+
+    hoveredNodeGfxOriginalChildren = undefined;
+    hoveredNodeLabelGfxOriginalChildren = undefined;
 
     nodeDataToNodeGfx = new WeakMap();
     nodeGfxToNodeData = new WeakMap();

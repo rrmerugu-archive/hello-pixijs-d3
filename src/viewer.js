@@ -202,7 +202,7 @@ export default class Viewer extends React.Component {
 
 
         let hoveredNodeGfxOriginalChildren = undefined;
-        let hoveredLabelGfxOriginalChildren = undefined;
+        let hoveredNodeLabelGfxOriginalChildren = undefined;
         let clickedNodeData = undefined;
         let linkGraphicsArray = [];
 
@@ -469,7 +469,7 @@ export default class Viewer extends React.Component {
 
             // add hover effect
             hoveredNodeGfxOriginalChildren = [...nodeGfx.children];
-            hoveredLabelGfxOriginalChildren = [...labelGfx.children];
+            hoveredNodeLabelGfxOriginalChildren = [...labelGfx.children];
 
             // circle border
             const circleBorder = new PIXI.Graphics();
@@ -529,11 +529,11 @@ export default class Viewer extends React.Component {
             hoveredNodeGfxOriginalChildren = undefined;
             const labelGfxChildren = [...labelGfx.children];
             for (let child of labelGfxChildren) {
-                if (!hoveredLabelGfxOriginalChildren.includes(child)) {
+                if (!hoveredNodeLabelGfxOriginalChildren.includes(child)) {
                     labelGfx.removeChild(child);
                 }
             }
-            hoveredLabelGfxOriginalChildren = undefined;
+            hoveredNodeLabelGfxOriginalChildren = undefined;
 
             requestRender();
         };

@@ -496,7 +496,7 @@ let nodeDataToLabelGfx = new WeakMap();
 let labelGfxToNodeData = new WeakMap();
 let hoveredNodeData = undefined;
 let hoveredNodeGfxOriginalChildren = undefined;
-let hoveredLabelGfxOriginalChildren = undefined;
+let hoveredNodeLabelGfxOriginalChildren = undefined;
 let clickedNodeData = undefined;
 
 const updatePositions = () => {
@@ -539,7 +539,7 @@ const hoverNode = nodeData => {
 
     // add hover effect
     hoveredNodeGfxOriginalChildren = [...nodeGfx.children];
-    hoveredLabelGfxOriginalChildren = [...labelGfx.children];
+    hoveredNodeLabelGfxOriginalChildren = [...labelGfx.children];
 
     // circle border
     const circleBorder = new PIXI.Graphics();
@@ -598,11 +598,11 @@ const unhoverNode = nodeData => {
     hoveredNodeGfxOriginalChildren = undefined;
     const labelGfxChildren = [...labelGfx.children];
     for (let child of labelGfxChildren) {
-        if (!hoveredLabelGfxOriginalChildren.includes(child)) {
+        if (!hoveredNodeLabelGfxOriginalChildren.includes(child)) {
             labelGfx.removeChild(child);
         }
     }
-    hoveredLabelGfxOriginalChildren = undefined;
+    hoveredNodeLabelGfxOriginalChildren = undefined;
 
     requestRender();
 };

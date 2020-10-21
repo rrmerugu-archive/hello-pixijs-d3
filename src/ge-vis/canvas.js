@@ -88,6 +88,8 @@ export default class GraphCanvas {
         this.nodeLabelsLayer = new PIXI.Container();
         this.viewport.addChild(this.nodeLabelsLayer);
 
+        this.frontLayer = new PIXI.Container();
+        this.viewport.addChild(this.frontLayer);
 
     }
 
@@ -116,7 +118,6 @@ export default class GraphCanvas {
             _this.renderRequestId = undefined;
         });
     }
-
 
 
     resetViewport() {
@@ -148,6 +149,9 @@ export default class GraphCanvas {
         nodeContainer.on('mousedown', event => _this.eventStore.onNodeClicked(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
         nodeContainer.on('mouseover', (event) => _this.eventStore.onNodeMouseOver(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget)), nodeContainer);
         nodeContainer.on('mouseout', (event) => _this.eventStore.onNodeMouseOut(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget)), nodeContainer);
+        nodeContainer.on('mouseup', (event) => this.eventStore.onNodeUnClicked(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
+        nodeContainer.on('mouseupoutside', (event) => this.eventStore.onNodeUnClicked(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
+
 
         const circle = new PIXI.Graphics();
         circle.x = 0;
@@ -204,7 +208,6 @@ export default class GraphCanvas {
         });
 
     }
-
 
 
     clearCanvas() {
@@ -278,7 +281,7 @@ export default class GraphCanvas {
 
                     // linkGfx.click = mouseover;
                     linkGfx.on("mouseover", (mouseData) => _this.eventStore.onLinkMouseOver(_this, linkData, linkGfx, mouseData));
-                    linkGfx.on("mouseout", (mouseData) => _this.eventStore.onLinkMouseOut(_this,  linkData, linkGfx, mouseData));
+                    linkGfx.on("mouseout", (mouseData) => _this.eventStore.onLinkMouseOut(_this, linkData, linkGfx, mouseData));
                     linkGfx.on('mousedown', event => _this.eventStore.onLinkClicked(_this, linkData, linkGfx, event));
 
                     clearInterval(interval);
