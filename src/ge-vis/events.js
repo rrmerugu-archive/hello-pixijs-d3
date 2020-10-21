@@ -1,29 +1,39 @@
 export default class EventStore {
 
+    clickedNodeData = undefined;
 
 
-    onLinkClicked(graphCanvas, linkData, linkGfx) {
-
-    }
-
-    onLinkMouseOver(graphCanvas, linkData, linkGfx) {
+    onLinkClicked(graphCanvas, linkData, linkGfx, event) {
+        console.log(linkData.id, " clicked");
 
     }
 
-    onLinkMouseOut(graphCanvas, linkData, linkGfx) {
+    onLinkMouseOver(graphCanvas, linkData, linkGfx, event) {
+        console.log(linkData.id, "link MouseOver");
 
     }
 
-    onNodeClicked(nodeContainer, nodeData, linkGfx) {
+
+    onLinkMouseOut(graphCanvas, linkData, linkGfx, event) {
+        console.log(linkData.id, "link MouseOut");
 
     }
 
-    onNodeMouseOver(nodeContainer, nodeData, linkGfx) {
+
+    onNodeClicked(graphCanvas, nodeData, nodeContainer, event) {
+        this.clickedNodeData = nodeData;
+        console.log(this.clickedNodeData.id, " clicked");
+    }
+
+    onNodeMouseOver(graphCanvas, nodeData, nodeContainer, event) {
+        this.clickedNodeData = nodeData;
+        console.log(this.clickedNodeData.id, " mouseover");
 
     }
 
-    onNodeMouseOut(nodeContainer, nodeData, linkGfx) {
-
+    onNodeMouseOut(graphCanvas, nodeData, nodeContainer, event) {
+        console.log(nodeData.id, " node mouseout");
+        this.clickedNodeData = undefined;
     }
 
 }

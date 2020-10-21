@@ -12,7 +12,7 @@ export default class GraphCanvas {
 
     graphStore = new GraphStore();
     dataStore = new DataStore();
-    events = new EventStore();
+    eventStore = new EventStore();
     renderRequestId = undefined;
     clickedNodeData = undefined;
 
@@ -117,37 +117,6 @@ export default class GraphCanvas {
         });
     }
 
-    onNodeClicked(nodeData) {
-        this.clickedNodeData = nodeData;
-        console.log(this.clickedNodeData.id, " clicked");
-
-    }
-    onNodeMouseOver(nodeData) {
-        this.clickedNodeData = nodeData;
-        console.log(this.clickedNodeData.id, " mouseover");
-
-    }
-
-    onLinkClicked(linkData) {
-        console.log(linkData.id, " clicked");
-    }
-
-
-    onNodeMouseOut(nodeData) {
-        console.log(nodeData.id , " node mouseout");
-        this.clickedNodeData = undefined;
-    }
-
-
-    onLinkMouseOver(mouseData, linkData) {
-        console.log(linkData.id, "link MouseOver");
-        // this.alpha = 1;
-    }
-
-    onLinkMouseOut(mouseData, linkData) {
-        console.log(linkData.id, "link MouseOut");
-
-    }
 
 
     resetViewport() {
@@ -176,9 +145,9 @@ export default class GraphCanvas {
         nodeContainer.buttonMode = true;
         nodeContainer.hitArea = new PIXI.Circle(0, 0, NODE_HIT_RADIUS);
 
-        nodeContainer.on('mousedown', event => _this.onNodeClicked(_this.graphStore.nodeGfxToNodeData.get(event.currentTarget)));
-        nodeContainer.on('mouseover', (event) => _this.onNodeMouseOver(_this.graphStore.nodeGfxToNodeData.get(event.currentTarget)));
-        nodeContainer.on('mouseout', (event) => _this.onNodeMouseOut(_this.graphStore.nodeGfxToNodeData.get(event.currentTarget)));
+        nodeContainer.on('mousedown', event => _this.eventStore.onNodeClicked(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
+        nodeContainer.on('mouseover', (event) => _this.eventStore.onNodeMouseOver(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget)), nodeContainer);
+        nodeContainer.on('mouseout', (event) => _this.eventStore.onNodeMouseOut(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget)), nodeContainer);
 
         const circle = new PIXI.Graphics();
         circle.x = 0;
@@ -286,7 +255,6 @@ export default class GraphCanvas {
             if (linkGfx.geometry && linkGfx.geometry.graphicsData.length > 0) {
                 let points = linkGfx.geometry.graphicsData[0].shape.points;
                 console.log("points interval", points.length, points);
-
                 if (points.length > 0) {
                     linkGfx.interactive = true;
                     linkGfx.buttonMode = true;
@@ -309,9 +277,9 @@ export default class GraphCanvas {
                     linkGfxLabels.endFill();
 
                     // linkGfx.click = mouseover;
-                    linkGfx.on("mouseover", (mouseData) => _this.onLinkMouseOver(mouseData, linkData));
-                    linkGfx.on("mouseout", (mouseData) => _this.onLinkMouseOut(mouseData, linkData));
-                    linkGfx.on('mousedown', event => _this.onLinkClicked(linkData));
+                    linkGfx.on("mouseover", (mouseData) => _this.eventStore.onLinkMouseOver(_this, linkData, linkGfx, mouseData));
+                    linkGfx.on("mouseout", (mouseData) => _this.eventStore.onLinkMouseOut(_this,  linkData, linkGfx, mouseData));
+                    linkGfx.on('mousedown', event => _this.eventStore.onLinkClicked(_this, linkData, linkGfx, event));
 
                     clearInterval(interval);
                 }
