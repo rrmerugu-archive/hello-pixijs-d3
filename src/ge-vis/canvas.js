@@ -186,7 +186,7 @@ export default class GraphCanvas {
         const nodeLabelText = new PIXI.Text(getNodeLabel(nodeData), {
             fontFamily: LABEL_FONT_FAMILY,
             fontSize: LABEL_FONT_SIZE,
-            fill: 0x333333
+            fill: 0xefefef
         });
         nodeLabelText.x = LABEL_X_PADDING;
         nodeLabelText.y = NODE_HIT_RADIUS + LABEL_Y_PADDING;

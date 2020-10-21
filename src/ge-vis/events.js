@@ -69,9 +69,9 @@ export default class EventStore {
         const labelText = new PIXI.Text(getNodeLabel(nodeData), {
             fontFamily: graphCanvas.settings.LABEL_FONT_FAMILY,
             fontSize: graphCanvas.settings.LABEL_FONT_SIZE,
-            fill: 0x333333
+            fill: 0xefefef
         });
-        labelText.x = 0;
+        labelText.x = graphCanvas.settings.LABEL_X_PADDING;
         labelText.y = graphCanvas.settings.NODE_HIT_RADIUS + graphCanvas.settings.LABEL_Y_PADDING;
         labelText.anchor.set(0.5, 0);
         //const labelBackground = new PIXI.Sprite(PIXI.Texture.WHITE);
