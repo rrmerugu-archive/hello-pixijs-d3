@@ -11,6 +11,7 @@ export default class GraphCanvas {
 
     graphStore = new GraphStore();
     renderRequestId = undefined;
+    clickedNodeData = undefined;
 
     loadFont(fontFamily) {
         new FontFaceObserver(fontFamily).load();
@@ -113,12 +114,45 @@ export default class GraphCanvas {
         });
     }
 
-    onNodeClick(node) {
+    onNodeClicked(nodeData) {
+        this.clickedNodeData = nodeData;
+        console.log(this.clickedNodeData.id, " clicked");
 
+        // // enable node dragging
+        // this.pixiApp.renderer.plugins.interaction.on('mousemove', this.appMouseMove);
+        // // disable viewport dragging
+        // this.viewport.pause = true;
+    }
+    onNodeMouseOver(nodeData) {
+        this.clickedNodeData = nodeData;
+        console.log(this.clickedNodeData.id, " mouseover");
+
+        // // enable node dragging
+        // this.pixiApp.renderer.plugins.interaction.on('mousemove', this.appMouseMove);
+        // // disable viewport dragging
+        // this.viewport.pause = true;
     }
 
-    onNodeUnClicked(node) {
+    onLinkClicked(linkData) {
+        console.log(linkData.id, " clicked");
+    }
 
+    // appMouseMove = event => {
+    //     if (!this.clickedNodeData) {
+    //         return;
+    //     }
+    //
+    //     this.moveNode(this.clickedNodeData, this.viewport.toWorld(event.data.global));
+    // };
+
+    onNodeUnClicked(nodeData) {
+        console.log(nodeData.id , " unclicked");
+        this.clickedNodeData = undefined;
+
+        // // disable node dragging
+        // this.pixiApp.renderer.plugins.interaction.off('mousemove', appMouseMove);
+        // // enable viewport dragging
+        // this.viewport.pause = false;
     }
 
 
@@ -151,6 +185,7 @@ export default class GraphCanvas {
 
 
     createNode(nodeData) {
+        const _this = this;
         const {
             NODE_HIT_RADIUS, NODE_RADIUS, LABEL_FONT_FAMILY, LABEL_FONT_SIZE,
             LABEL_X_PADDING,
@@ -167,6 +202,10 @@ export default class GraphCanvas {
         nodeContainer.interactive = true;
         nodeContainer.buttonMode = true;
         nodeContainer.hitArea = new PIXI.Circle(0, 0, NODE_HIT_RADIUS);
+
+        nodeContainer.on('mousedown', event => _this.onNodeClicked(_this.graphStore.nodeGfxToNodeData.get(event.currentTarget)));
+        nodeContainer.on('mouseover', (event) => _this.onNodeMouseOver(_this.graphStore.nodeGfxToNodeData.get(event.currentTarget)));
+        nodeContainer.on('mouseout', (event) => _this.onNodeUnClicked(_this.graphStore.nodeGfxToNodeData.get(event.currentTarget)));
 
         const circle = new PIXI.Graphics();
         circle.x = 0;
@@ -301,6 +340,8 @@ export default class GraphCanvas {
                     // linkGfx.click = mouseover;
                     linkGfx.on("mouseover", (mouseData) => _this.onLinkMouseOver(mouseData, linkData));
                     linkGfx.on("mouseout", (mouseData) => _this.onLinkMouseOut(mouseData, linkData));
+                    linkGfx.on('mousedown', event => _this.onLinkClicked(linkData));
+
                     clearInterval(interval);
                 }
             }
