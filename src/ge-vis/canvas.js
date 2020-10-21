@@ -2,8 +2,8 @@ import * as d3 from "d3";
 import GraphStore from "./store";
 import GESettings from "./settings";
 import * as PIXI from 'pixi.js-legacy'
-import { Viewport } from 'pixi-viewport'
-import { colorToNumber, scale, getColor, getNodeLabel, getLinkLabel } from "./utils";
+import {Viewport} from 'pixi-viewport'
+import {colorToNumber, scale, getColor, getNodeLabel, getLinkLabel} from "./utils";
 import FontFaceObserver from "fontfaceobserver";
 
 export default class GraphCanvas {
@@ -121,6 +121,19 @@ export default class GraphCanvas {
 
     }
 
+
+    onLinkMouseOver(mouseData, linkData) {
+        console.log(linkData.id, "link MouseOver");
+        // this.alpha = 1;
+    }
+
+    onLinkMouseOut(mouseData, linkData) {
+        console.log(linkData.id, "link MouseOut");
+
+        // this.alpha = 0.5;
+    }
+
+
     onLinkClicked(link) {
 
     }
@@ -137,9 +150,9 @@ export default class GraphCanvas {
     };
 
 
-
     createNode(nodeData) {
-        const { NODE_HIT_RADIUS, NODE_RADIUS, LABEL_FONT_FAMILY, LABEL_FONT_SIZE,
+        const {
+            NODE_HIT_RADIUS, NODE_RADIUS, LABEL_FONT_FAMILY, LABEL_FONT_SIZE,
             LABEL_X_PADDING,
             LABEL_Y_PADDING,
             ICON_TEXT,
@@ -154,7 +167,7 @@ export default class GraphCanvas {
         nodeContainer.interactive = true;
         nodeContainer.buttonMode = true;
         nodeContainer.hitArea = new PIXI.Circle(0, 0, NODE_HIT_RADIUS);
-   
+
         const circle = new PIXI.Graphics();
         circle.x = 0;
         circle.y = 0;
@@ -184,7 +197,7 @@ export default class GraphCanvas {
         nodeLabelContainer.y = nodeData.y;
         nodeLabelContainer.interactive = true;
         nodeLabelContainer.buttonMode = true;
-     
+
         const nodeLabelText = new PIXI.Text(getNodeLabel(nodeData), {
             fontFamily: LABEL_FONT_FAMILY,
             fontSize: LABEL_FONT_SIZE,
@@ -193,17 +206,17 @@ export default class GraphCanvas {
         nodeLabelText.x = 0 + LABEL_X_PADDING;
         nodeLabelText.y = NODE_HIT_RADIUS + LABEL_Y_PADDING;
         nodeLabelText.anchor.set(0.5, 0);
-        
+
         nodeLabelContainer.addChild(nodeLabelText);
 
-        return { nodeContainer, nodeLabelContainer }
+        return {nodeContainer, nodeLabelContainer}
     }
 
 
     createNodes(nodes) {
         // create node graphics
         return nodes.map(nodeData => {
-            const { nodeContainer, nodeLabelContainer } = this.createNode(nodeData);
+            const {nodeContainer, nodeLabelContainer} = this.createNode(nodeData);
 
             this.nodesLayer.addChild(nodeContainer);
             this.nodeLabelsLayer.addChild(nodeLabelContainer);
@@ -211,11 +224,12 @@ export default class GraphCanvas {
         });
 
     }
+
     linkGraphicsArray = [];
     linkLabelGraphicsArray = [];
 
 
-    clearCanvas(){
+    clearCanvas() {
         while (this.linkGraphicsArray.length > 0) {
             let linkGraphics = this.linkGraphicsArray.pop();
             linkGraphics.clear();
@@ -231,21 +245,21 @@ export default class GraphCanvas {
     }
 
 
-    createLink(linkData){
-        const { NODE_RADIUS, LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH } = this.settings;
-
+    createLink(linkData) {
+        const {NODE_RADIUS, LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH} = this.settings;
+        let _this = this;
         let linkGfx = new PIXI.Graphics();
 
         // link labels
         let linkGfxLabels = new PIXI.Graphics();
         this.linkLabelGraphicsArray.push(linkGfxLabels);
         this.linksLabelsLayer.addChild(linkGfxLabels);
-      
+
         linkGfx.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), 0x999999);
         linkGfx.moveTo(linkData.source.x, linkData.source.y);
         linkGfx.lineTo(linkData.target.x, linkData.target.y);
 
- 
+
         // for link label
         const linkLabelText = new PIXI.Text(getLinkLabel(linkData), {
             fontFamily: LABEL_FONT_FAMILY,
@@ -285,21 +299,9 @@ export default class GraphCanvas {
                     linkGfx.endFill();
                     linkGfxLabels.endFill();
 
-                    function mouseover(mouseData, linkData) {
-                        console.log(linkData.id, "link MouseOver" );
-                        // this.alpha = 1;
-                    }
-
-                    function mouseout(mouseData, linkData) {
-                        console.log(linkData.id, "link MouseOut");
-
-                        // this.alpha = 0.5;
-                    }
-
-
                     // linkGfx.click = mouseover;
-                    linkGfx.on("mouseover", (mouseData) => mouseover(mouseData, linkData));
-                    linkGfx.on("mouseout", (mouseData) => mouseout(mouseData, linkData));
+                    linkGfx.on("mouseover", (mouseData) => _this.onLinkMouseOver(mouseData, linkData));
+                    linkGfx.on("mouseout", (mouseData) => _this.onLinkMouseOut(mouseData, linkData));
                     clearInterval(interval);
                 }
             }
@@ -311,13 +313,13 @@ export default class GraphCanvas {
     updatePositions = () => {
 
         let _this = this;
-        const { links, nodes } = this.graphStore;
+        const {links, nodes} = this.graphStore;
 
         this.clearCanvas();
 
         for (let i = 0; i < links.length; i++) {
- 
-  
+
+
             let linkGfx = this.createLink(links[i])
             // linkGfx.hitArea = linkGfx.getBounds();
             // linkGfx.interactive = true;
@@ -326,8 +328,6 @@ export default class GraphCanvas {
             this.linkGraphicsArray.push(linkGfx);
             this.linksLayerContainer.addChild(linkGfx);
         }
-
- 
 
 
         for (const node of nodes) {
@@ -339,10 +339,9 @@ export default class GraphCanvas {
     };
 
 
-
     addData(nodes, links) {
 
-        this.forceSimulation = this.generateForceSimulation({ nodes, links });
+        this.forceSimulation = this.generateForceSimulation({nodes, links});
 
 
         const nodeDataGfxPairs = this.createNodes(nodes);
@@ -351,7 +350,6 @@ export default class GraphCanvas {
         this.graphStore.links = links;
         this.graphStore.nodes = nodes;
         this.graphStore.update(nodeDataGfxPairs);
-
 
 
         // initial draw
