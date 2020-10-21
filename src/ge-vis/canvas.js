@@ -134,13 +134,13 @@ export default class GraphCanvas {
     }
 
 
-    onLinkClicked(link) {
-
-    }
-
-    onLinkUnClicked(link) {
-
-    }
+    // onLinkClicked(link) {
+    //
+    // }
+    //
+    // onLinkUnClicked(link) {
+    //
+    // }
 
 
     resetViewport() {
@@ -203,12 +203,11 @@ export default class GraphCanvas {
             fontSize: LABEL_FONT_SIZE,
             fill: 0x333333
         });
-        nodeLabelText.x = 0 + LABEL_X_PADDING;
+        nodeLabelText.x = LABEL_X_PADDING;
         nodeLabelText.y = NODE_HIT_RADIUS + LABEL_Y_PADDING;
         nodeLabelText.anchor.set(0.5, 0);
 
         nodeLabelContainer.addChild(nodeLabelText);
-
         return {nodeContainer, nodeLabelContainer}
     }
 
@@ -246,7 +245,7 @@ export default class GraphCanvas {
 
 
     createLink(linkData) {
-        const {NODE_RADIUS, LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH} = this.settings;
+        const {LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH} = this.settings;
         let _this = this;
         let linkGfx = new PIXI.Graphics();
 
@@ -337,8 +336,6 @@ export default class GraphCanvas {
     addData(nodes, links) {
 
         this.forceSimulation = this.generateForceSimulation({nodes, links});
-
-
         const nodeDataGfxPairs = this.createNodes(nodes);
 
         // update store
@@ -346,16 +343,12 @@ export default class GraphCanvas {
         this.graphStore.nodes = nodes;
         this.graphStore.update(nodeDataGfxPairs);
 
-
         // initial draw
         this.resetViewport();
         // this.requestRender();
 
         this.updatePositions();
-
         this.preventWheelScrolling();
-
-
     }
 
 
