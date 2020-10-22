@@ -430,7 +430,6 @@ export default class GraphCanvas {
         this.graphStore.update(nodeDataGfxPairs);
 
         // initial draw
-        this.resetViewport();
         this.requestRender();
         // this.updatePositions();
     }

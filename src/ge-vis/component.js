@@ -21,6 +21,8 @@ export default class GraphComponent extends React.Component {
 
         this.graphCanvas = new GraphCanvas(canvasElem, 1200, 800)
         this.graphCanvas.addData(initData.nodes, initData.links)
+        this.graphCanvas.resetViewport();
+
         let _this = this;
 
         // setTimeout(() => {
@@ -51,7 +53,7 @@ export default class GraphComponent extends React.Component {
                     {"id": nodeName, "group": 1},
                 ],
                 links: [
-                    {"id": nodeName+ "-Ravi", "source": nodeName, "target": "Ravi", value: 1}
+                    {"id": nodeName + "-Ravi", "source": nodeName, "target": "Ravi", value: 1}
                 ]
             }
             _this.graphCanvas.addData(data3.nodes, data3.links);
