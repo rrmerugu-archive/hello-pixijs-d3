@@ -11,6 +11,31 @@ export class DataStore {
         this.linkLabelGraphicsArray = [];
     }
 
+
+    getNeighborNodesAndLinks(nodeData) {
+
+        let neighborLinks = [];
+        let neighborNodes = [];
+        // get the links attached to nodeId
+        this.links.forEach((link) => {
+            if (link.target.id === nodeData.id) {
+                neighborLinks.push(link);
+                neighborNodes.push(link.source);
+
+            } else if (link.source.id === nodeData.id) {
+                neighborLinks.push(link);
+                neighborNodes.push(link.target);
+
+            }
+        })
+
+
+        return {
+            nodes: neighborNodes,
+            links: neighborLinks
+        }
+    }
+
     checkIfElementExist(elementId, elementsData) {
         elementsData.forEach((elem) => {
             if (elementId === elem.id) {
@@ -72,10 +97,9 @@ export default class GraphStore {
 
     update(newNodeDataGfxPairs) {
 
-        newNodeDataGfxPairs.forEach((nodeDataPair)=>{
+        newNodeDataGfxPairs.forEach((nodeDataPair) => {
             this.nodeDataGfxPairs.push(nodeDataPair)
         })
-
 
 
         // create lookup tables

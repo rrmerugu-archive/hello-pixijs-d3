@@ -19,6 +19,7 @@ export default class GraphCanvas {
     isFirstLoaded = false
 
 
+
     loadFont(fontFamily) {
         new FontFaceObserver(fontFamily).load();
     }
@@ -352,11 +353,10 @@ export default class GraphCanvas {
         const {LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH} = this.settings;
         let _this = this;
         let linkGfx = new PIXI.Graphics();
+        linkGfx.id = "link-" + linkData.id;
+        let linkGfxLabel = new PIXI.Graphics();
+        linkGfx.id = "link-" + linkData.id;
 
-        // link labels
-        let linkGfxLabels = new PIXI.Graphics();
-        this.dataStore.linkLabelGraphicsArray.push(linkGfxLabels);
-        this.linksLabelsLayer.addChild(linkGfxLabels);
 
         linkGfx.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), 0x999999);
         linkGfx.moveTo(linkData.source.x, linkData.source.y);
@@ -374,7 +374,7 @@ export default class GraphCanvas {
         linkLabelText.x = (linkData.source.x + linkData.target.x) / 2 - 10 * sameIndex;
         linkLabelText.y = (linkData.source.y + linkData.target.y) / 2 - 10 * sameIndex;
         linkLabelText.anchor.set(0.5, 0);
-        linkGfxLabels.addChild(linkLabelText)
+        linkGfxLabel.addChild(linkLabelText)
 
 
         let interval = setInterval(() => {
@@ -400,7 +400,7 @@ export default class GraphCanvas {
                     linkGfx.hitArea = new PIXI.Polygon(points);
                     // linkGfx.drawPolygon(points);
                     linkGfx.endFill();
-                    linkGfxLabels.endFill();
+                    linkGfxLabel.endFill();
 
                     // linkGfx.click = mouseover;
                     linkGfx.on("mouseover", (mouseData) => _this.eventStore.onLinkMouseOver(_this, linkData, linkGfx, mouseData));
@@ -411,7 +411,7 @@ export default class GraphCanvas {
                 }
             }
         }, 50);
-        return linkGfx;
+        return {linkGfx, linkGfxLabel};
 
     }
 
@@ -420,9 +420,13 @@ export default class GraphCanvas {
         this.clearLinkCanvas();
 
         for (let i = 0; i < links.length; i++) {
-            let linkGfx = this.createLink(links[i])
+            let {linkGfx, linkGfxLabel} = this.createLink(links[i])
             this.dataStore.linkGraphicsArray.push(linkGfx);
             this.linksLayer.addChild(linkGfx);
+
+            this.dataStore.linkLabelGraphicsArray.push(linkGfxLabel);
+            this.linksLabelsLayer.addChild(linkGfxLabel);
+
         }
 
         this.updateNodePositions();
