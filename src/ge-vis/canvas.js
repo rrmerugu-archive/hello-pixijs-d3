@@ -320,7 +320,7 @@ export default class GraphCanvas {
         let interval = setInterval(() => {
             if (linkGfx.geometry && linkGfx.geometry.graphicsData.length > 0) {
                 let points = linkGfx.geometry.graphicsData[0].shape.points;
-                console.log("points interval", points.length, points);
+                // console.log("points interval", points.length, points);
                 if (points.length > 0) {
                     linkGfx.interactive = true;
                     linkGfx.buttonMode = true;

@@ -38,7 +38,7 @@ export default class GraphComponent extends React.Component {
         // }, 3000)
         // setTimeout(() => {
 
-            _this.graphCanvas.addData(connector.getData().nodes, connector.getData().links);
+        _this.graphCanvas.addData(connector.getData().nodes, connector.getData().links);
 
         // }, 3000)
     }
