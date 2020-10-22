@@ -1,22 +1,65 @@
 export class DataStore {
-    nodes = []
-    links = []
-    linkGraphicsArray = [];
-    linkLabelGraphicsArray = [];
+
+    constructor() {
+        this.clear();
+    }
+
+    clear() {
+        this.nodes = []
+        this.links = []
+        this.linkGraphicsArray = [];
+        this.linkLabelGraphicsArray = [];
+    }
+
+    checkIfElementExist(elementId, elementsData) {
+        elementsData.forEach((elem) => {
+            if (elementId === elem.id) {
+                return true;
+            }
+        })
+        return false
+    }
+
+
+    addData(nodes, links) {
+        // TODO - review this logic again,
+        // this where old data will be merged with the new data.
+        let _this = this;
+        links.forEach((link) => {
+            const isElemExist = _this.checkIfElementExist(link.id, _this.links);
+            console.log("isElemExist", isElemExist, link.id);
+            if (!isElemExist) {
+                _this.links.push(link);
+            }
+        });
+        nodes.forEach((node) => {
+            const isElemExist = _this.checkIfElementExist(node.id, _this.nodes);
+            if (!isElemExist) {
+                _this.nodes.push(node);
+            }
+        });
+
+        console.log("after addition", _this.nodes, _this.links)
+    }
 
 }
 
 export default class GraphStore {
 
 
-    hoveredNodeGfxOriginalChildren = undefined;
-    hoveredNodeLabelGfxOriginalChildren = undefined;
+    constructor() {
+        this.clear();
+    }
 
-    nodeDataToNodeGfx = new WeakMap();
-    nodeGfxToNodeData = new WeakMap();
-    nodeDataToLabelGfx = new WeakMap();
-    labelGfxToNodeData = new WeakMap();
-
+    clear() {
+        this.hoveredNodeGfxOriginalChildren = undefined;
+        this.hoveredNodeLabelGfxOriginalChildren = undefined;
+        this.nodeDataToNodeGfx = new WeakMap();
+        this.nodeGfxToNodeData = new WeakMap();
+        this.nodeDataToLabelGfx = new WeakMap();
+        this.labelGfxToNodeData = new WeakMap();
+        this.nodeDataGfxPairs = [];
+    }
 
     addNode(node) {
 
@@ -26,9 +69,6 @@ export default class GraphStore {
 
     }
 
-    addData(nodes, edges) {
-
-    }
 
     update(nodeDataGfxPairs) {
         this.nodeDataGfxPairs = nodeDataGfxPairs

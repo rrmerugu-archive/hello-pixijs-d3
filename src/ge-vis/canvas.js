@@ -46,9 +46,7 @@ export default class GraphCanvas {
         this.pixiApp.renderer.on('postrender', () => {
             // console.log('render');
         });
-
-
-        // create PIXI viewport
+        this.forceSimulation = this.generateForceSimulation();
         this.viewport = new Viewport({
             screenWidth: this.settings.SCREEN_WIDTH,
             screenHeight: this.settings.SCREEN_HEIGHT,
@@ -56,6 +54,19 @@ export default class GraphCanvas {
             worldHeight: this.settings.WORLD_HEIGHT,
             interaction: this.pixiApp.renderer.plugins.interaction
         });
+        this.viewport.on('frame-end', () => {
+            if (this.viewport.dirty) {
+                this.requestRender();
+                this.viewport.dirty = false;
+            }
+        });
+
+        this.setupCanvas();
+
+    }
+
+    setupCanvas() {
+        // create PIXI viewport
 
         this.pixiApp.stage.addChild(this.viewport);
         this.viewport
@@ -64,19 +75,10 @@ export default class GraphCanvas {
             .wheel()
             .decelerate();
 
-        this.viewport.on('frame-end', () => {
-            if (this.viewport.dirty) {
-                this.requestRender();
-                this.viewport.dirty = false;
-            }
-        });
 
-
-        // adding nodes layer
-
-
-        this.linksLayerContainer = new PIXI.Container();
-        this.viewport.addChild(this.linksLayerContainer);
+        // adding layers for nodes and links
+        this.linksLayer = new PIXI.Container();
+        this.viewport.addChild(this.linksLayer);
 
         this.linksLabelsLayer = new PIXI.Container();
         this.viewport.addChild(this.linksLabelsLayer);
@@ -93,19 +95,28 @@ export default class GraphCanvas {
 
     }
 
-    generateForceSimulation(data) {
-        const defaultLinkLength = this.settings.DEFAULT_LINK_LENGTH;
-        return d3.forceSimulation(data.nodes)
-            .force("link", d3.forceLink(data.links)
-                .id(linkData => linkData.id)
-                .distance(function (d) {
-                    return d.distance || defaultLinkLength
-                })
-            )
-            .force("charge", d3.forceManyBody().strength(this.settings.FORCE_LAYOUT_NODE_REPULSION_STRENGTH))
-            .force("center", d3.forceCenter())
-            .stop()
-            .tick(this.settings.FORCE_LAYOUT_ITERATIONS);
+    generateForceSimulation() {
+        // const defaultLinkLength = this.settings.DEFAULT_LINK_LENGTH;
+        // return d3.forceSimulation()
+        //     .force("link", d3.forceLink()
+        //         .id(linkData => linkData.id)
+        //         .distance(function (d) {
+        //             return d.distance || defaultLinkLength
+        //         })
+        //     )
+        //     .force("charge", d3.forceManyBody().strength(this.settings.FORCE_LAYOUT_NODE_REPULSION_STRENGTH))
+        //     // .force("center", d3.forceCenter())
+        //     .force("x", d3.forceX())
+        //     .force("y", d3.forceY())
+        //     .stop()
+        //     .tick(this.settings.FORCE_LAYOUT_ITERATIONS);
+        return d3.forceSimulation()
+            .force("charge", d3.forceManyBody().strength(-1000))
+            .force("link", d3.forceLink().id(d => d.id).distance(200))
+            .force("x", d3.forceX())
+            .force("y", d3.forceY())
+        // .on("tick", ticked);
+
     }
 
     requestRender = () => {
@@ -125,6 +136,30 @@ export default class GraphCanvas {
         this.viewport.fit(true, this.settings.WORLD_WIDTH / 4, this.settings.WORLD_HEIGHT / 4)
         this.viewport.setZoom(0.5, true);
     };
+
+
+    destroyEverything(func) {
+        while (this.nodesLayer.children[0]) {
+            this.nodesLayer.removeChild(this.nodesLayer.children[0]);
+        }
+        this.nodesLayer.destroy(true, true, true);
+        this.linksLabelsLayer.destroy(true, true, true);
+        this.nodeLabelsLayer.destroy(true, true, true);
+        this.frontLayer.destroy(true, true, true);
+        this.graphStore.clear();
+        // this.dataStore.clear();
+
+        let _this = this;
+        while (this.pixiApp.stage.children[0]) {
+            console.log("removing t", this.pixiApp.stage.children[0]);
+            _this.pixiApp.stage.removeChild(_this.pixiApp.stage.children[0])
+        }
+        this.setupCanvas();
+        // return
+        // setTimeout(() => func(), 500);
+        func()
+
+    }
 
 
     createNode(nodeData) {
@@ -210,18 +245,28 @@ export default class GraphCanvas {
     }
 
 
-    clearCanvas() {
+    clearLinkCanvas() {
+        console.log("this.dataStore.linkGraphicsArray.", this.dataStore.linkGraphicsArray.length, this.dataStore.linkGraphicsArray)
         while (this.dataStore.linkGraphicsArray.length > 0) {
             let linkGraphics = this.dataStore.linkGraphicsArray.pop();
-            linkGraphics.clear();
-            this.linksLayerContainer.removeChild(linkGraphics);
-            linkGraphics.destroy();
+            try {
+                linkGraphics.clear();
+                this.linksLayer.removeChild(linkGraphics);
+                linkGraphics.destroy();
+            } catch (e) {
+
+            }
+
         }
         while (this.dataStore.linkLabelGraphicsArray.length > 0) {
             let linkLabelGraphics = this.dataStore.linkLabelGraphicsArray.pop();
-            linkLabelGraphics.clear();
-            this.linksLabelsLayer.removeChild(linkLabelGraphics);
-            linkLabelGraphics.destroy();
+            try {
+                linkLabelGraphics.clear();
+                this.linksLabelsLayer.removeChild(linkLabelGraphics);
+                linkLabelGraphics.destroy();
+            } catch (e) {
+
+            }
         }
     }
 
@@ -294,12 +339,12 @@ export default class GraphCanvas {
 
     updatePositions = () => {
         const {links} = this.dataStore;
-        this.clearCanvas();
+        this.clearLinkCanvas();
 
         for (let i = 0; i < links.length; i++) {
             let linkGfx = this.createLink(links[i])
             this.dataStore.linkGraphicsArray.push(linkGfx);
-            this.linksLayerContainer.addChild(linkGfx);
+            this.linksLayer.addChild(linkGfx);
         }
 
         this.updateNodePositions();
@@ -316,22 +361,43 @@ export default class GraphCanvas {
         }
     }
 
-    addData(nodes, links) {
 
-        this.forceSimulation = this.generateForceSimulation({nodes, links});
-        const nodeDataGfxPairs = this.createNodes(nodes);
+    render(nodes, links) {
+        // this.clearLinkCanvas();
 
         // update store
-        this.dataStore.links = links;
-        this.dataStore.nodes = nodes;
+
+        console.log("rendering with data:: links ======== ", links);
+        console.log("rendering with data:: nodes ======== ", nodes);
+
+        this.forceSimulation.nodes(nodes);
+        this.forceSimulation.force("link").links(links)
+            // .id(linkData => linkData.id)
+            // .distance(function (d) {
+            //     return 100
+            // });
+        const nodeDataGfxPairs = this.createNodes(nodes);
+        this.forceSimulation.restart();
+
         this.graphStore.update(nodeDataGfxPairs);
 
         // initial draw
         this.resetViewport();
-        // this.requestRender();
+        this.requestRender();
 
         this.updatePositions();
+
         this.preventWheelScrolling();
+    }
+
+    addData(newNodes, newLinks) {
+        this.dataStore.addData(newNodes, newLinks);
+        const {nodes, links} = this.dataStore;
+        console.log("=======", nodes.length, links.length);
+        this.destroyEverything(() => {
+            this.render(nodes, links);
+        });
+
     }
 
 
