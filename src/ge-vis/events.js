@@ -127,6 +127,10 @@ export default class EventStore {
 
     }
 
+    focusGraph(graphCanvas){
+
+    }
+
     highlightNode(graphCanvas, nodeData) {
         console.log("highlightNode", nodeData.id);
         // add hover effect
@@ -226,7 +230,7 @@ export default class EventStore {
 
     }
 
-    unHighlightNode(graphCanvas, nodeData, nodeContainer) {
+    unHighlightNode(graphCanvas, nodeData) {
 
         const neighborsData = graphCanvas.dataStore.getNeighborNodesAndLinks(nodeData)
         let nodes2Highlight = neighborsData.nodes;
@@ -307,37 +311,23 @@ export default class EventStore {
     onNodeMouseOver(graphCanvas, nodeData, nodeContainer, event) {
         console.log(nodeData.id, " mouseover");
         if (nodeData) {
-
             this.highlightNode(graphCanvas, nodeData)
-
             // for drag feature
             if (this.clickedNodeData) {
                 return;
             }
-            // if (this.hoveredNodeData === nodeData) {
-            //     return;
-            // }
             this.hoveredNodeData = nodeData;
-
-
             graphCanvas.requestRender();
-
         }
 
     }
 
     onNodeMouseOut(graphCanvas, nodeData, nodeContainer, event) {
         console.log(nodeData.id, " mouseout");
-        // this.hideMenu();
-        this.unHighlightNode(graphCanvas, nodeData, nodeContainer)
+        this.unHighlightNode(graphCanvas, nodeData)
         if (this.clickedNodeData) {
             return;
         }
-        // if (this.hoveredNodeData !== nodeData) {
-        //     return;
-        // }
-        // this.unsetSelectedNodeData();
-
     }
 
     unsetSelectedNodeData() {

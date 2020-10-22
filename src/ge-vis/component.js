@@ -67,6 +67,8 @@ export default class GraphComponent extends React.Component {
 
     onClickFocus() {
         const nodeData = this.graphCanvas.eventStore.lastSelectedNodeData;
+        this.graphCanvas.dataStore.addNode2Focus(nodeData);
+        this.graphCanvas.eventStore.highlightNode(this.graphCanvas, nodeData);
         this.graphCanvas.zoom2Point(nodeData.x, nodeData.y);
     }
 

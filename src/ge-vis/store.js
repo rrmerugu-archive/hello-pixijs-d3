@@ -9,24 +9,29 @@ export class DataStore {
         this.links = []
         this.linkGraphicsArray = [];
         this.linkLabelGraphicsArray = [];
+        this.focusedNodes = [];
+    }
+
+    addNode2Focus(nodeData) {
+        this.focusedNodes.push(nodeData);
     }
 
 
     getNotNeighborLinks(nodeData) {
         let notNeighborLinks = [];
         let notNeighborNodes = [];
-        const {nodes, links } = this.getNeighborNodesAndLinks(nodeData);
+        const {nodes, links} = this.getNeighborNodesAndLinks(nodeData);
 
         nodes.push(nodeData);
 
-        this.nodes.forEach((node)=>{
-            if(!nodes.includes(node)){
+        this.nodes.forEach((node) => {
+            if (!nodes.includes(node)) {
                 notNeighborNodes.push(node);
             }
         })
 
-        this.links.forEach((link)=>{
-            if(!links.includes(link)){
+        this.links.forEach((link) => {
+            if (!links.includes(link)) {
                 notNeighborLinks.push(link);
             }
         })

@@ -451,8 +451,6 @@ export default class GraphCanvas {
         const {nodes, links} = this.dataStore;
         console.log("=======", nodes.length, links.length);
         _this.updateSimulationData(nodes, links);
-
-
     }
 
 
