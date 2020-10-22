@@ -1,4 +1,4 @@
-import {colorToNumber, getColor, getNodeLabel} from "./utils";
+import {colorToNumber, getColor, getLinkLabel, getNodeLabel} from "./utils";
 import * as PIXI from 'pixi.js-legacy'
 
 export default class EventStore {
@@ -140,7 +140,63 @@ export default class EventStore {
 
         graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = []
         graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren = []
-        nodes2Highlight.forEach((node2Highlight) => {
+
+        graphCanvas.graphStore.hoveredlinkGfxOriginalChildren = [];
+        graphCanvas.graphStore.hoveredlinkLabelOriginalChildren = [];
+
+
+        const {LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH} = graphCanvas.settings;
+
+        links2Highlight.forEach((linkData) => {
+
+
+            let linkGfx = graphCanvas.graphStore.linkDataToLinkGfx.get(linkData);
+            let linkGfxLabel = graphCanvas.graphStore.linkDataToLabelGfx.get(linkData);
+            console.log("==linkLayer", linkData, linkGfx);
+            const linkLabelGfx = graphCanvas.graphStore.linkDataToLabelGfx.get(linkData);
+
+            linkGfx.alpha = 0.5;
+            linkGfxLabel.alpha = 0.5;
+            graphCanvas.graphStore.hoveredlinkGfxOriginalChildren.push([...linkGfx.children]);
+            graphCanvas.graphStore.hoveredlinkLabelOriginalChildren.push([...linkLabelGfx.children]);
+
+            // circle border
+            let linkGfxHilight = new PIXI.Graphics();
+            linkGfx.id = "link-" + linkData.id;
+
+
+            linkGfxHilight.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH* 5), 0xefefef);
+            linkGfxHilight.alpha = 0.5;
+            linkGfxHilight.moveTo(linkData.source.x, linkData.source.y);
+            linkGfxHilight.lineTo(linkData.target.x, linkData.target.y);
+
+
+            linkGfx.addChild(linkGfxHilight);
+            let linkGfxLabelHighlight = new PIXI.Graphics();
+            const linkLabelText = new PIXI.Text(getLinkLabel(linkData), {
+                fontFamily: LABEL_FONT_FAMILY,
+                fontSize: LINK_DEFAULT_LABEL_FONT_SIZE,
+                fill: 0xefefef
+            });
+            linkLabelText.resolution = graphCanvas.settings.LABEL_RESOLUTION;
+            const sameIndex = 1;
+            linkLabelText.x = (linkData.source.x + linkData.target.x) / 2 - 10 * sameIndex;
+            linkLabelText.y = (linkData.source.y + linkData.target.y) / 2 - 10 * sameIndex;
+            linkLabelText.anchor.set(0.5, 0);
+            linkGfxLabelHighlight.addChild(linkLabelText)
+
+            linkGfxLabel.addChild(linkGfxLabelHighlight)
+
+            // move to front layer
+            graphCanvas.nodesLayer.removeChild(linkGfx);
+            graphCanvas.frontLayer.addChild(linkGfx);
+            graphCanvas.nodeLabelsLayer.removeChild(linkGfxLabel);
+            graphCanvas.frontLayer.addChild(linkGfxLabel);
+
+
+        })
+
+    nodes2Highlight.forEach((node2Highlight) => {
             let nodeContainer = graphCanvas.graphStore.nodeDataToNodeGfx.get(node2Highlight);
             console.log("==nodeContainer", node2Highlight, nodeContainer);
             const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(node2Highlight);
@@ -163,24 +219,7 @@ export default class EventStore {
             graphCanvas.nodeLabelsLayer.removeChild(labelGfx);
             graphCanvas.frontLayer.addChild(labelGfx);
 
-
         });
-
-
-        // TODO - improve this performance ; move this to something like nodeDataToNodeGfx storage method
-        graphCanvas.dataStore.linkGraphicsArray.forEach((linkGfx) => {
-            links2Highlight.forEach((link) => {
-                if (linkGfx.id === link.id) {
-                    linkGfx.tint = 0xeeeeee;
-                }
-            })
-
-        });
-        graphCanvas.dataStore.linkLabelGraphicsArray.forEach((linkGfx) => {
-
-
-        });
-
 
     }
 
@@ -189,7 +228,7 @@ export default class EventStore {
         const neighborsData = graphCanvas.dataStore.getNeighborNodesAndLinks(nodeData)
         let nodes2Highlight = neighborsData.nodes;
         nodes2Highlight.push(nodeData);
-        // const links2Highlight = neighborsData.links;
+        const links2Highlight = neighborsData.links;
 
         nodes2Highlight.forEach((node2Highlight, i) => {
             const nodeGfx = graphCanvas.graphStore.nodeDataToNodeGfx.get(node2Highlight);
@@ -216,9 +255,38 @@ export default class EventStore {
             }
         })
 
-        graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = undefined;
+       links2Highlight.forEach((link2Highlight, i) => {
 
+
+            const linkGfx = graphCanvas.graphStore.linkDataToLinkGfx.get(link2Highlight);
+            const linkLabelGfx = graphCanvas.graphStore.linkDataToLabelGfx.get(link2Highlight);
+
+            // move back from front layer
+            graphCanvas.frontLayer.removeChild(linkGfx);
+            graphCanvas.linksLayer.addChild(linkGfx);
+            graphCanvas.frontLayer.removeChild(linkLabelGfx);
+            graphCanvas.linksLabelsLayer.addChild(linkLabelGfx);
+
+            // clear hover effect
+            const nodeGfxChildren = [...linkGfx.children];
+            for (let child of nodeGfxChildren) {
+                if (graphCanvas.graphStore.hoveredlinkGfxOriginalChildren[i] && !graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i].includes(child)) {
+                    linkGfx.removeChild(child);
+                }
+            }
+            const labelGfxChildren = [...linkGfx.children];
+            for (let child of labelGfxChildren) {
+                if (graphCanvas.graphStore.hoveredlinkLabelOriginalChildren[i] && !graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren[i].includes(child)) {
+                    linkGfx.removeChild(child);
+                }
+            }
+        })
+
+        graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = undefined;
         graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren = undefined;
+
+        graphCanvas.graphStore.hoveredlinkGfxOriginalChildren = undefined;
+        graphCanvas.graphStore.hoveredlinkLabelOriginalChildren = undefined;
 
         graphCanvas.requestRender();
     }

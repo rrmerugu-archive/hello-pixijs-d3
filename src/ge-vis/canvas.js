@@ -283,7 +283,6 @@ export default class GraphCanvas {
             const nodeGfx = _this.graphStore.nodeDataToNodeGfx.get(nodeData);
             if (!nodeGfx) {
                 const {nodeContainer, nodeLabelContainer} = this.createNode(nodeData);
-
                 this.nodesLayer.addChild(nodeContainer);
                 this.nodeLabelsLayer.addChild(nodeLabelContainer);
                 return [nodeData, nodeContainer, nodeLabelContainer];
@@ -390,7 +389,7 @@ export default class GraphCanvas {
     updatePositions = () => {
         const {links} = this.dataStore;
         this.clearLinkCanvas();
-
+        const linkDataGfxPairs = [];
         for (let i = 0; i < links.length; i++) {
             let {linkGfx, linkGfxLabel} = this.createLink(links[i])
             this.dataStore.linkGraphicsArray.push(linkGfx);
@@ -398,8 +397,10 @@ export default class GraphCanvas {
 
             this.dataStore.linkLabelGraphicsArray.push(linkGfxLabel);
             this.linksLabelsLayer.addChild(linkGfxLabel);
+            linkDataGfxPairs.push([links[i], linkGfx, linkGfxLabel])
 
         }
+        this.graphStore.updateLinkPairs(linkDataGfxPairs);
 
         this.updateNodePositions();
         console.log("log positions updated");
@@ -439,7 +440,7 @@ export default class GraphCanvas {
 
 
         const nodeDataGfxPairs = this.createNodes(nodes);
-        this.graphStore.update(nodeDataGfxPairs);
+        this.graphStore.updateNodePairs(nodeDataGfxPairs);
 
         // initial draw
         this.requestRender();

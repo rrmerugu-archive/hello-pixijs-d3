@@ -79,13 +79,22 @@ export default class GraphStore {
     clear() {
         this.hoveredNodeGfxOriginalChildren = undefined;
         this.hoveredNodeLabelGfxOriginalChildren = undefined;
+
         this.hoveredlinkGfxOriginalChildren = undefined;
         this.hoveredlinkLabelOriginalChildren = undefined;
         this.nodeDataToNodeGfx = new WeakMap();
         this.nodeGfxToNodeData = new WeakMap();
         this.nodeDataToLabelGfx = new WeakMap();
         this.labelGfxToNodeData = new WeakMap();
+
+
+        this.linkDataToLinkGfx = new WeakMap();
+        this.linkGfxToLinkData = new WeakMap();
+        this.linkDataToLabelGfx = new WeakMap();
+        this.labelGfxToLinkData = new WeakMap();
+
         this.nodeDataGfxPairs = [];
+        this.linkDataGfxPairs = [];
     }
 
     addNode(node) {
@@ -97,7 +106,7 @@ export default class GraphStore {
     }
 
 
-    update(newNodeDataGfxPairs) {
+    updateNodePairs(newNodeDataGfxPairs) {
 
         newNodeDataGfxPairs.forEach((nodeDataPair) => {
             this.nodeDataGfxPairs.push(nodeDataPair)
@@ -109,6 +118,21 @@ export default class GraphStore {
         this.nodeGfxToNodeData = new WeakMap(this.nodeDataGfxPairs.map(([nodeData, nodeGfx, labelGfx]) => [nodeGfx, nodeData]));
         this.nodeDataToLabelGfx = new WeakMap(this.nodeDataGfxPairs.map(([nodeData, nodeGfx, labelGfx]) => [nodeData, labelGfx]));
         this.labelGfxToNodeData = new WeakMap(this.nodeDataGfxPairs.map(([nodeData, nodeGfx, labelGfx]) => [labelGfx, nodeData]));
+        // add Neighbours map also.
+    }
+
+    updateLinkPairs(newLinkDataGfxPairs) {
+
+        newLinkDataGfxPairs.forEach((linkDataPair) => {
+            this.linkDataGfxPairs.push(linkDataPair)
+        })
+
+
+        // create lookup tables
+        this.linkDataToLinkGfx = new WeakMap(this.linkDataGfxPairs.map(([linkData, linkGfx, labelGfx]) => [linkData, linkGfx]));
+        this.linkGfxToLinkData = new WeakMap(this.linkDataGfxPairs.map(([linkData, linkGfx, labelGfx]) => [linkGfx, linkData]));
+        this.linkDataToLabelGfx = new WeakMap(this.linkDataGfxPairs.map(([linkData, linkGfx, labelGfx]) => [linkData, labelGfx]));
+        this.labelGfxToLinkData = new WeakMap(this.linkDataGfxPairs.map(([linkData, linkGfx, labelGfx]) => [labelGfx, linkData]));
         // add Neighbours map also.
     }
 
