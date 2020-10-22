@@ -191,14 +191,6 @@ export default class GraphCanvas {
 
     };
 
-
-    destroyEverything(func) {
-
-        func()
-
-    }
-
-
     createNode(nodeData) {
         const _this = this;
         const {
