@@ -12,17 +12,21 @@ export default class GraphCanvas {
 
     graphStore = new GraphStore();
     dataStore = new DataStore();
-    eventStore = new EventStore();
     renderRequestId = undefined;
-    clickedNodeData = undefined;
+    // clickedNodeData = undefined;
     isRendering = undefined;
+    nodeMenuEl = undefined;
+    isFirstLoaded = false
 
 
     loadFont(fontFamily) {
         new FontFaceObserver(fontFamily).load();
     }
 
-    constructor(canvasElem, width, height) {
+    constructor(canvasElem, nodeMenuEl, width, height) {
+        this.nodeMenuEl = nodeMenuEl;
+        this.eventStore = new EventStore(nodeMenuEl);
+
         this.settings = new GESettings(width, height);
         this.loadFont(this.settings.ICON_FONT_FAMILY);
 
@@ -56,6 +60,11 @@ export default class GraphCanvas {
             worldHeight: this.settings.WORLD_HEIGHT,
             interaction: this.pixiApp.renderer.plugins.interaction
         });
+        this.viewport.clampZoom({
+            minScale: this.settings.ZOOM_CLAMP_MIN_SCALE,
+            maxScale: this.settings.ZOOM_CLAMP_MAX_SCALE
+        })
+
         this.viewport.on('frame-end', () => {
             if (this.viewport.dirty) {
                 this.requestRender();
@@ -80,6 +89,9 @@ export default class GraphCanvas {
 
 
         // adding layers for nodes and links
+        this.nodeMenuLayer = new PIXI.Container();
+        this.viewport.addChild(this.nodeMenuLayer);
+
         this.linksLayer = new PIXI.Container();
         this.viewport.addChild(this.linksLayer);
 
@@ -134,6 +146,11 @@ export default class GraphCanvas {
         graphCanvas.updatePositions();
         graphCanvas.isRendering = false;
 
+        if (this.isFirstLoaded === false) {
+            // center the view only for the first time.
+            graphCanvas.resetViewport();
+            this.isFirstLoaded = true;
+        }
 
         // graphCanvas.updatePositions();
         // graphCanvas.upd
@@ -204,7 +221,7 @@ export default class GraphCanvas {
         nodeContainer.buttonMode = true;
         nodeContainer.hitArea = new PIXI.Circle(0, 0, NODE_HIT_RADIUS);
 
-        nodeContainer.on('mousedown', event => _this.eventStore.onNodeClicked(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
+        nodeContainer.on('mousedown', (event) => _this.eventStore.onNodeClicked(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer, event));
         nodeContainer.on('mouseover', (event) => _this.eventStore.onNodeMouseOver(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
         nodeContainer.on('mouseout', (event) => _this.eventStore.onNodeMouseOut(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
         nodeContainer.on('mouseup', (event) => this.eventStore.onNodeUnClicked(_this, _this.graphStore.nodeGfxToNodeData.get(event.currentTarget), nodeContainer));
@@ -265,7 +282,7 @@ export default class GraphCanvas {
         nodes.forEach(nodeData => {
             const nodeGfx = _this.graphStore.nodeDataToNodeGfx.get(nodeData);
             if (!nodeGfx) {
-               newNodes.push(nodeData);
+                newNodes.push(nodeData);
             }
         })
         console.log("======newNodes", newNodes.length, newNodes);

@@ -6,6 +6,11 @@ export default class EventStore {
     clickedNodeData = undefined;
     hoveredNodeData = undefined;
 
+    nodeMenuEl = undefined;
+
+    constructor(nodeMenuEl) {
+        this.nodeMenuEl = nodeMenuEl;
+    }
 
     onLinkClicked(graphCanvas, linkData, linkGfx, event) {
         console.log(linkData.id, " clicked");
@@ -17,19 +22,80 @@ export default class EventStore {
 
     }
 
-
     onLinkMouseOut(graphCanvas, linkData, linkGfx, event) {
         console.log(linkData.id, "link MouseOut");
 
     }
 
+    createNodeMenu(graphCanvas, nodeData, event) {
+        console.log("createNode Menu", nodeData, event);
+        // https://www.programmersought.com/article/2722368758/
+        // while (graphCanvas.nodeMenuLayer.children[0]) {
+        //     graphCanvas.nodeMenuLayer.removeChild(graphCanvas.nodeMenuLayer.children[0]);
+        // }
+        //
+        // const menuList = ["item1", "item2", "item3",];
+        // // const scale = graphCanvas.nodeMenuLayer.state.scale;
+        // const scale = 1;
+        // menuList.forEach((menuItem, currentItemNo) => {
+        //
+        //     const menuItemContainer = new PIXI.Container();
+        //
+        //
+        //     const bg = new PIXI.Graphics();
+        //     bg.beginFill(0x131227, .8);
+        //     bg.drawRect(0, 0, 100 * scale, 25* scale);
+        //     bg.endFill();
+        //     bg.y = currentItemNo * 25 *  scale;
+        //     menuItemContainer.addChild(bg);
+        //     const stylecoin = {
+        //         fontSize: 12 * scale,
+        //         fill: "0xeade1a",
+        //         // fontFamily: ["Young Round", "Microsoft YaHei", "Black Body", "sans-serif",],
+        //         // fontWeight: 'bold',
+        //         letterSpacing: 2
+        //     };
+        //     const _txt = new PIXI.Text("Item " + currentItemNo, stylecoin);
+        //     _txt.x = (100** scale - _txt.width) / 2;
+        //     _txt.y = currentItemNo * 25 *  scale;
+        //     //return context;
+        //     menuItemContainer.addChild(_txt)
+        //     menuItemContainer.interactive = true;
+        //     menuItemContainer.buttonMode = true;
+        //     // graphCanvas.nodeMenuLayer.visible = that.curr==0?true:that.show;
+        //
+        //     menuItemContainer.on('mousedown', event => {
+        //         alert("Clicked " + currentItemNo)
+        //     });
+        //
+        //
+        //     graphCanvas.nodeMenuLayer.addChild(menuItemContainer);
+        // })
+        //
+        // graphCanvas.nodeMenuLayer.x = nodeData.x;
+        // graphCanvas.nodeMenuLayer.y = nodeData.y;
+        this.nodeMenuEl.style.left =  event.data.global.x + "px";
+        this.nodeMenuEl.style.top =  event.data.global.y + "px";
+    }
 
-    moveNode = (nodeData, point, graphCanvas) => {
+    moveNodeMenu(graphCanvas, point, event) {
+        console.log("moveNodeMenu Menu", point, event);
+        console.log("move=====", event.data.global.x, event.data.global.y)
+        graphCanvas.nodeMenuLayer.x = point.x;
+        graphCanvas.nodeMenuLayer.y = point.y;
+        this.nodeMenuEl.style.left =  event.data.global.x + "px";
+        this.nodeMenuEl.style.top =  event.data.global.y + "px";
+    }
+
+    moveNode = (nodeData, point, graphCanvas, event) => {
 
         nodeData.x = point.x;
         nodeData.y = point.y;
 
+
+
         graphCanvas.updatePositions();
+        this.moveNodeMenu(graphCanvas, point, event);
     };
 
     appMouseMove(event, graphCanvas) {
@@ -37,9 +103,8 @@ export default class EventStore {
             return;
         }
 
-        this.moveNode(this.clickedNodeData, graphCanvas.viewport.toWorld(event.data.global), graphCanvas);
+        this.moveNode(this.clickedNodeData, graphCanvas.viewport.toWorld(event.data.global), graphCanvas, event);
     };
-
 
     onNodeClicked(graphCanvas, nodeData, nodeContainer, event) {
         this.clickedNodeData = nodeData;
@@ -49,19 +114,9 @@ export default class EventStore {
         graphCanvas.pixiApp.renderer.plugins.interaction.on('mousemove', (mouseEvent) => _this.appMouseMove(mouseEvent, graphCanvas));
         // disable viewport dragging
         graphCanvas.viewport.pause = true;
+        console.log("clicked", event);
+        this.createNodeMenu(graphCanvas, nodeData, event)
 
-
-        // const data2 = {
-        //        nodes: [
-        //         {"id": "Ravi", "group": 1},
-        //         // {"id": "Napoleon", "group": 1},
-        //
-        //     ],
-        //     links: [
-        //         {"id": "Ravi-Napoleon", "source": "Ravi", "target": "Napoleon", value: 1}
-        //     ]
-        // }
-        // graphCanvas.addData(data2.nodes, data2.links);
     }
 
     highlightNode(graphCanvas, nodeData, nodeContainer, nodeLabelContainer) {

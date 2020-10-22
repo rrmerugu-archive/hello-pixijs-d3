@@ -25,6 +25,10 @@ export default class GESettings {
     ICON_FONT_SIZE = this.NODE_RADIUS / Math.SQRT2 * 2;
     ICON_TEXT = 'person';
 
+    ZOOM_CLAMP_MIN_SCALE= .2;
+    ZOOM_CLAMP_MAX_SCALE= 3;
+
+
 
     constructor(screenWidth, screenHeight) {
         if (screenWidth) {

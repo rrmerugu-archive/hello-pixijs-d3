@@ -9,6 +9,7 @@ export default class GraphComponent extends React.Component {
 
     componentDidMount() {
         const canvasElem = document.querySelector(".graphContainer");
+        const nodeMenuEl = document.querySelector("#nodeMenu");
         const initData = {
             nodes: [
                 {"id": "Myriel", "group": 1},
@@ -19,9 +20,8 @@ export default class GraphComponent extends React.Component {
         };
 
 
-        this.graphCanvas = new GraphCanvas(canvasElem, 1200, 800)
+        this.graphCanvas = new GraphCanvas(canvasElem, nodeMenuEl, 900, 600)
         this.graphCanvas.addData(initData.nodes, initData.links)
-        this.graphCanvas.resetViewport();
 
         let _this = this;
 
@@ -44,28 +44,48 @@ export default class GraphComponent extends React.Component {
         _this.graphCanvas.addData(data2.nodes, data2.links);
 
         let i = 1;
-        setInterval(() => {
-            //
-            let nodeName = "data-" + i;
+        // setInterval(() => {
+        //     //
+        //     let nodeName = "data-" + i;
+        //
+        //     let data3 = {
+        //         nodes: [
+        //             {"id": nodeName, "group": 1},
+        //         ],
+        //         links: [
+        //             {"id": nodeName + "-Ravi", "source": nodeName, "target": "Ravi", value: 1}
+        //         ]
+        //     }
+        //     _this.graphCanvas.addData(data3.nodes, data3.links);
+        //     i += 1;
+        // }, 5000)
+    }
 
-            let data3 = {
-                nodes: [
-                    {"id": nodeName, "group": 1},
-                ],
-                links: [
-                    {"id": nodeName + "-Ravi", "source": nodeName, "target": "Ravi", value: 1}
-                ]
-            }
-            _this.graphCanvas.addData(data3.nodes, data3.links);
-            i += 1;
-        }, 5000)
+
+    onClickItem1() {
+        alert("item1 clicked");
+
+    }
+
+    onClickItem2() {
+        alert("item2 clicked");
+
+    }
+
+    onClickItem3() {
+        alert("item3 clicked");
     }
 
     render() {
         return (
-            <div className={"graphContainer"}
-                // style={{"height":500}}
-            />
+            <div className={"graphContainer"}>
+                <ul id={"nodeMenu"}>
+                    <li onClick={() => this.onClickItem1()}>item 1</li>
+                    <li onClick={() => this.onClickItem2()}>item 2</li>
+                    <li onClick={() => this.onClickItem3()}>item 3</li>
+                </ul>
+            </div>
+
         )
     }
 

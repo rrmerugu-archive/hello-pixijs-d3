@@ -21,3 +21,19 @@ body, html {
     width: calc(100% - 200px);
     float: left;
 }
+
+#nodeMenu {
+    margin-left: 0;
+    padding-left: 0;
+    width: 170px;
+    border: 1px solid #efefef;
+    position: fixed;
+
+}
+
+#nodeMenu li {
+    display: block;
+    border-bottom: 1px solid #efefef;
+    color: #efefef;
+    cursor: pointer;
+}
