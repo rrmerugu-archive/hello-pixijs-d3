@@ -70,6 +70,9 @@ export default class GraphComponent extends React.Component {
         this.graphCanvas.dataStore.addNode2Focus(nodeData);
         this.graphCanvas.eventStore.highlightNode(this.graphCanvas, nodeData);
         this.graphCanvas.zoom2Point(nodeData.x, nodeData.y);
+        document.querySelector(".focused-nodes").append(
+            "<li>"+ nodeData.id+"</li>"
+        )
     }
 
     onClickShowInV() {
@@ -86,9 +89,19 @@ export default class GraphComponent extends React.Component {
         this.graphCanvas.nodeMenuEl.style.display = "none";
     }
 
+    getFocusData(){
+
+    }
+
     render() {
         return (
             <div className={"graphContainer"}>
+                <h3>Focused Nodes</h3>
+                <ul className={"focused-nodes"}>
+
+
+                </ul>
+
                 <ul id={"nodeMenu"} style={{"display": "none"}}>
                 {/*<ul id={"nodeMenu"}>*/}
                     <li onClick={() => this.onClickFocus()}>Focus</li>

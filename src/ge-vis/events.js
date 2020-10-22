@@ -118,10 +118,12 @@ export default class EventStore {
         this.lastSelectedNodeData = nodeData;
         console.log(this.clickedNodeData.id, " clicked");
         let _this = this;
+
+        // TODO -  this will make the node drag functionality
         // enable node dragging
-        graphCanvas.pixiApp.renderer.plugins.interaction.on('mousemove', (mouseEvent) => _this.appMouseMove(mouseEvent, graphCanvas));
+        // graphCanvas.pixiApp.renderer.plugins.interaction.on('mousemove', (mouseEvent) => _this.appMouseMove(mouseEvent, graphCanvas));
         // disable viewport dragging
-        graphCanvas.viewport.pause = true;
+        // graphCanvas.viewport.pause = true;
         console.log("clicked", event);
         this.createNodeMenu(graphCanvas, nodeData, event)
 

@@ -227,7 +227,7 @@ export default class GraphCanvas {
         const circleBorder = new PIXI.Graphics();
         circle.x = 0;
         circle.y = 0;
-        circleBorder.lineStyle(1.5, 0xff00ff);
+        circleBorder.lineStyle(1.5, this.settings.NODE_DEFAULT_BORDER_COLOR);
         circleBorder.drawCircle(0, 0, NODE_RADIUS);
         nodeContainer.addChild(circleBorder);
 

@@ -12,8 +12,19 @@ export class DataStore {
         this.focusedNodes = [];
     }
 
+    checkIfNodeExistInFocused(nodeData) {
+        this.focusedNodes.forEach((node) => {
+            if (nodeData.id === node.id) {
+                return true;
+            }
+        })
+        return false;
+    }
+
     addNode2Focus(nodeData) {
-        this.focusedNodes.push(nodeData);
+        if (!this.checkIfNodeExistInFocused(nodeData)) {
+            this.focusedNodes.push(nodeData);
+        }
     }
 
 
