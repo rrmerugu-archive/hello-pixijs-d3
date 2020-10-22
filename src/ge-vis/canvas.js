@@ -23,10 +23,11 @@ export default class GraphCanvas {
         new FontFaceObserver(fontFamily).load();
     }
 
-    constructor(canvasElem, nodeMenuEl, width, height) {
+    constructor(canvasElem, nodeMenuEl, width, height, onNodeSelected) {
         // let _this = this;
         this.nodeMenuEl = nodeMenuEl;
         this.eventStore = new EventStore(nodeMenuEl);
+        this.onNodeSelected = onNodeSelected; // used to send back any message to react component.
 
         this.settings = new GESettings(width, height);
         this.loadFont(this.settings.ICON_FONT_FAMILY);

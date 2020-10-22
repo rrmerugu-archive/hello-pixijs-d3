@@ -2,6 +2,7 @@ import React from "react";
 import GraphCanvas from "./canvas";
 import Connector from "../connector";
 import "./style.css";
+import UpdaterCls from "./updates";
 
 const connector = new Connector();
 
@@ -11,6 +12,7 @@ export default class GraphComponent extends React.Component {
     componentDidMount() {
         const canvasElem = document.querySelector(".graphContainer");
         const nodeMenuEl = document.querySelector(".nodeMenuContainer");
+
         const initData = {
             nodes: [
                 {"id": "Myriel", "group": 1},
@@ -22,7 +24,8 @@ export default class GraphComponent extends React.Component {
 
 
         this.graphCanvas = new GraphCanvas(canvasElem, nodeMenuEl,
-            900, 600
+            900, 600,
+            this.onNodeSelected.bind(this)
         )
         // this.graphCanvas.addData(initData.nodes, initData.links)
 
@@ -65,6 +68,12 @@ export default class GraphComponent extends React.Component {
     }
 
 
+    onNodeSelected(nodeData){
+
+        document.querySelector("#elementId").innerHTML =  nodeData.id;
+    }
+
+
     onClickFocus() {
         const nodeData = this.graphCanvas.eventStore.lastSelectedNodeData;
         this.graphCanvas.dataStore.addNode2Focus(nodeData);
@@ -73,6 +82,7 @@ export default class GraphComponent extends React.Component {
         document.querySelector(".focused-nodes").append(
             "<li>" + nodeData.id + "</li>"
         )
+        this.graphCanvas.eventStore.hideMenu();
     }
 
     onClickShowInV() {
@@ -102,10 +112,10 @@ export default class GraphComponent extends React.Component {
 
                 </ul>
 
-                {/*<ul id={"nodeMenu"} style={{"display": "none"}}>*/}
-                <div className="nodeMenuContainer">
+
+                <div className="nodeMenuContainer" style={{"display": "none"}}>
                     <h5>Vertex Label</h5>
-                    <p>Id: 1928264529</p>
+                    <p>Id: <span id={"elementId"}>1928264529</span></p>
                     <ul id={"nodeMenu"}>
                         <li onClick={() => this.onClickFocus()}>Focus</li>
                         <li onClick={() => this.onClickShowInV()}>Show InV</li>
