@@ -127,7 +127,7 @@ export default class GraphCanvas {
 
     onForceSimulationEnd(graphCanvas) {
         console.log("onForceSimulationEnd")
-            graphCanvas.render();
+        graphCanvas.render();
 
         graphCanvas.updatePositions();
 
@@ -264,7 +264,7 @@ export default class GraphCanvas {
 
 
     clearLinkCanvas() {
-        console.log("this.dataStore.linkGraphicsArray.", this.dataStore.linkGraphicsArray.length, this.dataStore.linkGraphicsArray)
+        // console.log("this.dataStore.linkGraphicsArray.", this.dataStore.linkGraphicsArray.length)
         while (this.dataStore.linkGraphicsArray.length > 0) {
             let linkGraphics = this.dataStore.linkGraphicsArray.pop();
             try {
@@ -374,8 +374,12 @@ export default class GraphCanvas {
         let _this = this;
         const {nodes} = this.dataStore;
         for (const node of nodes) {
-            _this.graphStore.nodeDataToNodeGfx.get(node).position = new PIXI.Point(node.x, node.y)
-            _this.graphStore.nodeDataToLabelGfx.get(node).position = new PIXI.Point(node.x, node.y)
+            if (!!_this.graphStore.nodeDataToNodeGfx.get(node)) {
+                _this.graphStore.nodeDataToNodeGfx.get(node).position = new PIXI.Point(node.x, node.y)
+            }
+            if (!!_this.graphStore.nodeDataToLabelGfx.get(node)) {
+                _this.graphStore.nodeDataToLabelGfx.get(node).position = new PIXI.Point(node.x, node.y)
+            }
         }
     }
 

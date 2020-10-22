@@ -39,7 +39,7 @@ export class DataStore {
             }
         });
 
-        console.log("after addition", _this.nodes, _this.links)
+        console.log("after addition", _this.nodes.length, _this.links.length)
     }
 
 }

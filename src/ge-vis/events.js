@@ -49,6 +49,21 @@ export default class EventStore {
         graphCanvas.pixiApp.renderer.plugins.interaction.on('mousemove', (mouseEvent) => _this.appMouseMove(mouseEvent, graphCanvas));
         // disable viewport dragging
         graphCanvas.viewport.pause = true;
+
+
+
+
+        // const data2 = {
+        //        nodes: [
+        //         {"id": "Ravi", "group": 1},
+        //         // {"id": "Napoleon", "group": 1},
+        //
+        //     ],
+        //     links: [
+        //         {"id": "Ravi-Napoleon", "source": "Ravi", "target": "Napoleon", value: 1}
+        //     ]
+        // }
+        // graphCanvas.addData(data2.nodes, data2.links);
     }
 
     highlightNode(graphCanvas, nodeData, nodeContainer, nodeLabelContainer) {
