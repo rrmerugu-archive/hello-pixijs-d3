@@ -32,12 +32,15 @@ export default class GraphComponent extends React.Component {
         this.graphCanvas.addData(initData.nodes, initData.links)
         let _this = this;
         // setTimeout(() => {
-        // document.querySelector('.graphContainer').innerHTML = "";
-        // this.graphCanvas = new GraphCanvas(canvasElem, 800, 500)
-        _this.graphCanvas.addData(data2.nodes, data2.links);
-        _this.graphCanvas.addData(connector.getData().nodes, connector.getData().links);
+        //
+        //     _this.graphCanvas.addData(data2.nodes, data2.links);
+        //
+        // }, 3000)
+        // setTimeout(() => {
 
-        // }, 1000)
+            _this.graphCanvas.addData(connector.getData().nodes, connector.getData().links);
+
+        // }, 3000)
     }
 
     render() {

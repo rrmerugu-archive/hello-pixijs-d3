@@ -62,6 +62,7 @@ export default class GraphCanvas {
         });
 
         this.setupCanvas();
+        this.preventWheelScrolling();
 
     }
 
@@ -96,7 +97,7 @@ export default class GraphCanvas {
     }
 
     generateForceSimulation() {
-        // const defaultLinkLength = this.settings.DEFAULT_LINK_LENGTH;
+        const defaultLinkLength = this.settings.DEFAULT_LINK_LENGTH;
         // return d3.forceSimulation()
         //     .force("link", d3.forceLink()
         //         .id(linkData => linkData.id)
@@ -108,14 +109,31 @@ export default class GraphCanvas {
         //     // .force("center", d3.forceCenter())
         //     .force("x", d3.forceX())
         //     .force("y", d3.forceY())
-        //     .stop()
-        //     .tick(this.settings.FORCE_LAYOUT_ITERATIONS);
+        //
+        //     .tick(this.settings.FORCE_LAYOUT_ITERATIONS)
+        //     // .on("tick", () => this.onForceSimulationEnd(this))
+        //     .on("end", () => this.onForceSimulationEnd(this))
+        //     // .stop();
+
         return d3.forceSimulation()
             .force("charge", d3.forceManyBody().strength(-1000))
             .force("link", d3.forceLink().id(d => d.id).distance(200))
             .force("x", d3.forceX())
             .force("y", d3.forceY())
-        // .on("tick", ticked);
+            // .on("tick", () => this.onForceSimulationEnd(this))
+            .on("end", () => this.onForceSimulationEnd(this));
+
+    }
+
+    onForceSimulationEnd(graphCanvas) {
+        console.log("onForceSimulationEnd")
+            graphCanvas.render();
+
+        graphCanvas.updatePositions();
+
+
+        // graphCanvas.updatePositions();
+        // graphCanvas.upd
 
     }
 
@@ -146,7 +164,7 @@ export default class GraphCanvas {
         this.linksLabelsLayer.destroy(true, true, true);
         this.nodeLabelsLayer.destroy(true, true, true);
         this.frontLayer.destroy(true, true, true);
-        this.graphStore.clear();
+        // this.graphStore.clear();
         // this.dataStore.clear();
 
         let _this = this;
@@ -361,41 +379,45 @@ export default class GraphCanvas {
         }
     }
 
+    updateSimulationData(nodes, links) {
+        this.forceSimulation.nodes(nodes);
+        this.forceSimulation.force("link").links(links)
+        // this.forceSimulation.restart();
 
-    render(nodes, links) {
-        // this.clearLinkCanvas();
+    }
 
-        // update store
+    render() {
 
+        const {nodes, links} = this.dataStore;
         console.log("rendering with data:: links ======== ", links);
         console.log("rendering with data:: nodes ======== ", nodes);
 
-        this.forceSimulation.nodes(nodes);
-        this.forceSimulation.force("link").links(links)
-            // .id(linkData => linkData.id)
-            // .distance(function (d) {
-            //     return 100
-            // });
-        const nodeDataGfxPairs = this.createNodes(nodes);
-        this.forceSimulation.restart();
 
+        // .id(linkData => linkData.id)
+        // .distance(function (d) {
+        //     return 100
+        // });
+        const nodeDataGfxPairs = this.createNodes(nodes);
         this.graphStore.update(nodeDataGfxPairs);
 
         // initial draw
         this.resetViewport();
         this.requestRender();
-
-        this.updatePositions();
-
-        this.preventWheelScrolling();
+        // this.updatePositions();
     }
 
     addData(newNodes, newLinks) {
+        let _this = this;
         this.dataStore.addData(newNodes, newLinks);
         const {nodes, links} = this.dataStore;
         console.log("=======", nodes.length, links.length);
         this.destroyEverything(() => {
-            this.render(nodes, links);
+
+            _this.updateSimulationData(nodes, links);
+
+            // _this.render(nodes, links);
+            // _this.updateNodePositions()
+
         });
 
     }
