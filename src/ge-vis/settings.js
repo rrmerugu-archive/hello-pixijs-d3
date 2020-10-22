@@ -7,8 +7,8 @@
 
 export default class GESettings {
 
-    RESOLUTION = window.devicePixelRatio * 2;
-    FORCE_LAYOUT_NODE_REPULSION_STRENGTH = -1000;
+    RESOLUTION = window.devicePixelRatio ;
+    FORCE_LAYOUT_NODE_REPULSION_STRENGTH = -2000;
     FORCE_LAYOUT_ITERATIONS = 150;
     DEFAULT_LINK_LENGTH = 220;
     NODE_RADIUS = 10;

@@ -27,7 +27,7 @@ export class DataStore {
         let _this = this;
         links.forEach((link) => {
             const isElemExist = _this.checkIfElementExist(link.id, _this.links);
-            console.log("isElemExist", isElemExist, link.id);
+            // console.log("isElemExist", isElemExist, link.id);
             if (!isElemExist) {
                 _this.links.push(link);
             }
@@ -39,7 +39,7 @@ export class DataStore {
             }
         });
 
-        console.log("after addition", _this.nodes.length, _this.links.length)
+        // console.log("after addition", _this.nodes.length, _this.links.length)
     }
 
 }
@@ -70,16 +70,19 @@ export default class GraphStore {
     }
 
 
-    update(nodeDataGfxPairs) {
-        this.nodeDataGfxPairs = nodeDataGfxPairs
+    update(newNodeDataGfxPairs) {
+
+        newNodeDataGfxPairs.forEach((nodeDataPair)=>{
+            this.nodeDataGfxPairs.push(nodeDataPair)
+        })
+
+
 
         // create lookup tables
-        this.nodeDataToNodeGfx = new WeakMap(nodeDataGfxPairs.map(([nodeData, nodeGfx, labelGfx]) => [nodeData, nodeGfx]));
-        this.nodeGfxToNodeData = new WeakMap(nodeDataGfxPairs.map(([nodeData, nodeGfx, labelGfx]) => [nodeGfx, nodeData]));
-        this.nodeDataToLabelGfx = new WeakMap(nodeDataGfxPairs.map(([nodeData, nodeGfx, labelGfx]) => [nodeData, labelGfx]));
-        this.labelGfxToNodeData = new WeakMap(nodeDataGfxPairs.map(([nodeData, nodeGfx, labelGfx]) => [labelGfx, nodeData]));
-
-
+        this.nodeDataToNodeGfx = new WeakMap(this.nodeDataGfxPairs.map(([nodeData, nodeGfx, labelGfx]) => [nodeData, nodeGfx]));
+        this.nodeGfxToNodeData = new WeakMap(this.nodeDataGfxPairs.map(([nodeData, nodeGfx, labelGfx]) => [nodeGfx, nodeData]));
+        this.nodeDataToLabelGfx = new WeakMap(this.nodeDataGfxPairs.map(([nodeData, nodeGfx, labelGfx]) => [nodeData, labelGfx]));
+        this.labelGfxToNodeData = new WeakMap(this.nodeDataGfxPairs.map(([nodeData, nodeGfx, labelGfx]) => [labelGfx, nodeData]));
         // add Neighbours map also.
     }
 

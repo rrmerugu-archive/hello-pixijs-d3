@@ -15,6 +15,8 @@ export default class GraphCanvas {
     eventStore = new EventStore();
     renderRequestId = undefined;
     clickedNodeData = undefined;
+    isRendering = undefined;
+
 
     loadFont(fontFamily) {
         new FontFaceObserver(fontFamily).load();
@@ -116,7 +118,7 @@ export default class GraphCanvas {
         //     // .stop();
 
         return d3.forceSimulation()
-            .force("charge", d3.forceManyBody().strength(-1000))
+            .force("charge", d3.forceManyBody().strength(this.settings.FORCE_LAYOUT_NODE_REPULSION_STRENGTH))
             .force("link", d3.forceLink().id(d => d.id).distance(200))
             .force("x", d3.forceX())
             .force("y", d3.forceY())
@@ -130,6 +132,7 @@ export default class GraphCanvas {
         graphCanvas.render();
 
         graphCanvas.updatePositions();
+        graphCanvas.isRendering = false;
 
 
         // graphCanvas.updatePositions();
@@ -157,24 +160,26 @@ export default class GraphCanvas {
 
 
     destroyEverything(func) {
-        while (this.nodesLayer.children[0]) {
-            this.nodesLayer.removeChild(this.nodesLayer.children[0]);
-        }
-        this.nodesLayer.destroy(true, true, true);
-        this.linksLabelsLayer.destroy(true, true, true);
-        this.nodeLabelsLayer.destroy(true, true, true);
-        this.frontLayer.destroy(true, true, true);
+        // while (this.nodesLayer.children[0]) {
+        //     this.nodesLayer.removeChild(this.nodesLayer.children[0]);
+        // }
+        // this.nodesLayer.destroy(true, true, true);
+        // this.nodeLabelsLayer.destroy(true, true, true);
+        // this.linksLayer.destroy(true, true, true);
+        // this.linksLabelsLayer.destroy(true, true, true);
+        // this.frontLayer.destroy(true, true, true);
         // this.graphStore.clear();
         // this.dataStore.clear();
 
         let _this = this;
-        while (this.pixiApp.stage.children[0]) {
-            console.log("removing t", this.pixiApp.stage.children[0]);
-            _this.pixiApp.stage.removeChild(_this.pixiApp.stage.children[0])
-        }
-        this.setupCanvas();
+        // while (this.pixiApp.stage.children[0]) {
+        //     console.log("removing t", this.pixiApp.stage.children[0]);
+        //     _this.pixiApp.stage.removeChild(_this.pixiApp.stage.children[0])
+        // }
+        // this.setupCanvas();
         // return
         // setTimeout(() => func(), 500);
+
         func()
 
     }
@@ -252,12 +257,31 @@ export default class GraphCanvas {
 
     createNodes(nodes) {
         // create node graphics
-        return nodes.map(nodeData => {
-            const {nodeContainer, nodeLabelContainer} = this.createNode(nodeData);
+        let _this = this;
 
-            this.nodesLayer.addChild(nodeContainer);
-            this.nodeLabelsLayer.addChild(nodeLabelContainer);
-            return [nodeData, nodeContainer, nodeLabelContainer];
+
+        let newNodes = [];
+
+        nodes.forEach(nodeData => {
+            const nodeGfx = _this.graphStore.nodeDataToNodeGfx.get(nodeData);
+            if (!nodeGfx) {
+               newNodes.push(nodeData);
+            }
+        })
+        console.log("======newNodes", newNodes.length, newNodes);
+
+        return newNodes.map(nodeData => {
+
+            const nodeGfx = _this.graphStore.nodeDataToNodeGfx.get(nodeData);
+            if (!nodeGfx) {
+                const {nodeContainer, nodeLabelContainer} = this.createNode(nodeData);
+
+                this.nodesLayer.addChild(nodeContainer);
+                this.nodeLabelsLayer.addChild(nodeLabelContainer);
+                return [nodeData, nodeContainer, nodeLabelContainer];
+            }
+
+
         });
 
     }
@@ -386,15 +410,16 @@ export default class GraphCanvas {
     updateSimulationData(nodes, links) {
         this.forceSimulation.nodes(nodes);
         this.forceSimulation.force("link").links(links)
-        // this.forceSimulation.restart();
+        this.forceSimulation.restart();
 
     }
 
     render() {
 
+        this.isRendering = true
         const {nodes, links} = this.dataStore;
-        console.log("rendering with data:: links ======== ", links);
-        console.log("rendering with data:: nodes ======== ", nodes);
+        console.log("rendering with data:: links ======== ", links.length);
+        console.log("rendering with data:: nodes ======== ", nodes.length);
 
 
         // .id(linkData => linkData.id)
@@ -416,6 +441,7 @@ export default class GraphCanvas {
         const {nodes, links} = this.dataStore;
         console.log("=======", nodes.length, links.length);
         this.destroyEverything(() => {
+
 
             _this.updateSimulationData(nodes, links);
 

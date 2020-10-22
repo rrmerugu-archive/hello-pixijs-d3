@@ -51,8 +51,6 @@ export default class EventStore {
         graphCanvas.viewport.pause = true;
 
 
-
-
         // const data2 = {
         //        nodes: [
         //         {"id": "Ravi", "group": 1},
@@ -131,27 +129,30 @@ export default class EventStore {
 
     onNodeMouseOver(graphCanvas, nodeData, nodeContainer, event) {
         console.log(nodeData.id, " mouseover");
-        const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(nodeData);
+        if (nodeData) {
+            const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(nodeData);
 
-        this.highlightNode(graphCanvas, nodeData, nodeContainer, labelGfx)
+            this.highlightNode(graphCanvas, nodeData, nodeContainer, labelGfx)
 
-        // for drag feature
-        if (this.clickedNodeData) {
-            return;
+            // for drag feature
+            if (this.clickedNodeData) {
+                return;
+            }
+            // if (this.hoveredNodeData === nodeData) {
+            //     return;
+            // }
+            this.hoveredNodeData = nodeData;
+
+
+            // move to front layer
+            graphCanvas.nodesLayer.removeChild(nodeContainer);
+            graphCanvas.frontLayer.addChild(nodeContainer);
+            graphCanvas.nodeLabelsLayer.removeChild(labelGfx);
+            graphCanvas.frontLayer.addChild(labelGfx);
+
+            graphCanvas.requestRender();
+
         }
-        // if (this.hoveredNodeData === nodeData) {
-        //     return;
-        // }
-        this.hoveredNodeData = nodeData;
-
-
-        // move to front layer
-        graphCanvas.nodesLayer.removeChild(nodeContainer);
-        graphCanvas.frontLayer.addChild(nodeContainer);
-        graphCanvas.nodeLabelsLayer.removeChild(labelGfx);
-        graphCanvas.frontLayer.addChild(labelGfx);
-
-        graphCanvas.requestRender();
 
     }
 

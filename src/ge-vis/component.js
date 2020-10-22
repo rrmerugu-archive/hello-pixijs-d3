@@ -19,43 +19,44 @@ export default class GraphComponent extends React.Component {
         };
 
 
-        this.graphCanvas = new GraphCanvas(canvasElem, 800, 500)
-        // this.graphCanvas.addData(initData.nodes, initData.links)
+        this.graphCanvas = new GraphCanvas(canvasElem, 1200, 800)
+        this.graphCanvas.addData(initData.nodes, initData.links)
         let _this = this;
 
         // setTimeout(() => {
 
-        _this.graphCanvas.addData(connector.getData().nodes, connector.getData().links);
+        // _this.graphCanvas.addData(connector.getData().nodes, connector.getData().links);
 
         // }, 3000)
 
+        const data2 = {
+            nodes: [
+                {"id": "Ravi", "group": 1},
+                // {"id": "Napoleon", "group": 1},
 
-        // setTimeout(() => {
-        //
-            const data2 = {
+            ],
+            links: [
+                {"id": "Ravi-Napoleon", "source": "Ravi", "target": "Napoleon", value: 1}
+            ]
+        }
+        _this.graphCanvas.addData(data2.nodes, data2.links);
+
+        let i = 1;
+        setInterval(() => {
+            //
+            let nodeName = "data-" + i;
+
+            let data3 = {
                 nodes: [
-                    {"id": "Ravi", "group": 1},
-                    // {"id": "Napoleon", "group": 1},
-
+                    {"id": nodeName, "group": 1},
                 ],
                 links: [
-                    {"id": "Ravi-Napoleon", "source": "Ravi", "target": "Napoleon", value: 1}
-                ]
-            }
-            _this.graphCanvas.addData(data2.nodes, data2.links);
-            const data3 = {
-                nodes: [
-                    {"id": "Roja", "group": 1},
-                    // {"id": "Napoleon", "group": 1},
-
-                ],
-                links: [
-                    {"id": "Ravi-Roja", "source": "Ravi", "target": "Roja", value: 1}
+                    {"id": nodeName+ "-Ravi", "source": nodeName, "target": "Ravi", value: 1}
                 ]
             }
             _this.graphCanvas.addData(data3.nodes, data3.links);
-
-        // }, 10000)
+            i += 1;
+        }, 5000)
     }
 
     render() {
