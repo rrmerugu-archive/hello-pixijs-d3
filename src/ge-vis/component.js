@@ -10,7 +10,7 @@ export default class GraphComponent extends React.Component {
 
     componentDidMount() {
         const canvasElem = document.querySelector(".graphContainer");
-        const nodeMenuEl = document.querySelector("#nodeMenu");
+        const nodeMenuEl = document.querySelector(".nodeMenuContainer");
         const initData = {
             nodes: [
                 {"id": "Myriel", "group": 1},
@@ -71,7 +71,7 @@ export default class GraphComponent extends React.Component {
         this.graphCanvas.eventStore.highlightNode(this.graphCanvas, nodeData);
         this.graphCanvas.zoom2Point(nodeData.x, nodeData.y);
         document.querySelector(".focused-nodes").append(
-            "<li>"+ nodeData.id+"</li>"
+            "<li>" + nodeData.id + "</li>"
         )
     }
 
@@ -89,7 +89,7 @@ export default class GraphComponent extends React.Component {
         this.graphCanvas.nodeMenuEl.style.display = "none";
     }
 
-    getFocusData(){
+    getFocusData() {
 
     }
 
@@ -102,13 +102,18 @@ export default class GraphComponent extends React.Component {
 
                 </ul>
 
-                <ul id={"nodeMenu"} style={{"display": "none"}}>
-                {/*<ul id={"nodeMenu"}>*/}
-                    <li onClick={() => this.onClickFocus()}>Focus</li>
-                    <li onClick={() => this.onClickShowInV()}>Show InV</li>
-                    <li onClick={() => this.onClickShowOutV()}>Show OutV</li>
-                    <li onClick={() => this.hideMenu()}>hide menu</li>
-                </ul>
+                {/*<ul id={"nodeMenu"} style={{"display": "none"}}>*/}
+                <div className="nodeMenuContainer">
+                    <h5>Vertex Label</h5>
+                    <p>Id: 1928264529</p>
+                    <ul id={"nodeMenu"}>
+                        <li onClick={() => this.onClickFocus()}>Focus</li>
+                        <li onClick={() => this.onClickShowInV()}>Show InV</li>
+                        <li onClick={() => this.onClickShowOutV()}>Show OutV</li>
+                        <li onClick={() => this.hideMenu()}>hide menu</li>
+                    </ul>
+                </div>
+
             </div>
 
         )

@@ -178,7 +178,7 @@ export default class GraphCanvas {
         this.viewport.center = new PIXI.Point(x, y);
         this.viewport.fit(true, this.settings.WORLD_WIDTH / 4, this.settings.WORLD_HEIGHT / 4)
         this.viewport.setZoom(1, true);
-        this.nodeMenuEl.style.display = "none";
+        // this.eventStore.hideMenu();
     }
 
     resetViewport() {
