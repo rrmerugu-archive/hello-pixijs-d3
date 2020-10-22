@@ -145,8 +145,8 @@ export default class EventStore {
             console.log("==nodeContainer", node2Highlight, nodeContainer);
             const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(node2Highlight);
 
-            graphCanvas.graphStore.hoveredNodeGfxOriginalChildren.push(...nodeContainer.children);
-            graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren.push(...labelGfx.children);
+            graphCanvas.graphStore.hoveredNodeGfxOriginalChildren.push([...nodeContainer.children]);
+            graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren.push([...labelGfx.children]);
 
             // circle border
             const circleBorder = new PIXI.Graphics();
@@ -191,7 +191,7 @@ export default class EventStore {
         nodes2Highlight.push(nodeData);
         // const links2Highlight = neighborsData.links;
 
-        nodes2Highlight.forEach((node2Highlight) => {
+        nodes2Highlight.forEach((node2Highlight, i) => {
             const nodeGfx = graphCanvas.graphStore.nodeDataToNodeGfx.get(node2Highlight);
             const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(node2Highlight);
 
@@ -204,19 +204,19 @@ export default class EventStore {
             // clear hover effect
             const nodeGfxChildren = [...nodeGfx.children];
             for (let child of nodeGfxChildren) {
-                if (graphCanvas.graphStore.hoveredNodeGfxOriginalChildren && !graphCanvas.graphStore.hoveredNodeGfxOriginalChildren.includes(child)) {
+                if (graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i] && !graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i].includes(child)) {
                     nodeGfx.removeChild(child);
                 }
             }
-            graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = undefined;
             const labelGfxChildren = [...labelGfx.children];
             for (let child of labelGfxChildren) {
-                if (graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren && !graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren.includes(child)) {
+                if (graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren[i] && !graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren[i].includes(child)) {
                     labelGfx.removeChild(child);
                 }
             }
         })
 
+        graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = undefined;
 
         graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren = undefined;
 
