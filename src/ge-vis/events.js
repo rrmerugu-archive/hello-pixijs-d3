@@ -147,26 +147,27 @@ export default class EventStore {
 
         const {LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH} = graphCanvas.settings;
 
-        links2Highlight.forEach((linkData) => {
+        const {notNeighborLinks, notNeighborNodes} = graphCanvas.dataStore.getNotNeighborLinks(nodeData);
 
-
+        notNeighborLinks.forEach((linkData) => {
             let linkGfx = graphCanvas.graphStore.linkDataToLinkGfx.get(linkData);
             let linkGfxLabel = graphCanvas.graphStore.linkDataToLabelGfx.get(linkData);
             console.log("==linkLayer", linkData, linkGfx);
             const linkLabelGfx = graphCanvas.graphStore.linkDataToLabelGfx.get(linkData);
 
-            linkGfx.alpha = 0.5;
-            linkGfxLabel.alpha = 0.5;
+            // delete linkGfx.children[0];
+            linkGfx.alpha = graphCanvas.settings.LINK_UN_HIGHLIGHT_ALPHA;
+            linkGfxLabel.alpha = graphCanvas.settings.LINK_UN_HIGHLIGHT_ALPHA;
             graphCanvas.graphStore.hoveredlinkGfxOriginalChildren.push([...linkGfx.children]);
             graphCanvas.graphStore.hoveredlinkLabelOriginalChildren.push([...linkLabelGfx.children]);
 
             // circle border
             let linkGfxHilight = new PIXI.Graphics();
-            linkGfx.id = "link-" + linkData.id;
+            // linkGfx.id = "link-" + linkData.id;
 
 
-            linkGfxHilight.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH* 5), 0xefefef);
-            linkGfxHilight.alpha = 0.5;
+            linkGfxHilight.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), 0xefefef);
+            linkGfxHilight.alpha = 0.1;
             linkGfxHilight.moveTo(linkData.source.x, linkData.source.y);
             linkGfxHilight.lineTo(linkData.target.x, linkData.target.y);
 
@@ -188,15 +189,15 @@ export default class EventStore {
             linkGfxLabel.addChild(linkGfxLabelHighlight)
 
             // move to front layer
-            graphCanvas.nodesLayer.removeChild(linkGfx);
+            graphCanvas.linksLayer.removeChild(linkGfx);
             graphCanvas.frontLayer.addChild(linkGfx);
-            graphCanvas.nodeLabelsLayer.removeChild(linkGfxLabel);
+            graphCanvas.linksLabelsLayer.removeChild(linkGfxLabel);
             graphCanvas.frontLayer.addChild(linkGfxLabel);
 
 
         })
 
-    nodes2Highlight.forEach((node2Highlight) => {
+        notNeighborNodes.forEach((node2Highlight) => {
             let nodeContainer = graphCanvas.graphStore.nodeDataToNodeGfx.get(node2Highlight);
             console.log("==nodeContainer", node2Highlight, nodeContainer);
             const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(node2Highlight);
@@ -204,14 +205,16 @@ export default class EventStore {
             graphCanvas.graphStore.hoveredNodeGfxOriginalChildren.push([...nodeContainer.children]);
             graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren.push([...labelGfx.children]);
 
-            // circle border
-            const circleBorder = new PIXI.Graphics();
-            circleBorder.x = 0;
-            circleBorder.y = 0;
-            circleBorder.lineStyle(1.5, 0x000000);
-            circleBorder.drawCircle(0, 0, graphCanvas.settings.NODE_RADIUS);
-            nodeContainer.addChild(circleBorder);
-
+            // // circle border
+            // const circleBorder = new PIXI.Graphics();
+            // circleBorder.x = 0;
+            // circleBorder.y = 0;
+            // circleBorder.lineStyle(1.5, 0x000000);
+            // circleBorder.drawCircle(0, 0, graphCanvas.settings.NODE_RADIUS);
+            // nodeContainer.addChild(circleBorder);
+            // nodeContainer.alpha = 0.1
+            nodeContainer.alpha = graphCanvas.settings.LINK_UN_HIGHLIGHT_ALPHA;
+            labelGfx.alpha = graphCanvas.settings.LINK_UN_HIGHLIGHT_ALPHA;
 
             // move to front layer
             graphCanvas.nodesLayer.removeChild(nodeContainer);
@@ -229,8 +232,41 @@ export default class EventStore {
         let nodes2Highlight = neighborsData.nodes;
         nodes2Highlight.push(nodeData);
         const links2Highlight = neighborsData.links;
+        const {notNeighborLinks, notNeighborNodes} = graphCanvas.dataStore.getNotNeighborLinks(nodeData);
+        console.log("notNeighborLinks", notNeighborLinks)
+        // reseting the rest of the links
+        notNeighborLinks.forEach((link2Highlight, i) => {
 
-        nodes2Highlight.forEach((node2Highlight, i) => {
+            const linkGfx = graphCanvas.graphStore.linkDataToLinkGfx.get(link2Highlight);
+            const linkLabelGfx = graphCanvas.graphStore.linkDataToLabelGfx.get(link2Highlight);
+            console.log("====unhighlight link", link2Highlight, linkGfx)
+
+            linkGfx.alpha = graphCanvas.settings.LINK_DEFAULT_ALPHA;
+            linkLabelGfx.alpha = graphCanvas.settings.LINK_DEFAULT_ALPHA;
+
+            // move back from front layer
+            graphCanvas.frontLayer.removeChild(linkGfx);
+            graphCanvas.linksLayer.addChild(linkGfx);
+            graphCanvas.frontLayer.removeChild(linkLabelGfx);
+            graphCanvas.linksLabelsLayer.addChild(linkLabelGfx);
+
+            // clear hover effect
+            const nodeGfxChildren = [...linkGfx.children];
+            for (let child of nodeGfxChildren) {
+                if (graphCanvas.graphStore.hoveredlinkGfxOriginalChildren[i]
+                    && !graphCanvas.graphStore.hoveredlinkGfxOriginalChildren[i].includes(child)) {
+                    linkGfx.removeChild(child);
+                }
+            }
+            const labelGfxChildren = [...linkLabelGfx.children];
+            for (let child of labelGfxChildren) {
+                if (graphCanvas.graphStore.hoveredlinkLabelOriginalChildren[i]
+                    && !graphCanvas.graphStore.hoveredlinkLabelOriginalChildren[i].includes(child)) {
+                    linkLabelGfx.removeChild(child);
+                }
+            }
+        })
+        notNeighborNodes.forEach((node2Highlight, i) => {
             const nodeGfx = graphCanvas.graphStore.nodeDataToNodeGfx.get(node2Highlight);
             const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(node2Highlight);
 
@@ -239,6 +275,9 @@ export default class EventStore {
             graphCanvas.nodesLayer.addChild(nodeGfx);
             graphCanvas.frontLayer.removeChild(labelGfx);
             graphCanvas.nodeLabelsLayer.addChild(labelGfx);
+
+            nodeGfx.alpha = 1;
+            labelGfx.alpha = 1;
 
             // clear hover effect
             const nodeGfxChildren = [...nodeGfx.children];
@@ -255,38 +294,12 @@ export default class EventStore {
             }
         })
 
-       links2Highlight.forEach((link2Highlight, i) => {
 
+        graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = [];
+        graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren = [];
 
-            const linkGfx = graphCanvas.graphStore.linkDataToLinkGfx.get(link2Highlight);
-            const linkLabelGfx = graphCanvas.graphStore.linkDataToLabelGfx.get(link2Highlight);
-
-            // move back from front layer
-            graphCanvas.frontLayer.removeChild(linkGfx);
-            graphCanvas.linksLayer.addChild(linkGfx);
-            graphCanvas.frontLayer.removeChild(linkLabelGfx);
-            graphCanvas.linksLabelsLayer.addChild(linkLabelGfx);
-
-            // clear hover effect
-            const nodeGfxChildren = [...linkGfx.children];
-            for (let child of nodeGfxChildren) {
-                if (graphCanvas.graphStore.hoveredlinkGfxOriginalChildren[i] && !graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i].includes(child)) {
-                    linkGfx.removeChild(child);
-                }
-            }
-            const labelGfxChildren = [...linkGfx.children];
-            for (let child of labelGfxChildren) {
-                if (graphCanvas.graphStore.hoveredlinkLabelOriginalChildren[i] && !graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren[i].includes(child)) {
-                    linkGfx.removeChild(child);
-                }
-            }
-        })
-
-        graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = undefined;
-        graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren = undefined;
-
-        graphCanvas.graphStore.hoveredlinkGfxOriginalChildren = undefined;
-        graphCanvas.graphStore.hoveredlinkLabelOriginalChildren = undefined;
+        graphCanvas.graphStore.hoveredlinkGfxOriginalChildren = [];
+        graphCanvas.graphStore.hoveredlinkLabelOriginalChildren = [];
 
         graphCanvas.requestRender();
     }

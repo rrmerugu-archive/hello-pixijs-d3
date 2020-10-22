@@ -12,10 +12,33 @@ export class DataStore {
     }
 
 
+    getNotNeighborLinks(nodeData) {
+        let notNeighborLinks = [];
+        let notNeighborNodes = [];
+        const {nodes, links } = this.getNeighborNodesAndLinks(nodeData);
+
+        nodes.push(nodeData);
+
+        this.nodes.forEach((node)=>{
+            if(!nodes.includes(node)){
+                notNeighborNodes.push(node);
+            }
+        })
+
+        this.links.forEach((link)=>{
+            if(!links.includes(link)){
+                notNeighborLinks.push(link);
+            }
+        })
+
+        console.log("=====notNeighborNodes", notNeighborNodes, notNeighborLinks)
+        return {notNeighborLinks, notNeighborNodes};
+    }
+
     getNeighborNodesAndLinks(nodeData) {
 
-        let neighborLinks = [];
         let neighborNodes = [];
+        let neighborLinks = [];
         // get the links attached to nodeId
         this.links.forEach((link) => {
             if (link.target.id === nodeData.id) {

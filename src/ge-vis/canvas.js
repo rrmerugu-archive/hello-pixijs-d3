@@ -259,6 +259,7 @@ export default class GraphCanvas {
         nodeLabelText.anchor.set(0.5, 0);
 
         nodeLabelContainer.addChild(nodeLabelText);
+        // nodeLabelContainer.alpha = 0.5;
         return {nodeContainer, nodeLabelContainer}
     }
 
@@ -266,18 +267,13 @@ export default class GraphCanvas {
     createNodes(nodes) {
         // create node graphics
         let _this = this;
-
-
         let newNodes = [];
-
         nodes.forEach(nodeData => {
             const nodeGfx = _this.graphStore.nodeDataToNodeGfx.get(nodeData);
             if (!nodeGfx) {
                 newNodes.push(nodeData);
             }
         })
-        console.log("======newNodes", newNodes.length, newNodes);
-
         return newNodes.map(nodeData => {
 
             const nodeGfx = _this.graphStore.nodeDataToNodeGfx.get(nodeData);
@@ -324,9 +320,9 @@ export default class GraphCanvas {
         const {LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH} = this.settings;
         let _this = this;
         let linkGfx = new PIXI.Graphics();
-        linkGfx.id = "link-" + linkData.id;
+        // linkGfx.id = "link-" + linkData.id;
         let linkGfxLabel = new PIXI.Graphics();
-        linkGfx.id = "link-" + linkData.id;
+        // linkGfx.id = "link-" + linkData.id;
 
 
         linkGfx.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), 0x999999);
@@ -382,6 +378,9 @@ export default class GraphCanvas {
                 }
             }
         }, 50);
+
+        linkGfx.alpha = this.settings.LINK_DEFAULT_ALPHA;
+        linkGfxLabel.alpha = this.settings.LINK_DEFAULT_ALPHA;
         return {linkGfx, linkGfxLabel};
 
     }
@@ -451,7 +450,7 @@ export default class GraphCanvas {
         this.dataStore.addData(newNodes, newLinks);
         const {nodes, links} = this.dataStore;
         console.log("=======", nodes.length, links.length);
-            _this.updateSimulationData(nodes, links);
+        _this.updateSimulationData(nodes, links);
 
 
     }

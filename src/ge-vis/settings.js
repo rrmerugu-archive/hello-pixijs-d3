@@ -20,6 +20,8 @@ export default class GESettings {
 
     LINK_DEFAULT_LABEL_FONT_SIZE = 10;
     LINK_DEFAULT_WIDTH= 5;
+    LINK_DEFAULT_ALPHA = 0.8;
+    LINK_UN_HIGHLIGHT_ALPHA = 0.1;
 
     ICON_FONT_FAMILY = 'Material Icons';
     ICON_FONT_SIZE = this.NODE_RADIUS / Math.SQRT2 * 2;
