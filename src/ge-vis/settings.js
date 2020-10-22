@@ -7,7 +7,7 @@
 
 export default class GESettings {
 
-    RESOLUTION = window.devicePixelRatio ;
+    RESOLUTION = window.devicePixelRatio * 2 ;
     FORCE_LAYOUT_NODE_REPULSION_STRENGTH = -2000;
     FORCE_LAYOUT_ITERATIONS = 150;
     DEFAULT_LINK_LENGTH = 220;
@@ -25,8 +25,12 @@ export default class GESettings {
     ICON_FONT_SIZE = this.NODE_RADIUS / Math.SQRT2 * 2;
     ICON_TEXT = 'person';
 
-    ZOOM_CLAMP_MIN_SCALE= .2;
+    ZOOM_CLAMP_MIN_SCALE= .4;
     ZOOM_CLAMP_MAX_SCALE= 3;
+
+    NODE_MENU_X_PADDING = 200 + this.NODE_RADIUS;
+
+    LABEL_RESOLUTION = 6;
 
 
 

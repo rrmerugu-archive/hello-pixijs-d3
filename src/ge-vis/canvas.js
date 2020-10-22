@@ -24,6 +24,7 @@ export default class GraphCanvas {
     }
 
     constructor(canvasElem, nodeMenuEl, width, height) {
+        // let _this = this;
         this.nodeMenuEl = nodeMenuEl;
         this.eventStore = new EventStore(nodeMenuEl);
 
@@ -34,8 +35,8 @@ export default class GraphCanvas {
 
         // create PIXI application
         this.pixiApp = new PIXI.Application({
-            width: this.settings.SCREEN_WIDTH,
-            height: this.settings.SCREEN_HEIGHT,
+            // width: this.settings.SCREEN_WIDTH,
+            // height: this.settings.SCREEN_HEIGHT,
             resolution: this.settings.RESOLUTION,
             transparent: true,
             // backgroundColor: 0xFFFFFF,
@@ -52,6 +53,11 @@ export default class GraphCanvas {
         this.pixiApp.renderer.on('postrender', () => {
             // console.log('render');
         });
+        // this.pixiApp.renderer.view.addEventListener('click', function (e) {
+        //     console.log(e);
+        //     _this.eventStore.hideMenu();
+        //
+        // });
         this.forceSimulation = this.generateForceSimulation();
         this.viewport = new Viewport({
             screenWidth: this.settings.SCREEN_WIDTH,
@@ -168,11 +174,21 @@ export default class GraphCanvas {
         });
     }
 
+    zoom2Point(x, y) {
+        this.viewport.center = new PIXI.Point(x, y);
+        this.viewport.fit(true, this.settings.WORLD_WIDTH / 4, this.settings.WORLD_HEIGHT / 4)
+        this.viewport.setZoom(1, true);
+        this.nodeMenuEl.style.display = "none";
+    }
 
     resetViewport() {
-        this.viewport.center = new PIXI.Point(this.settings.WORLD_WIDTH / 4, this.settings.WORLD_HEIGHT / 4);
-        this.viewport.fit(true, this.settings.WORLD_WIDTH / 4, this.settings.WORLD_HEIGHT / 4)
+        this.zoom2Point(this.settings.WORLD_WIDTH / 4, this.settings.WORLD_HEIGHT / 4)
         this.viewport.setZoom(0.5, true);
+        // this.viewport.center = new PIXI.Point(this.settings.WORLD_WIDTH / 4, this.settings.WORLD_HEIGHT / 4);
+        // this.viewport.fit(true, this.settings.WORLD_WIDTH / 4, this.settings.WORLD_HEIGHT / 4)
+        // this.viewport.setZoom(0.5, true);
+        // this.nodeMenuEl.style.display = "none";
+
     };
 
 
@@ -263,6 +279,8 @@ export default class GraphCanvas {
             fontSize: LABEL_FONT_SIZE,
             fill: 0xefefef
         });
+        nodeLabelText.resolution = this.settings.LABEL_RESOLUTION;
+
         nodeLabelText.x = LABEL_X_PADDING;
         nodeLabelText.y = NODE_HIT_RADIUS + LABEL_Y_PADDING;
         nodeLabelText.anchor.set(0.5, 0);
@@ -351,6 +369,7 @@ export default class GraphCanvas {
             fontSize: LINK_DEFAULT_LABEL_FONT_SIZE,
             fill: 0xd2d2d2
         });
+        linkLabelText.resolution = this.settings.LABEL_RESOLUTION;
         const sameIndex = 1;
         linkLabelText.x = (linkData.source.x + linkData.target.x) / 2 - 10 * sameIndex;
         linkLabelText.y = (linkData.source.y + linkData.target.y) / 2 - 10 * sameIndex;

@@ -1,6 +1,7 @@
 import React from "react";
 import GraphCanvas from "./canvas";
 import Connector from "../connector";
+import "./style.css";
 
 const connector = new Connector();
 
@@ -20,7 +21,9 @@ export default class GraphComponent extends React.Component {
         };
 
 
-        this.graphCanvas = new GraphCanvas(canvasElem, nodeMenuEl, 900, 600)
+        this.graphCanvas = new GraphCanvas(canvasElem, nodeMenuEl,
+            900, 600
+        )
         this.graphCanvas.addData(initData.nodes, initData.links)
 
         let _this = this;
@@ -31,17 +34,17 @@ export default class GraphComponent extends React.Component {
 
         // }, 3000)
 
-        const data2 = {
-            nodes: [
-                {"id": "Ravi", "group": 1},
-                // {"id": "Napoleon", "group": 1},
-
-            ],
-            links: [
-                {"id": "Ravi-Napoleon", "source": "Ravi", "target": "Napoleon", value: 1}
-            ]
-        }
-        _this.graphCanvas.addData(data2.nodes, data2.links);
+        // const data2 = {
+        //     nodes: [
+        //         {"id": "Ravi", "group": 1},
+        //         // {"id": "Napoleon", "group": 1},
+        //
+        //     ],
+        //     links: [
+        //         {"id": "Ravi-Napoleon", "source": "Ravi", "target": "Napoleon", value: 1}
+        //     ]
+        // }
+        // _this.graphCanvas.addData(data2.nodes, data2.links);
 
         let i = 1;
         // setInterval(() => {
@@ -62,27 +65,34 @@ export default class GraphComponent extends React.Component {
     }
 
 
-    onClickItem1() {
-        alert("item1 clicked");
+    onClickFocus() {
+        const nodeData = this.graphCanvas.eventStore.lastSelectedNodeData;
+        this.graphCanvas.zoom2Point(nodeData.x, nodeData.y);
+    }
+
+    onClickShowInV() {
+        alert("onClickShowInv clicked");
 
     }
 
-    onClickItem2() {
-        alert("item2 clicked");
+    onClickShowOutV() {
+        alert("onClickShowOutV clicked");
 
     }
 
-    onClickItem3() {
-        alert("item3 clicked");
+    hideMenu() {
+        this.graphCanvas.nodeMenuEl.style.display = "none";
     }
 
     render() {
         return (
             <div className={"graphContainer"}>
-                <ul id={"nodeMenu"}>
-                    <li onClick={() => this.onClickItem1()}>item 1</li>
-                    <li onClick={() => this.onClickItem2()}>item 2</li>
-                    <li onClick={() => this.onClickItem3()}>item 3</li>
+                <ul id={"nodeMenu"} style={{"display": "none"}}>
+                {/*<ul id={"nodeMenu"}>*/}
+                    <li onClick={() => this.onClickFocus()}>Focus</li>
+                    <li onClick={() => this.onClickShowInV()}>Show InV</li>
+                    <li onClick={() => this.onClickShowOutV()}>Show OutV</li>
+                    <li onClick={() => this.hideMenu()}>hide menu</li>
                 </ul>
             </div>
 

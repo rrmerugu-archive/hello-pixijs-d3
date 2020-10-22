@@ -3,13 +3,22 @@ import * as PIXI from 'pixi.js-legacy'
 
 export default class EventStore {
 
-    clickedNodeData = undefined;
+    clickedNodeData = undefined;//
+    lastSelectedNodeData = undefined;// used to get the last selected data for menu.
     hoveredNodeData = undefined;
 
     nodeMenuEl = undefined;
 
     constructor(nodeMenuEl) {
         this.nodeMenuEl = nodeMenuEl;
+    }
+
+    showMenu() {
+        this.nodeMenuEl.style.display = "block";
+    }
+
+    hideMenu() {
+        this.nodeMenuEl.style.display = "none";
     }
 
     onLinkClicked(graphCanvas, linkData, linkGfx, event) {
@@ -74,8 +83,8 @@ export default class EventStore {
         //
         // graphCanvas.nodeMenuLayer.x = nodeData.x;
         // graphCanvas.nodeMenuLayer.y = nodeData.y;
-        this.nodeMenuEl.style.left =  event.data.global.x + "px";
-        this.nodeMenuEl.style.top =  event.data.global.y + "px";
+        this.nodeMenuEl.style.left = event.data.global.x + +graphCanvas.settings.NODE_MENU_X_PADDING + "px";
+        this.nodeMenuEl.style.top = event.data.global.y + "px";
     }
 
     moveNodeMenu(graphCanvas, point, event) {
@@ -83,15 +92,14 @@ export default class EventStore {
         console.log("move=====", event.data.global.x, event.data.global.y)
         graphCanvas.nodeMenuLayer.x = point.x;
         graphCanvas.nodeMenuLayer.y = point.y;
-        this.nodeMenuEl.style.left =  event.data.global.x + "px";
-        this.nodeMenuEl.style.top =  event.data.global.y + "px";
+        this.nodeMenuEl.style.left = event.data.global.x + graphCanvas.settings.NODE_MENU_X_PADDING + "px";
+        this.nodeMenuEl.style.top = event.data.global.y + "px";
     }
 
     moveNode = (nodeData, point, graphCanvas, event) => {
 
         nodeData.x = point.x;
         nodeData.y = point.y;
-
 
 
         graphCanvas.updatePositions();
@@ -107,7 +115,10 @@ export default class EventStore {
     };
 
     onNodeClicked(graphCanvas, nodeData, nodeContainer, event) {
+
+        this.showMenu();
         this.clickedNodeData = nodeData;
+        this.lastSelectedNodeData = nodeData;
         console.log(this.clickedNodeData.id, " clicked");
         let _this = this;
         // enable node dragging
@@ -214,6 +225,7 @@ export default class EventStore {
 
     onNodeMouseOut(graphCanvas, nodeData, nodeContainer, event) {
         console.log(nodeData.id, " mouseout");
+        // this.hideMenu();
         this.unHighlightNode(graphCanvas, nodeData, nodeContainer)
         if (this.clickedNodeData) {
             return;
@@ -221,13 +233,19 @@ export default class EventStore {
         // if (this.hoveredNodeData !== nodeData) {
         //     return;
         // }
+        // this.unsetSelectedNodeData();
+
+    }
+
+    unsetSelectedNodeData() {
         this.clickedNodeData = undefined;
 
     }
 
 
     onNodeUnClicked(graphCanvas, nodeData, nodeContainer, event) {
-        this.clickedNodeData = undefined;
+        console.log("===onNodeUnClicked", nodeData);
+        this.unsetSelectedNodeData();
 
         // disable node dragging
         graphCanvas.pixiApp.renderer.plugins.interaction.off('mousemove', (event) => this.appMouseMove(event, graphCanvas));
