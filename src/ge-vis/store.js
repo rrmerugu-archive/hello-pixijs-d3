@@ -79,6 +79,8 @@ export default class GraphStore {
     clear() {
         this.hoveredNodeGfxOriginalChildren = undefined;
         this.hoveredNodeLabelGfxOriginalChildren = undefined;
+        this.hoveredlinkGfxOriginalChildren = undefined;
+        this.hoveredlinkLabelOriginalChildren = undefined;
         this.nodeDataToNodeGfx = new WeakMap();
         this.nodeGfxToNodeData = new WeakMap();
         this.nodeDataToLabelGfx = new WeakMap();

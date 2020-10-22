@@ -19,7 +19,6 @@ export default class GraphCanvas {
     isFirstLoaded = false
 
 
-
     loadFont(fontFamily) {
         new FontFaceObserver(fontFamily).load();
     }
@@ -194,25 +193,6 @@ export default class GraphCanvas {
 
 
     destroyEverything(func) {
-        // while (this.nodesLayer.children[0]) {
-        //     this.nodesLayer.removeChild(this.nodesLayer.children[0]);
-        // }
-        // this.nodesLayer.destroy(true, true, true);
-        // this.nodeLabelsLayer.destroy(true, true, true);
-        // this.linksLayer.destroy(true, true, true);
-        // this.linksLabelsLayer.destroy(true, true, true);
-        // this.frontLayer.destroy(true, true, true);
-        // this.graphStore.clear();
-        // this.dataStore.clear();
-
-        let _this = this;
-        // while (this.pixiApp.stage.children[0]) {
-        //     console.log("removing t", this.pixiApp.stage.children[0]);
-        //     _this.pixiApp.stage.removeChild(_this.pixiApp.stage.children[0])
-        // }
-        // this.setupCanvas();
-        // return
-        // setTimeout(() => func(), 500);
 
         func()
 
@@ -450,6 +430,10 @@ export default class GraphCanvas {
     updateSimulationData(nodes, links) {
         this.forceSimulation.nodes(nodes);
         this.forceSimulation.force("link").links(links)
+        // .id(linkData => linkData.id)
+        // .distance(function (d) {
+        //     return 100
+        // });
         this.forceSimulation.restart();
 
     }
@@ -462,16 +446,11 @@ export default class GraphCanvas {
         console.log("rendering with data:: nodes ======== ", nodes.length);
 
 
-        // .id(linkData => linkData.id)
-        // .distance(function (d) {
-        //     return 100
-        // });
         const nodeDataGfxPairs = this.createNodes(nodes);
         this.graphStore.update(nodeDataGfxPairs);
 
         // initial draw
         this.requestRender();
-        // this.updatePositions();
     }
 
     addData(newNodes, newLinks) {
@@ -479,15 +458,8 @@ export default class GraphCanvas {
         this.dataStore.addData(newNodes, newLinks);
         const {nodes, links} = this.dataStore;
         console.log("=======", nodes.length, links.length);
-        this.destroyEverything(() => {
-
-
             _this.updateSimulationData(nodes, links);
 
-            // _this.render(nodes, links);
-            // _this.updateNodePositions()
-
-        });
 
     }
 
