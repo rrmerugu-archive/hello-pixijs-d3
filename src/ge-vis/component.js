@@ -100,14 +100,11 @@ export default class GraphComponent extends React.Component {
     }
 
     resetFocus() {
+        this.graphCanvas.dataStore.removeAllNodes2Focus();
         this.graphCanvas.graphStore.resetFocus();
         this.graphCanvas.resetViewport();
-
     }
 
-    getFocusData() {
-
-    }
 
     render() {
         return (

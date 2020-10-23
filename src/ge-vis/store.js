@@ -28,6 +28,9 @@ export class DataStore {
             this.focusedNodes.push(nodeData);
         }
     }
+    removeAllNodes2Focus() {
+        this.focusedNodes = [];
+    }
 
 
     getNotNeighborLinks(selectedNodes) {
