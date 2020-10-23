@@ -10,8 +10,6 @@ import EventStore from "./events";
 export default class GraphCanvas {
 
 
-    graphStore = new GraphStore();
-    dataStore = new DataStore();
     renderRequestId = undefined;
     // clickedNodeData = undefined;
     isRendering = undefined;
@@ -25,6 +23,9 @@ export default class GraphCanvas {
 
     constructor(canvasElem, nodeMenuEl, width, height, onNodeSelected) {
         // let _this = this;
+        this.dataStore = new DataStore();
+        this.graphStore = new GraphStore(this.dataStore, this);
+
         this.nodeMenuEl = nodeMenuEl;
         this.eventStore = new EventStore(nodeMenuEl);
         this.onNodeSelected = onNodeSelected; // used to send back any message to react component.
@@ -179,7 +180,7 @@ export default class GraphCanvas {
         this.viewport.center = new PIXI.Point(x, y);
         this.viewport.fit(true, this.settings.WORLD_WIDTH / 4, this.settings.WORLD_HEIGHT / 4)
         this.viewport.setZoom(1, true);
-        // this.eventStore.hideMenu();
+        this.eventStore.hideMenu();
     }
 
     resetViewport() {

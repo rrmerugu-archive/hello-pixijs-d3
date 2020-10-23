@@ -68,16 +68,16 @@ export default class GraphComponent extends React.Component {
     }
 
 
-    onNodeSelected(nodeData){
+    onNodeSelected(nodeData) {
 
-        document.querySelector("#elementId").innerHTML =  nodeData.id;
+        document.querySelector("#elementId").innerHTML = nodeData.id;
     }
 
 
     onClickFocus() {
         const nodeData = this.graphCanvas.eventStore.lastSelectedNodeData;
         this.graphCanvas.dataStore.addNode2Focus(nodeData);
-        this.graphCanvas.eventStore.highlightNode(this.graphCanvas, nodeData);
+        this.graphCanvas.graphStore.focusOnNodes(this.graphCanvas.dataStore.focusedNodes);
         this.graphCanvas.zoom2Point(nodeData.x, nodeData.y);
         document.querySelector(".focused-nodes").append(
             "<li>" + nodeData.id + "</li>"
@@ -96,7 +96,13 @@ export default class GraphComponent extends React.Component {
     }
 
     hideMenu() {
-        this.graphCanvas.nodeMenuEl.style.display = "none";
+        this.graphCanvas.eventStore.hideMenu();
+    }
+
+    resetFocus() {
+        this.graphCanvas.graphStore.resetFocus();
+        this.graphCanvas.resetViewport();
+
     }
 
     getFocusData() {
@@ -118,6 +124,7 @@ export default class GraphComponent extends React.Component {
                     <p>Id: <span id={"elementId"}>1928264529</span></p>
                     <ul id={"nodeMenu"}>
                         <li onClick={() => this.onClickFocus()}>Focus</li>
+                        <li onClick={() => this.resetFocus()}>Reset Focus</li>
                         <li onClick={() => this.onClickShowInV()}>Show InV</li>
                         <li onClick={() => this.onClickShowOutV()}>Show OutV</li>
                         <li onClick={() => this.hideMenu()}>hide menu</li>

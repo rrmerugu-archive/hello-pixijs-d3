@@ -135,177 +135,179 @@ export default class EventStore {
 
     }
 
-    highlightNode(graphCanvas, nodeData) {
-        console.log("highlightNode", nodeData.id);
+    highlightNode(graphCanvas, nodes) {
+        console.log("highlightNodes ", nodes);
         // add hover effect
+        graphCanvas.graphStore.focusOnNodes(nodes);
 
-
-        const neighborsData = graphCanvas.dataStore.getNeighborNodesAndLinks(nodeData)
-        let nodes2Highlight = neighborsData.nodes;
-        nodes2Highlight.push(nodeData);
-        const links2Highlight = neighborsData.links;
-        console.log("====nodes2Highlight, links2Highlight", nodes2Highlight, links2Highlight)
-
-        graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = []
-        graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren = []
-
-        graphCanvas.graphStore.hoveredlinkGfxOriginalChildren = [];
-        graphCanvas.graphStore.hoveredlinkLabelOriginalChildren = [];
-
-
-        const {LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH} = graphCanvas.settings;
-        const {notNeighborLinks, notNeighborNodes} = graphCanvas.dataStore.getNotNeighborLinks(nodeData);
-        notNeighborLinks.forEach((linkData) => {
-            let linkGfx = graphCanvas.graphStore.linkDataToLinkGfx.get(linkData);
-            let linkGfxLabel = graphCanvas.graphStore.linkDataToLabelGfx.get(linkData);
-            console.log("==linkLayer", linkData, linkGfx);
-            const linkLabelGfx = graphCanvas.graphStore.linkDataToLabelGfx.get(linkData);
-
-            // delete linkGfx.children[0];
-            linkGfx.alpha = graphCanvas.settings.LINK_UN_HIGHLIGHT_ALPHA;
-            linkGfxLabel.alpha = graphCanvas.settings.LINK_UN_HIGHLIGHT_ALPHA;
-            graphCanvas.graphStore.hoveredlinkGfxOriginalChildren.push([...linkGfx.children]);
-            graphCanvas.graphStore.hoveredlinkLabelOriginalChildren.push([...linkLabelGfx.children]);
-
-            // // circle border
-            // let linkGfxHilight = new PIXI.Graphics();
-            // // linkGfx.id = "link-" + linkData.id;
-            //
-            //
-            // linkGfxHilight.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), 0xefefef);
-            // linkGfxHilight.alpha = 0.1;
-            // linkGfxHilight.moveTo(linkData.source.x, linkData.source.y);
-            // linkGfxHilight.lineTo(linkData.target.x, linkData.target.y);
-            //
-            //
-            // linkGfx.addChild(linkGfxHilight);
-            // let linkGfxLabelHighlight = new PIXI.Graphics();
-            // const linkLabelText = new PIXI.Text(getLinkLabel(linkData), {
-            //     fontFamily: LABEL_FONT_FAMILY,
-            //     fontSize: LINK_DEFAULT_LABEL_FONT_SIZE,
-            //     fill: 0xefefef
-            // });
-            // linkLabelText.resolution = graphCanvas.settings.LABEL_RESOLUTION;
-            // const sameIndex = 1;
-            // linkLabelText.x = (linkData.source.x + linkData.target.x) / 2 - 10 * sameIndex;
-            // linkLabelText.y = (linkData.source.y + linkData.target.y) / 2 - 10 * sameIndex;
-            // linkLabelText.anchor.set(0.5, 0);
-            // linkGfxLabelHighlight.addChild(linkLabelText)
-            //
-            // linkGfxLabel.addChild(linkGfxLabelHighlight)
-
-            // move to front layer
-            graphCanvas.linksLayer.removeChild(linkGfx);
-            graphCanvas.frontLayer.addChild(linkGfx);
-            graphCanvas.linksLabelsLayer.removeChild(linkGfxLabel);
-            graphCanvas.frontLayer.addChild(linkGfxLabel);
-
-
-        })
-
-        notNeighborNodes.forEach((node2Highlight) => {
-            let nodeContainer = graphCanvas.graphStore.nodeDataToNodeGfx.get(node2Highlight);
-            console.log("==nodeContainer", node2Highlight, nodeContainer);
-            const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(node2Highlight);
-            //
-            // graphCanvas.graphStore.hoveredNodeGfxOriginalChildren.push([...nodeContainer.children]);
-            // graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren.push([...labelGfx.children]);
-
-            // // circle border
-            // const circleBorder = new PIXI.Graphics();
-            // circleBorder.x = 0;
-            // circleBorder.y = 0;
-            // circleBorder.lineStyle(1.5, 0x000000);
-            // circleBorder.drawCircle(0, 0, graphCanvas.settings.NODE_RADIUS);
-            // nodeContainer.addChild(circleBorder);
-            // nodeContainer.alpha = 0.1
-            nodeContainer.alpha = graphCanvas.settings.LINK_UN_HIGHLIGHT_ALPHA;
-            labelGfx.alpha = graphCanvas.settings.LINK_UN_HIGHLIGHT_ALPHA;
-
-            // // move to front layer
-            // graphCanvas.nodesLayer.removeChild(nodeContainer);
-            // graphCanvas.frontLayer.addChild(nodeContainer);
-            // graphCanvas.nodeLabelsLayer.removeChild(labelGfx);
-            // graphCanvas.frontLayer.addChild(labelGfx);
-
-        });
+        // const neighborsData = graphCanvas.dataStore.getNeighborNodesAndLinks([nodeData])
+        // let nodes2Highlight = neighborsData.nodes;
+        // nodes2Highlight.push(nodeData);
+        // const links2Highlight = neighborsData.links;
+        // console.log("====nodes2Highlight, links2Highlight", nodes2Highlight, links2Highlight)
+        //
+        // graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = []
+        // graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren = []
+        //
+        // graphCanvas.graphStore.hoveredlinkGfxOriginalChildren = [];
+        // graphCanvas.graphStore.hoveredlinkLabelOriginalChildren = [];
+        //
+        //
+        // const {LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH} = graphCanvas.settings;
+        // const {notNeighborLinks, notNeighborNodes} = graphCanvas.dataStore.getNotNeighborLinks([nodeData]);
+        // notNeighborLinks.forEach((linkData) => {
+        //     let linkGfx = graphCanvas.graphStore.linkDataToLinkGfx.get(linkData);
+        //     let linkGfxLabel = graphCanvas.graphStore.linkDataToLabelGfx.get(linkData);
+        //     console.log("==linkLayer", linkData, linkGfx);
+        //     const linkLabelGfx = graphCanvas.graphStore.linkDataToLabelGfx.get(linkData);
+        //
+        //     // delete linkGfx.children[0];
+        //     linkGfx.alpha = graphCanvas.settings.LINK_UN_HIGHLIGHT_ALPHA;
+        //     linkGfxLabel.alpha = graphCanvas.settings.LINK_UN_HIGHLIGHT_ALPHA;
+        //     graphCanvas.graphStore.hoveredlinkGfxOriginalChildren.push([...linkGfx.children]);
+        //     graphCanvas.graphStore.hoveredlinkLabelOriginalChildren.push([...linkLabelGfx.children]);
+        //
+        //     // // circle border
+        //     // let linkGfxHilight = new PIXI.Graphics();
+        //     // // linkGfx.id = "link-" + linkData.id;
+        //     //
+        //     //
+        //     // linkGfxHilight.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), 0xefefef);
+        //     // linkGfxHilight.alpha = 0.1;
+        //     // linkGfxHilight.moveTo(linkData.source.x, linkData.source.y);
+        //     // linkGfxHilight.lineTo(linkData.target.x, linkData.target.y);
+        //     //
+        //     //
+        //     // linkGfx.addChild(linkGfxHilight);
+        //     // let linkGfxLabelHighlight = new PIXI.Graphics();
+        //     // const linkLabelText = new PIXI.Text(getLinkLabel(linkData), {
+        //     //     fontFamily: LABEL_FONT_FAMILY,
+        //     //     fontSize: LINK_DEFAULT_LABEL_FONT_SIZE,
+        //     //     fill: 0xefefef
+        //     // });
+        //     // linkLabelText.resolution = graphCanvas.settings.LABEL_RESOLUTION;
+        //     // const sameIndex = 1;
+        //     // linkLabelText.x = (linkData.source.x + linkData.target.x) / 2 - 10 * sameIndex;
+        //     // linkLabelText.y = (linkData.source.y + linkData.target.y) / 2 - 10 * sameIndex;
+        //     // linkLabelText.anchor.set(0.5, 0);
+        //     // linkGfxLabelHighlight.addChild(linkLabelText)
+        //     //
+        //     // linkGfxLabel.addChild(linkGfxLabelHighlight)
+        //
+        //     // move to front layer
+        //     graphCanvas.linksLayer.removeChild(linkGfx);
+        //     graphCanvas.frontLayer.addChild(linkGfx);
+        //     graphCanvas.linksLabelsLayer.removeChild(linkGfxLabel);
+        //     graphCanvas.frontLayer.addChild(linkGfxLabel);
+        //
+        //
+        // })
+        //
+        // notNeighborNodes.forEach((node2Highlight) => {
+        //     let nodeContainer = graphCanvas.graphStore.nodeDataToNodeGfx.get(node2Highlight);
+        //     console.log("==nodeContainer", node2Highlight, nodeContainer);
+        //     const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(node2Highlight);
+        //     //
+        //     // graphCanvas.graphStore.hoveredNodeGfxOriginalChildren.push([...nodeContainer.children]);
+        //     // graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren.push([...labelGfx.children]);
+        //
+        //     // // circle border
+        //     // const circleBorder = new PIXI.Graphics();
+        //     // circleBorder.x = 0;
+        //     // circleBorder.y = 0;
+        //     // circleBorder.lineStyle(1.5, 0x000000);
+        //     // circleBorder.drawCircle(0, 0, graphCanvas.settings.NODE_RADIUS);
+        //     // nodeContainer.addChild(circleBorder);
+        //     // nodeContainer.alpha = 0.1
+        //     nodeContainer.alpha = graphCanvas.settings.LINK_UN_HIGHLIGHT_ALPHA;
+        //     labelGfx.alpha = graphCanvas.settings.LINK_UN_HIGHLIGHT_ALPHA;
+        //
+        //     // // move to front layer
+        //     // graphCanvas.nodesLayer.removeChild(nodeContainer);
+        //     // graphCanvas.frontLayer.addChild(nodeContainer);
+        //     // graphCanvas.nodeLabelsLayer.removeChild(labelGfx);
+        //     // graphCanvas.frontLayer.addChild(labelGfx);
+        //
+        // });
 
     }
 
     unHighlightNode(graphCanvas, nodeData) {
 
-        const neighborsData = graphCanvas.dataStore.getNeighborNodesAndLinks(nodeData)
-        let nodes2Highlight = neighborsData.nodes;
-        nodes2Highlight.push(nodeData);
-        const links2Highlight = neighborsData.links;
-        const {notNeighborLinks, notNeighborNodes} = graphCanvas.dataStore.getNotNeighborLinks(nodeData);
-        console.log("notNeighborLinks", notNeighborLinks)
-        // reseting the rest of the links
-        notNeighborLinks.forEach((link2Highlight, i) => {
+        graphCanvas.graphStore.resetFocus();
 
-            const linkGfx = graphCanvas.graphStore.linkDataToLinkGfx.get(link2Highlight);
-            const linkLabelGfx = graphCanvas.graphStore.linkDataToLabelGfx.get(link2Highlight);
-            console.log("====unhighlight link", link2Highlight, linkGfx)
-
-            linkGfx.alpha = graphCanvas.settings.LINK_DEFAULT_ALPHA;
-            linkLabelGfx.alpha = graphCanvas.settings.LINK_DEFAULT_ALPHA;
-            //
-            // // move back from front layer
-            graphCanvas.frontLayer.removeChild(linkGfx);
-            graphCanvas.linksLayer.addChild(linkGfx);
-            graphCanvas.frontLayer.removeChild(linkLabelGfx);
-            graphCanvas.linksLabelsLayer.addChild(linkLabelGfx);
-
-            // // clear hover effect
-            // const nodeGfxChildren = [...linkGfx.children];
-            // for (let child of nodeGfxChildren) {
-            //     if (graphCanvas.graphStore.hoveredlinkGfxOriginalChildren[i]
-            //         && !graphCanvas.graphStore.hoveredlinkGfxOriginalChildren[i].includes(child)) {
-            //         linkGfx.removeChild(child);
-            //     }
-            // }
-            // const labelGfxChildren = [...linkLabelGfx.children];
-            // for (let child of labelGfxChildren) {
-            //     if (graphCanvas.graphStore.hoveredlinkLabelOriginalChildren[i]
-            //         && !graphCanvas.graphStore.hoveredlinkLabelOriginalChildren[i].includes(child)) {
-            //         linkLabelGfx.removeChild(child);
-            //     }
-            // }
-        })
-        notNeighborNodes.forEach((node2Highlight, i) => {
-            const nodeGfx = graphCanvas.graphStore.nodeDataToNodeGfx.get(node2Highlight);
-            const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(node2Highlight);
-
-            // move back from front layer
-            graphCanvas.frontLayer.removeChild(nodeGfx);
-            graphCanvas.nodesLayer.addChild(nodeGfx);
-            graphCanvas.frontLayer.removeChild(labelGfx);
-            graphCanvas.nodeLabelsLayer.addChild(labelGfx);
-
-            nodeGfx.alpha = 1;
-            labelGfx.alpha = 1;
-
-            // // clear hover effect
-            // const nodeGfxChildren = [...nodeGfx.children];
-            // for (let child of nodeGfxChildren) {
-            //     if (graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i] && !graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i].includes(child)) {
-            //         nodeGfx.removeChild(child);
-            //     }
-            // }
-            // const labelGfxChildren = [...labelGfx.children];
-            // for (let child of labelGfxChildren) {
-            //     if (graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren[i] && !graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren[i].includes(child)) {
-            //         labelGfx.removeChild(child);
-            //     }
-            // }
-        })
-
-
-        graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = [];
-        graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren = [];
-
-        graphCanvas.graphStore.hoveredlinkGfxOriginalChildren = [];
-        graphCanvas.graphStore.hoveredlinkLabelOriginalChildren = [];
+        // const neighborsData = graphCanvas.dataStore.getNeighborNodesAndLinks([nodeData])
+        // let nodes2Highlight = neighborsData.nodes;
+        // nodes2Highlight.push(nodeData);
+        // const links2Highlight = neighborsData.links;
+        // const {notNeighborLinks, notNeighborNodes} = graphCanvas.dataStore.getNotNeighborLinks([nodeData]);
+        // console.log("notNeighborLinks", notNeighborLinks)
+        // // reseting the rest of the links
+        // notNeighborLinks.forEach((link2Highlight, i) => {
+        //
+        //     const linkGfx = graphCanvas.graphStore.linkDataToLinkGfx.get(link2Highlight);
+        //     const linkLabelGfx = graphCanvas.graphStore.linkDataToLabelGfx.get(link2Highlight);
+        //     console.log("====unhighlight link", link2Highlight, linkGfx)
+        //
+        //     linkGfx.alpha = graphCanvas.settings.LINK_DEFAULT_ALPHA;
+        //     linkLabelGfx.alpha = graphCanvas.settings.LINK_DEFAULT_ALPHA;
+        //     //
+        //     // // move back from front layer
+        //     graphCanvas.frontLayer.removeChild(linkGfx);
+        //     graphCanvas.linksLayer.addChild(linkGfx);
+        //     graphCanvas.frontLayer.removeChild(linkLabelGfx);
+        //     graphCanvas.linksLabelsLayer.addChild(linkLabelGfx);
+        //
+        //     // // clear hover effect
+        //     // const nodeGfxChildren = [...linkGfx.children];
+        //     // for (let child of nodeGfxChildren) {
+        //     //     if (graphCanvas.graphStore.hoveredlinkGfxOriginalChildren[i]
+        //     //         && !graphCanvas.graphStore.hoveredlinkGfxOriginalChildren[i].includes(child)) {
+        //     //         linkGfx.removeChild(child);
+        //     //     }
+        //     // }
+        //     // const labelGfxChildren = [...linkLabelGfx.children];
+        //     // for (let child of labelGfxChildren) {
+        //     //     if (graphCanvas.graphStore.hoveredlinkLabelOriginalChildren[i]
+        //     //         && !graphCanvas.graphStore.hoveredlinkLabelOriginalChildren[i].includes(child)) {
+        //     //         linkLabelGfx.removeChild(child);
+        //     //     }
+        //     // }
+        // })
+        // notNeighborNodes.forEach((node2Highlight, i) => {
+        //     const nodeGfx = graphCanvas.graphStore.nodeDataToNodeGfx.get(node2Highlight);
+        //     const labelGfx = graphCanvas.graphStore.nodeDataToLabelGfx.get(node2Highlight);
+        //
+        //     // move back from front layer
+        //     graphCanvas.frontLayer.removeChild(nodeGfx);
+        //     graphCanvas.nodesLayer.addChild(nodeGfx);
+        //     graphCanvas.frontLayer.removeChild(labelGfx);
+        //     graphCanvas.nodeLabelsLayer.addChild(labelGfx);
+        //
+        //     nodeGfx.alpha = 1;
+        //     labelGfx.alpha = 1;
+        //
+        //     // // clear hover effect
+        //     // const nodeGfxChildren = [...nodeGfx.children];
+        //     // for (let child of nodeGfxChildren) {
+        //     //     if (graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i] && !graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i].includes(child)) {
+        //     //         nodeGfx.removeChild(child);
+        //     //     }
+        //     // }
+        //     // const labelGfxChildren = [...labelGfx.children];
+        //     // for (let child of labelGfxChildren) {
+        //     //     if (graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren[i] && !graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren[i].includes(child)) {
+        //     //         labelGfx.removeChild(child);
+        //     //     }
+        //     // }
+        // })
+        //
+        //
+        // graphCanvas.graphStore.hoveredNodeGfxOriginalChildren = [];
+        // graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren = [];
+        //
+        // graphCanvas.graphStore.hoveredlinkGfxOriginalChildren = [];
+        // graphCanvas.graphStore.hoveredlinkLabelOriginalChildren = [];
 
         graphCanvas.requestRender();
     }
@@ -327,7 +329,7 @@ export default class EventStore {
         }
 
         if (nodeData) {
-            this.highlightNode(graphCanvas, nodeData)
+            this.highlightNode(graphCanvas, [nodeData])
             // for drag feature
             if (this.clickedNodeData) {
                 return;
