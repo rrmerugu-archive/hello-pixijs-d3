@@ -318,18 +318,91 @@ export default class GraphCanvas {
     }
 
 
+    linearDistanceBetweenTwoPoints(x1, y1, x2, y2) {
+        return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    }
+
+    getPointForArrowAtPointWithPadding(x1, y1, x2, y2, padding) {
+
+        const d = this.linearDistanceBetweenTwoPoints(x1, y1, x2, y2)
+        const dt = d - padding;
+        //ratio of distances
+        let t = dt / d;
+        const x = (1 - t) * x1 + t * x2;
+        const y = (1 - t) * y1 + t * y2;
+        return {x, y};
+
+    }
+
     createLink(linkData) {
         const {LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH} = this.settings;
         let _this = this;
         let linkGfx = new PIXI.Graphics();
-        // linkGfx.id = "link-" + linkData.id;
         let linkGfxLabel = new PIXI.Graphics();
-        // linkGfx.id = "link-" + linkData.id;
 
 
         linkGfx.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), this.settings.LINK_DEFAULT_COLOR);
         linkGfx.moveTo(linkData.source.x, linkData.source.y);
         linkGfx.lineTo(linkData.target.x, linkData.target.y);
+
+
+        const normal = [
+            -(linkData.target.y - linkData.source.y),
+            linkData.target.x - linkData.source.x,
+        ]
+        const l = Math.sqrt(normal[0] ** 2 + normal[1] ** 2);
+        normal[0] /= l;
+        normal[1] /= l;
+
+        const tangent = [
+            -normal[1] * 45,
+            normal[0] * 45
+        ]
+
+        normal[0] *= 30;
+        normal[1] *= 30;
+
+
+        //  The distance between Start and End point is given by
+        // xt, yt are the coordinates at a distance dt from source.
+        const t2 = this.getPointForArrowAtPointWithPadding(linkData.source.x, linkData.source.y,
+            linkData.target.x, linkData.target.y, this.settings.NODE_RADIUS + 1)
+        // const d = Math.sqrt((linkData.target.x - linkData.source.x) ** 2 + (linkData.target.y - linkData.source.y) ** 2)
+
+        // points for triangle with points t1, t2(point touching to circle), t3
+        const t1 = this.getPointForArrowAtPointWithPadding(
+            linkData.target.x + normal[0] + tangent[0],
+            linkData.target.y + normal[1] + tangent[1],
+            t2.x, t2.y, 6
+        )
+        const t3 = this.getPointForArrowAtPointWithPadding(
+            linkData.target.x - normal[0] + tangent[0],
+            linkData.target.y - normal[1] + tangent[1],
+            t2.x, t2.y
+            , 6
+        )
+
+        console.log("tangent", tangent);
+        linkGfx.beginFill(this.settings.LINK_DEFAULT_COLOR, 1);
+
+        linkGfx.lineStyle(1, this.settings.LINK_DEFAULT_COLOR, 1, .5)
+            // .moveTo(linkData.target.x + normal[0] + tangent[0],
+            //     linkData.target.y + normal[1] + tangent[1])
+            .moveTo(t1.x, t1.y)
+            // .lineTo(linkData.target.x - 10 , linkData.target.y + 10  )
+            // .lineTo(linkData.target.x, linkData.target.y)
+            .lineTo(t2.x, t2.y)
+            // .lineTo(t1.x, t1.y)
+
+            // .lineTo(linkData.target.x, linkData.target.y)
+            // .lineTo(linkData.target.x - normal[0] + tangent[0],
+            //     linkData.target.y - normal[1] + tangent[1])
+            .lineTo(t3.x, t3.y)
+            .lineTo(t1.x, t1.y)
+
+        // )
+        linkGfx.buttonMode = true;
+        linkGfx.endFill();
 
 
         // for link label
