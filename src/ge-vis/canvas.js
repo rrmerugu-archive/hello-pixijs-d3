@@ -52,9 +52,9 @@ export default class GraphCanvas {
         canvasElem.appendChild(this.pixiApp.view);
 
         // manual rendering
-        this.pixiApp.renderer.on('postrender', () => {
-            // console.log('render');
-        });
+        // this.pixiApp.renderer.on('postrender', () => {
+        //     // console.log('render');
+        // });
         // this.pixiApp.renderer.view.addEventListener('click', function (e) {
         //     console.log(e);
         //     _this.eventStore.hideMenu();
@@ -327,7 +327,7 @@ export default class GraphCanvas {
         // linkGfx.id = "link-" + linkData.id;
 
 
-        linkGfx.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), 0x999999);
+        linkGfx.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), this.settings.LINK_DEFAULT_COLOR);
         linkGfx.moveTo(linkData.source.x, linkData.source.y);
         linkGfx.lineTo(linkData.target.x, linkData.target.y);
 
@@ -336,7 +336,7 @@ export default class GraphCanvas {
         const linkLabelText = new PIXI.Text(getLinkLabel(linkData), {
             fontFamily: LABEL_FONT_FAMILY,
             fontSize: LINK_DEFAULT_LABEL_FONT_SIZE,
-            fill: 0xd2d2d2
+            fill: _this.settings.LINK_DEFAULT_LABEL_COLOR
         });
         linkLabelText.resolution = this.settings.LABEL_RESOLUTION;
         const sameIndex = 1;
