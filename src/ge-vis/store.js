@@ -122,6 +122,9 @@ export default class GraphStore {
 
         this.hoveredlinkGfxOriginalChildren = [];
         this.hoveredlinkLabelOriginalChildren = [];
+
+
+        this.hoveredNodeChildrenPairs = {};
         this.nodeDataToNodeGfx = new WeakMap();
         this.nodeGfxToNodeData = new WeakMap();
         this.nodeDataToLabelGfx = new WeakMap();
@@ -178,8 +181,9 @@ export default class GraphStore {
             let nodeContainer = _this.nodeDataToNodeGfx.get(node);
             console.log("==nodeContainer", node, nodeContainer);
             //
-            // _this.hoveredNodeGfxOriginalChildren.push([...nodeContainer.children]);
-            //
+            // _this.hoveredNodeChildrenPairs[node.id] = nodeContainer.children;
+
+            nodeContainer.children[1].alpha =  _this.graphCanvas.settings.NODE_BORDER_HIGHLIGHT_ALPHA;
             // // circle border
             // const circleBorder = new PIXI.Graphics();
             // circleBorder.x = 0;
@@ -230,12 +234,15 @@ export default class GraphStore {
 
             nodeGfx.alpha = _this.graphCanvas.settings.NODE_DEFAULT_ALPHA;
             labelGfx.alpha = _this.graphCanvas.settings.NODE_DEFAULT_ALPHA;
+            nodeGfx.children[1].alpha = _this.graphCanvas.settings.NODE_BORDER_UN_HIGHLIGHT_ALPHA;
 
             // // // clear hover effect
-            // const nodeGfxChildren = [...nodeGfx.children];
+
+
+            // const nodeGfxChildren = nodeGfx.children;
             // for (let child of nodeGfxChildren) {
-            //     if (_this.graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i]
-            //         && !_this.graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i].includes(child)) {
+            //     if (_this.hoveredNodeChildrenPairs[node.id]
+            //         && !_this.hoveredNodeChildrenPairs[node.id].includes(child)) {
             //         nodeGfx.removeChild(child);
             //     }
             // }
