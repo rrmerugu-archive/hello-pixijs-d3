@@ -27,14 +27,15 @@ export default class GESettings {
 
     LINK_DEFAULT_LABEL_FONT_SIZE = 10;
     LINK_DEFAULT_WIDTH= 2;
-    LINK_DEFAULT_ALPHA = 0.9;
+    LINK_DEFAULT_ALPHA = 0.4;
     LINK_UN_HIGHLIGHT_ALPHA = 0.03;
+
 
     ICON_FONT_FAMILY = 'Material Icons';
     ICON_FONT_SIZE = this.NODE_RADIUS / Math.SQRT2 * 2;
     ICON_TEXT = 'person';
 
-    ZOOM_CLAMP_MIN_SCALE= .4;
+    ZOOM_CLAMP_MIN_SCALE= .2;
     ZOOM_CLAMP_MAX_SCALE= 3;
 
     NODE_MENU_X_PADDING = 200 + this.NODE_RADIUS;

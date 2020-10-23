@@ -21,10 +21,11 @@ export default class GraphComponent extends React.Component {
                 {"id": "Myriel-Napoleon", "source": "Napoleon", "target": "Myriel", "value": 1},
             ]
         };
-
+        console.log("canvasElem.offsetWidth,", canvasElem.offsetWidth, canvasElem.offsetHeight)
 
         this.graphCanvas = new GraphCanvas(canvasElem, nodeMenuEl,
-            900, 600,
+            canvasElem.offsetWidth,
+            canvasElem.offsetHeight,
             this.onNodeSelected.bind(this)
         )
         // this.graphCanvas.addData(initData.nodes, initData.links)
@@ -121,8 +122,8 @@ export default class GraphComponent extends React.Component {
 
                 <div className="nodeMenuContainer" style={{"display": "none"}}>
                     <h5>Vertex Label</h5>
-                    <p>Id: <span id={"elementId"}>1928264529</span></p>
-                    <ul id={"nodeMenu"}>
+                    <p>Id: <span id={"elementId"}></span></p>
+                    <ul className={"nodeMenu"}>
                         <li onClick={() => this.onClickFocus()}>Focus</li>
                         <li onClick={() => this.resetFocus()}>Reset Focus</li>
                         <li onClick={() => this.onClickShowInV()}>Show InV</li>

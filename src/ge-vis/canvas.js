@@ -37,8 +37,8 @@ export default class GraphCanvas {
 
         // create PIXI application
         this.pixiApp = new PIXI.Application({
-            // width: this.settings.SCREEN_WIDTH,
-            // height: this.settings.SCREEN_HEIGHT,
+            width: width || this.settings.SCREEN_WIDTH,
+            height: height || this.settings.SCREEN_HEIGHT,
             resolution: this.settings.RESOLUTION,
             transparent: true,
             // backgroundColor: 0xFFFFFF,

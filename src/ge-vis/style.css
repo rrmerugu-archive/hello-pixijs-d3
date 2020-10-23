@@ -7,11 +7,13 @@
     padding: 5px;
 
 }
-.nodeMenuContainer h5{
-    font-size:14px
+
+.nodeMenuContainer h5 {
+    font-size: 14px
 }
-.nodeMenuContainer p{
-     font-size: 12px;
+
+.nodeMenuContainer p {
+    font-size: 12px;
     border-bottom: 1px solid #ccc;
     padding-bottom: 5px;
     margin-bottom: 10px;
@@ -19,7 +21,11 @@
     color: #676767;
 }
 
-#nodeMenu {
+.graphContainer {
+    height: 100%;
+}
+
+.nodeMenu {
     margin-left: 0;
     padding-left: 0;
     width: 100px;
@@ -27,7 +33,7 @@
 
 }
 
-#nodeMenu li {
+.nodeMenu li {
     display: block;
     border-bottom: 1px solid #343434;
     color: #343434;
