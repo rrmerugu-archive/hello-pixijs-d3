@@ -178,16 +178,16 @@ export default class GraphStore {
             let nodeContainer = _this.nodeDataToNodeGfx.get(node);
             console.log("==nodeContainer", node, nodeContainer);
             //
-            _this.hoveredNodeGfxOriginalChildren.push([...nodeContainer.children]);
-
-            // circle border
-            const circleBorder = new PIXI.Graphics();
-            circleBorder.x = 0;
-            circleBorder.y = 0;
-            circleBorder.lineStyle(2.5, _this.graphCanvas.settings.NODE_FOCUSED_NODE_BORDER_COLOR);
-            circleBorder.drawCircle(0, 0, _this.graphCanvas.settings.NODE_RADIUS);
-            nodeContainer.addChild(circleBorder);
-
+            // _this.hoveredNodeGfxOriginalChildren.push([...nodeContainer.children]);
+            //
+            // // circle border
+            // const circleBorder = new PIXI.Graphics();
+            // circleBorder.x = 0;
+            // circleBorder.y = 0;
+            // circleBorder.lineStyle(2.5, _this.graphCanvas.settings.NODE_FOCUSED_NODE_BORDER_COLOR);
+            // circleBorder.drawCircle(0, 0, _this.graphCanvas.settings.NODE_RADIUS);
+            // nodeContainer.addChild(circleBorder);
+            //
 
             // move to front layer
             _this.graphCanvas.nodesLayer.removeChild(nodeContainer);
@@ -228,22 +228,18 @@ export default class GraphStore {
             _this.graphCanvas.frontLayer.removeChild(labelGfx);
             _this.graphCanvas.nodeLabelsLayer.addChild(labelGfx);
 
-            nodeGfx.alpha = 1;
-            labelGfx.alpha = 1;
+            nodeGfx.alpha = _this.graphCanvas.settings.NODE_DEFAULT_ALPHA;
+            labelGfx.alpha = _this.graphCanvas.settings.NODE_DEFAULT_ALPHA;
 
-            // // clear hover effect
-            const nodeGfxChildren = [...nodeGfx.children];
-            for (let child of nodeGfxChildren) {
-                if (_this.graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i] && !_this.graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i].includes(child)) {
-                    nodeGfx.removeChild(child);
-                }
-            }
-            const labelGfxChildren = [...labelGfx.children];
-            for (let child of labelGfxChildren) {
-                if (_this.graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren[i] && !_this.graphCanvas.graphStore.hoveredNodeLabelGfxOriginalChildren[i].includes(child)) {
-                    labelGfx.removeChild(child);
-                }
-            }
+            // // // clear hover effect
+            // const nodeGfxChildren = [...nodeGfx.children];
+            // for (let child of nodeGfxChildren) {
+            //     if (_this.graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i]
+            //         && !_this.graphCanvas.graphStore.hoveredNodeGfxOriginalChildren[i].includes(child)) {
+            //         nodeGfx.removeChild(child);
+            //     }
+            // }
+
         })
 
 
