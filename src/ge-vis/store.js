@@ -212,7 +212,7 @@ export default class GraphStore {
 
             const linkGfx = _this.linkDataToLinkGfx.get(link);
             const linkLabelGfx = _this.linkDataToLabelGfx.get(link);
-            console.log("====unhighlight link", link, linkGfx)
+            // console.log("====unhighlight link", link, linkGfx)
 
             linkGfx.alpha = _this.graphCanvas.settings.LINK_DEFAULT_ALPHA;
             linkLabelGfx.alpha = _this.graphCanvas.settings.LINK_DEFAULT_ALPHA;

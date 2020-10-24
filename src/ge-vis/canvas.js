@@ -6,6 +6,7 @@ import {Viewport} from 'pixi-viewport'
 import {colorToNumber, scale, getColor, getNodeLabel, getLinkLabel} from "./utils";
 import FontFaceObserver from "fontfaceobserver";
 import EventStore from "./events";
+import {prepareLinksDataForCurves} from "../utils";
 
 export default class GraphCanvas {
 
@@ -334,22 +335,19 @@ export default class GraphCanvas {
 
     }
 
-    createLink(linkData) {
-        const {LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH} = this.settings;
-        let _this = this;
-        let linkGfx = new PIXI.Graphics();
-        let linkGfxLabel = new PIXI.Graphics();
+    getTrianglePointsTan
 
 
-        linkGfx.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), this.settings.LINK_DEFAULT_COLOR);
-        linkGfx.moveTo(linkData.source.x, linkData.source.y);
-        linkGfx.lineTo(linkData.target.x, linkData.target.y);
+    getNormalAndTangentForTwoPoints(x1, y1, x2, y2, sameIndex) {
+        // x1, y1 is the first point and x2, y2 is the second point.
 
 
-        const normal = [
-            -(linkData.target.y - linkData.source.y),
-            linkData.target.x - linkData.source.x,
+        let normal = [
+            -(y2 - this.settings.NODE_RADIUS),
+            x2 - this.settings.NODE_RADIUS,
         ]
+
+
         const l = Math.sqrt(normal[0] ** 2 + normal[1] ** 2);
         normal[0] /= l;
         normal[1] /= l;
@@ -361,6 +359,40 @@ export default class GraphCanvas {
 
         normal[0] *= 30;
         normal[1] *= 30;
+        return {normal, tangent,}
+    }
+
+    createLink(linkData) {
+        const {LINK_DEFAULT_LABEL_FONT_SIZE, LABEL_FONT_FAMILY, LINK_DEFAULT_WIDTH} = this.settings;
+        let _this = this;
+        let linkGfx = new PIXI.Graphics();
+        let linkGfxLabel = new PIXI.Graphics();
+
+
+        linkGfx.lineStyle(Math.sqrt(LINK_DEFAULT_WIDTH), this.settings.LINK_DEFAULT_COLOR);
+        const curvatureConstant = 0.5;
+        const sameIndex = linkData.sameIndex;
+        let nextPoint = {};
+        nextPoint.x = linkData.target.x;
+        nextPoint.y = linkData.target.y;
+        let {normal, tangent} = this.getNormalAndTangentForTwoPoints(
+            linkData.source.x,
+            linkData.source.y,
+            linkData.target.x,
+            linkData.target.y,
+            linkData.sameIndex
+        )
+
+
+        if (sameIndex > 1) {
+            // for curved links
+            nextPoint.y = linkData.target.x - 300 * sameIndex * curvatureConstant;
+            nextPoint.y = linkData.target.y - 300 * sameIndex * curvatureConstant;
+            normal = [
+                -(linkData.target.y - this.settings.NODE_RADIUS - nextPoint.y),
+                linkData.target.x - this.settings.NODE_RADIUS - nextPoint.x,
+            ]
+        }
 
 
         //  The distance between Start and End point is given by
@@ -383,26 +415,6 @@ export default class GraphCanvas {
         )
 
         console.log("tangent", tangent);
-        linkGfx.beginFill(this.settings.LINK_DEFAULT_COLOR, 1);
-
-        linkGfx.lineStyle(1, this.settings.LINK_DEFAULT_COLOR, 1, .5)
-            // .moveTo(linkData.target.x + normal[0] + tangent[0],
-            //     linkData.target.y + normal[1] + tangent[1])
-            .moveTo(t1.x, t1.y)
-            // .lineTo(linkData.target.x - 10 , linkData.target.y + 10  )
-            // .lineTo(linkData.target.x, linkData.target.y)
-            .lineTo(t2.x, t2.y)
-            // .lineTo(t1.x, t1.y)
-
-            // .lineTo(linkData.target.x, linkData.target.y)
-            // .lineTo(linkData.target.x - normal[0] + tangent[0],
-            //     linkData.target.y - normal[1] + tangent[1])
-            .lineTo(t3.x, t3.y)
-            .lineTo(t1.x, t1.y)
-
-        // )
-        linkGfx.buttonMode = true;
-        linkGfx.endFill();
 
 
         // for link label
@@ -412,9 +424,72 @@ export default class GraphCanvas {
             fill: _this.settings.LINK_DEFAULT_LABEL_COLOR
         });
         linkLabelText.resolution = this.settings.LABEL_RESOLUTION;
-        const sameIndex = 1;
-        linkLabelText.x = (linkData.source.x + linkData.target.x) / 2 - 10 * sameIndex;
-        linkLabelText.y = (linkData.source.y + linkData.target.y) / 2 - 10 * sameIndex;
+
+        if (sameIndex === 1) {
+            linkGfx.moveTo(linkData.source.x, linkData.source.y);
+
+//             linkGfx.lineTo(linkData.target.x, linkData.target.y);
+//             linkGfx.beginFill(this.settings.LINK_DEFAULT_COLOR, 1);
+//             // triangle for the arrow
+//             linkGfx.lineStyle(1, this.settings.LINK_DEFAULT_COLOR, 1, .5)
+//                 .moveTo(t1.x, t1.y)
+//             linkGfx.lineTo(t2.x, t2.y)
+//                 .lineTo(t3.x, t3.y)
+//                 .lineTo(t1.x, t1.y)
+//             .closePath()
+//
+// // set label in the middle
+//             linkLabelText.x = (linkData.source.x + linkData.target.x) / 2 - 10 * sameIndex;
+//             linkLabelText.y = (linkData.source.y + linkData.target.y) / 2 - 10 * sameIndex;
+
+        } else {
+            linkGfx.moveTo(linkData.source.x, linkData.source.y);
+
+            console.log("linkData=====", linkData, nextPoint.x, nextPoint.y)
+
+            // linkGfx
+            //     .bezierCurveTo(linkData.source.x, linkData.source.y,
+            //         nextPoint.x + 50, nextPoint.y + 50,
+            //         linkData.target.x, linkData.target.y)
+
+            let linkCurveGfx = new PIXI.Graphics()
+                linkCurveGfx.lineStyle(10,0xff0000, 1)
+
+            linkCurveGfx.beginFill(this.settings.LINK_DEFAULT_COLOR, 1);
+            linkCurveGfx.arcTo(
+                linkData.source.x, linkData.source.y,
+                linkData.target.x, linkData.target.y,
+                linkData.sameIndex * 10
+            )
+
+            linkGfx.addChild(linkCurveGfx)
+
+
+            //
+            // linkGfx.beginFill(this.settings.LINK_DEFAULT_COLOR, 1);
+            // // triangle for the arrow
+            // linkGfx.lineStyle(1, this.settings.LINK_DEFAULT_COLOR, 1, .5)
+            //     .moveTo(t1.x, t1.y)
+            // linkGfx.lineTo(t2.x, t2.y)
+            //     .lineTo(t3.x, t3.y)
+            //     .lineTo(t1.x, t1.y)
+
+            // set label at the next point
+            linkLabelText.x = (linkData.source.x + linkData.target.x) / 2 - 10 * sameIndex;
+            linkLabelText.y = (linkData.source.y + linkData.target.y) / 2 - 10 * sameIndex;
+            // linkLabelText.x = nextPoint.x;
+            // linkLabelText.y = nextPoint.y;
+
+
+        }
+
+
+        // )
+        // linkGfx.buttonMode = true;
+        linkGfx.endFill();
+
+
+        // const sameIndex = 1;
         linkLabelText.anchor.set(0.5, 0);
         linkGfxLabel.addChild(linkLabelText)
 
@@ -501,6 +576,7 @@ export default class GraphCanvas {
         // .distance(function (d) {
         //     return 100
         // });
+
         this.forceSimulation.restart();
 
     }
@@ -525,7 +601,10 @@ export default class GraphCanvas {
         this.dataStore.addData(newNodes, newLinks);
         const {nodes, links} = this.dataStore;
         console.log("=======", nodes.length, links.length);
-        _this.updateSimulationData(nodes, links);
+
+        const linksCurvesPrepared = prepareLinksDataForCurves(links);
+
+        _this.updateSimulationData(nodes, linksCurvesPrepared);
     }
 
 

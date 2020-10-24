@@ -19,6 +19,8 @@ export default class GraphComponent extends React.Component {
                 {"id": "Napoleon", "group": 1},
             ], links: [
                 {"id": "Myriel-Napoleon", "source": "Napoleon", "target": "Myriel", "value": 1},
+                {"id": "Myriel-Napoleon-2", "source": "Napoleon", "target": "Myriel", "value": 2},
+                {"id": "Myriel-Napoleon-3", "source": "Napoleon", "target": "Myriel", "value": 3},
             ]
         };
         console.log("canvasElem.offsetWidth,", canvasElem.offsetWidth, canvasElem.offsetHeight)
@@ -28,13 +30,12 @@ export default class GraphComponent extends React.Component {
             canvasElem.offsetHeight,
             this.onNodeSelected.bind(this)
         )
-        // this.graphCanvas.addData(initData.nodes, initData.links)
+        this.graphCanvas.addData(initData.nodes, initData.links)
 
-        let _this = this;
 
         // setTimeout(() => {
 
-        _this.graphCanvas.addData(connector.getData().nodes, connector.getData().links);
+        // _this.graphCanvas.addData(connector.getData().nodes, connector.getData().links);
 
         // }, 3000)
 
