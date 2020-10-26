@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import GraphStore, {DataStore} from "./store";
 import GESettings from "./settings";
 import * as PIXI from 'pixi.js-legacy'
+// import * as PIXI from "pixi.js";
 import {Viewport} from 'pixi-viewport'
 import {colorToNumber, scale, getColor, getNodeLabel, getLinkLabel} from "./utils";
 import FontFaceObserver from "fontfaceobserver";
@@ -395,25 +396,6 @@ export default class GraphCanvas {
         }
 
 
-        //  The distance between Start and End point is given by
-        // xt, yt are the coordinates at a distance dt from source.
-        const t2 = this.getPointForArrowAtPointWithPadding(linkData.source.x, linkData.source.y,
-            linkData.target.x, linkData.target.y, this.settings.NODE_RADIUS + 1)
-        // const d = Math.sqrt((linkData.target.x - linkData.source.x) ** 2 + (linkData.target.y - linkData.source.y) ** 2)
-
-        // points for triangle with points t1, t2(point touching to circle), t3
-        const t1 = this.getPointForArrowAtPointWithPadding(
-            linkData.target.x + normal[0] + tangent[0],
-            linkData.target.y + normal[1] + tangent[1],
-            t2.x, t2.y, 6
-        )
-        const t3 = this.getPointForArrowAtPointWithPadding(
-            linkData.target.x - normal[0] + tangent[0],
-            linkData.target.y - normal[1] + tangent[1],
-            t2.x, t2.y
-            , 6
-        )
-
         console.log("tangent", tangent);
 
 
@@ -428,41 +410,73 @@ export default class GraphCanvas {
         if (sameIndex === 1) {
             linkGfx.moveTo(linkData.source.x, linkData.source.y);
 
-//             linkGfx.lineTo(linkData.target.x, linkData.target.y);
-//             linkGfx.beginFill(this.settings.LINK_DEFAULT_COLOR, 1);
-//             // triangle for the arrow
-//             linkGfx.lineStyle(1, this.settings.LINK_DEFAULT_COLOR, 1, .5)
-//                 .moveTo(t1.x, t1.y)
-//             linkGfx.lineTo(t2.x, t2.y)
-//                 .lineTo(t3.x, t3.y)
-//                 .lineTo(t1.x, t1.y)
-//             .closePath()
-//
-// // set label in the middle
-//             linkLabelText.x = (linkData.source.x + linkData.target.x) / 2 - 10 * sameIndex;
-//             linkLabelText.y = (linkData.source.y + linkData.target.y) / 2 - 10 * sameIndex;
+            linkGfx.lineTo(linkData.target.x, linkData.target.y);
+            linkGfx.beginFill(this.settings.LINK_DEFAULT_COLOR, 1);
+            // triangle for the arrow
+            //  The distance between Start and End point is given by
+            // xt, yt are the coordinates at a distance dt from source.
+            const t2 = this.getPointForArrowAtPointWithPadding(linkData.source.x, linkData.source.y,
+                linkData.target.x, linkData.target.y, this.settings.NODE_RADIUS + 1)
+            // const d = Math.sqrt((linkData.target.x - linkData.source.x) ** 2 + (linkData.target.y - linkData.source.y) ** 2)
+
+            // points for triangle with points t1, t2(point touching to circle), t3
+            const t1 = this.getPointForArrowAtPointWithPadding(
+                linkData.target.x + normal[0] + tangent[0],
+                linkData.target.y + normal[1] + tangent[1],
+                t2.x, t2.y, 6
+            )
+            const t3 = this.getPointForArrowAtPointWithPadding(
+                linkData.target.x - normal[0] + tangent[0],
+                linkData.target.y - normal[1] + tangent[1],
+                t2.x, t2.y
+                , 6
+            )
+
+            linkGfx.lineStyle(1, this.settings.LINK_DEFAULT_COLOR, 1, .5)
+                .moveTo(t1.x, t1.y)
+            linkGfx.lineTo(t2.x, t2.y)
+                .lineTo(t3.x, t3.y)
+                .lineTo(t1.x, t1.y)
+                .closePath()
+
+            // set label in the middle
+            linkLabelText.x = (linkData.source.x + linkData.target.x) / 2 - 10 * sameIndex;
+            linkLabelText.y = (linkData.source.y + linkData.target.y) / 2 - 10 * sameIndex;
 
         } else {
             linkGfx.moveTo(linkData.source.x, linkData.source.y);
 
             console.log("linkData=====", linkData, nextPoint.x, nextPoint.y)
 
-            // linkGfx
-            //     .bezierCurveTo(linkData.source.x, linkData.source.y,
-            //         nextPoint.x + 50, nextPoint.y + 50,
-            //         linkData.target.x, linkData.target.y)
 
-            let linkCurveGfx = new PIXI.Graphics()
-                linkCurveGfx.lineStyle(10,0xff0000, 1)
 
-            linkCurveGfx.beginFill(this.settings.LINK_DEFAULT_COLOR, 1);
-            linkCurveGfx.arcTo(
-                linkData.source.x, linkData.source.y,
-                linkData.target.x, linkData.target.y,
-                linkData.sameIndex * 10
-            )
+            linkGfx
+                .bezierCurveTo(linkData.source.x, linkData.source.y,
+                    nextPoint.x + 50, nextPoint.y + 50,
+                    linkData.target.x, linkData.target.y)
 
-            linkGfx.addChild(linkCurveGfx)
+            // let linkCurveGfx = new PIXI.Graphics()
+            // linkCurveGfx.lineStyle(10, 0xff0000, 1)
+            //
+            // linkCurveGfx.moveTo(linkData.source.x, linkData.source.y);
+            //
+            // linkCurveGfx.beginFill(this.settings.LINK_DEFAULT_COLOR, 1);
+            // linkCurveGfx.arcTo(
+            //     linkData.source.x, linkData.source.y, linkData.target.x, linkData.target.y, linkData.sameIndex * 600
+            // )
+            console.log("+++", linkData.source.x, linkData.source.y, linkData.target.x, linkData.target.y, linkData.sameIndex * 60)
+            // linkCurveGfx.lineStyle(10,0xff0000, 0.5)
+            // linkCurveGfx.lineTo(200,200)
+
+            //             let linkCurveGfx = new PIXI.Graphics()
+            // linkCurveGfx.lineStyle(10,0x000000)
+            //
+            // linkCurveGfx.moveTo(0,0)
+            // linkCurveGfx.arcTo(0,100,200,200, 600)
+            // linkCurveGfx.lineStyle(10,0xff0000, 0.5)a
+            // linkCurveGfx.lineTo(200,200)
+
+            // linkGfx.addChild(linkCurveGfx)
 
 
             //

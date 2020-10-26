@@ -38,11 +38,11 @@ export default class GESettings {
     ICON_TEXT = 'person';
 
     ZOOM_CLAMP_MIN_SCALE= .2;
-    ZOOM_CLAMP_MAX_SCALE= 2;
+    ZOOM_CLAMP_MAX_SCALE= 3;
 
     NODE_MENU_X_PADDING = 240 + this.NODE_RADIUS;
 
-    LABEL_RESOLUTION = 6;
+    LABEL_RESOLUTION = 2;
 
 
 
